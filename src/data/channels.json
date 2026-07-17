@@ -1,0 +1,719 @@
+[
+  {
+    "Title": "DW Español (Alemania)",
+    "Genre": "Noticias",
+    "Language": "Español",
+    "Summary": "Noticias mundiales y reportajes en vivo desde Berlín, Alemania.",
+    "Link": "https://dwamdstream104.akamaized.net/hls/live/2015530/dwstream104/index.m3u8",
+    "IsStream": true,
+    "Logo": "https://upload.wikimedia.org/wikipedia/commons/d/d1/Deutsche_Welle_logo.svg"
+  },
+  {
+    "Title": "Canal 26 (Argentina)",
+    "Genre": "Noticias",
+    "Language": "Español",
+    "Summary": "Canal de televisión de noticias las 24 horas desde Buenos Aires, Argentina.",
+    "Link": "https://live-01-02-canal26.secure.footprint.net/canal26/canal26.m3u8",
+    "IsStream": true,
+    "Logo": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Canal26_logo.svg"
+  },
+  {
+    "Title": "TeleSUR (Latinoamérica)",
+    "Genre": "Noticias",
+    "Language": "Español",
+    "Summary": "Multimedio de comunicación e información de América Latina y el Caribe.",
+    "Link": "https://telesur-live.akamaized.net/hls/live/2015099/telesur/Telesur_HLS_500.m3u8",
+    "IsStream": true,
+    "Logo": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Telesur_logo.svg"
+  },
+  {
+    "Title": "RTVE 24 Horas (España)",
+    "Genre": "Noticias",
+    "Language": "Español",
+    "Summary": "Señal informativa en vivo de Televisión Española (RTVE).",
+    "Link": "https://rtvesp-live.rtve.es/rtvesp/c24h_la_1.m3u8",
+    "IsStream": true,
+    "Logo": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Canal_24_horas_logo_2021.png"
+  },
+  {
+    "Title": "Canal Sur Andalucía (España)",
+    "Genre": "General",
+    "Language": "Español",
+    "Summary": "Televisión pública autonómica de la Junta de Andalucía.",
+    "Link": "https://rtva-live.mdn.upapi.com/rtva/rtvasur_hd/playlist.m3u8",
+    "IsStream": true,
+    "Logo": "https://upload.wikimedia.org/wikipedia/commons/1/1a/Canal_Sur_Televisi%C3%B3n_logo.svg"
+  },
+  {
+    "Title": "Pluto TV Películas (Stream)",
+    "Genre": "Cine",
+    "Language": "Español",
+    "Summary": "Películas de diversos géneros las 24 horas del día gratis en directo.",
+    "Link": "https://service-channelfilter.clusters.pluto.tv/v1/channel/5e834bd31e87870007d4b293/stream?userAgent=Mozilla&deviceType=web&deviceVersion=1.0&deviceSid=123",
+    "IsStream": true,
+    "Logo": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Pluto_TV_logo.svg"
+  },
+  {
+    "Title": "Pluto TV Cine Estelar (Stream)",
+    "Genre": "Cine",
+    "Language": "Español",
+    "Summary": "Cine de Hollywood en español con las mejores estrellas en vivo.",
+    "Link": "https://service-channelfilter.clusters.pluto.tv/v1/channel/5f0f3531b79fbb00072bc5d1/stream?userAgent=Mozilla&deviceType=web&deviceVersion=1.0&deviceSid=123",
+    "IsStream": true,
+    "Logo": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Pluto_TV_logo.svg"
+  },
+  {
+    "Title": "Pluto TV Anime (Stream)",
+    "Genre": "Anime",
+    "Language": "Español",
+    "Summary": "Canal de anime las 24 horas del día en español latino.",
+    "Link": "https://service-channelfilter.clusters.pluto.tv/v1/channel/5f1b5bc938b81300078bb091/stream?userAgent=Mozilla&deviceType=web&deviceVersion=1.0&deviceSid=123",
+    "IsStream": true,
+    "Logo": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Pluto_TV_logo.svg"
+  },
+  {
+    "Title": "Televisión Pública (Argentina)",
+    "Genre": "General",
+    "Language": "Español",
+    "Summary": "Canal de televisión abierta nacional de Argentina.",
+    "Link": "https://tvp-live.secure.footprint.net/tvp/tvp.m3u8",
+    "IsStream": true,
+    "Logo": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Logo_Televisi%C3%B3n_P%C3%BAblica_Argentina.svg"
+  },
+  {
+    "Title": "El Trece (Argentina)",
+    "Genre": "Entretenimiento",
+    "Language": "Español",
+    "Summary": "Programas en vivo, novelas y noticias desde Buenos Aires, Argentina.",
+    "Link": "https://c13.solocanal.top/hls/c13.m3u8",
+    "IsStream": true,
+    "Logo": "https://upload.wikimedia.org/wikipedia/commons/8/87/Logo_de_eltrece.svg"
+  },
+  {
+    "Title": "RT en Español (Rusia)",
+    "Genre": "Noticias",
+    "Language": "Español",
+    "Summary": "Noticias internacionales de actualidad política, económica y social.",
+    "Link": "https://rt-esp.live.origin.cdn.rt.com/bpk-tv/rt_esp_3/default/index.m3u8",
+    "IsStream": true,
+    "Logo": "https://upload.wikimedia.org/wikipedia/commons/1/1b/RT_Logo_in_Spanish.svg"
+  },
+  {
+    "Title": "Pluto TV Ciencia (Stream)",
+    "Genre": "Documentales",
+    "Language": "Español",
+    "Summary": "Ciencia, espacio y tecnología explicados de forma interactiva.",
+    "Link": "https://service-channelfilter.clusters.pluto.tv/v1/channel/5f1b5bd55db6db00076a084c/stream?userAgent=Mozilla&deviceType=web&deviceVersion=1.0&deviceSid=123",
+    "IsStream": true,
+    "Logo": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Pluto_TV_logo.svg"
+  },
+  {
+    "Title": "Deal Or No Deal",
+    "Genre": "Daytime TV & Games",
+    "Language": "ES",
+    "Summary": "Deal Or No Deal es el exitoso concurso televisivo en el que los participantes compiten por un gran premio en efectivo, en una prueba de nervios e intuición pura.",
+    "Link": "https://watch.plex.tv/live-tv/channel/deal-or-no-deal-4"
+  },
+  {
+    "Title": "Billboard Español TV",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "La máxima autoridad musical crea el destino favorito para los fanáticos de la cultura pop en español alrededor del mundo.",
+    "Link": "https://watch.plex.tv/live-tv/channel/billboard-espanol-tv"
+  },
+  {
+    "Title": "Sobrévivi",
+    "Genre": "Explore",
+    "Language": "ES",
+    "Summary": "Historias reales de supervivencia: personas comunes llevadas al límite en los lugares más duros de la naturaleza.",
+    "Link": "https://watch.plex.tv/live-tv/channel/sobrevivi"
+  },
+  {
+    "Title": "Caracol Mix",
+    "Genre": "Bingeworthy",
+    "Language": "ES",
+    "Summary": "Caracol Mix, el primer canal FAST de Caracol Televisión, lleva las producciones más aclamadas de Colombia a los espectadores hispanos de todo el mundo.",
+    "Link": "https://watch.plex.tv/live-tv/channel/caracol-mix-2"
+  },
+  {
+    "Title": "Masha y el Oso",
+    "Genre": "Kids & Family",
+    "Language": "ES",
+    "Summary": "Masha y el Oso es una serie de animación que narra las aventuras de una niña, Masha, y su amigo, el Oso.",
+    "Link": "https://watch.plex.tv/live-tv/channel/masha-y-el-oso"
+  },
+  {
+    "Title": "AddictaTV",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Historias latinas que cobran vida. Cine y series nacidos del corazón, celebrando la pasión, cultura y alma de Latinoamérica.",
+    "Link": "https://watch.plex.tv/live-tv/channel/addictatv"
+  },
+  {
+    "Title": "Delito",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "KIVI DELITO ofrece una serie continua de crímenes reales, thrillers y dramas policiales: historias apasionantes sobre la justicia y el lado más oscuro de la naturaleza humana.",
+    "Link": "https://watch.plex.tv/live-tv/channel/delito"
+  },
+  {
+    "Title": "Western Bound Español",
+    "Genre": "Bingeworthy",
+    "Language": "ES",
+    "Summary": "Western Bound Español es el destino ideal para ver series, películas y especiales originales de estilo Oeste Americano.",
+    "Link": "https://watch.plex.tv/live-tv/channel/western-bound-espanol"
+  },
+  {
+    "Title": "Nature Time",
+    "Genre": "Explore",
+    "Language": "ES",
+    "Summary": "Es hora de conectar con la naturaleza. NatureTime, un canal de streaming gratuito que encanta a personas de todas las edades, ofrece fascinantes documentales sobre la vida salvaje y la naturaleza de todo el mundo.",
+    "Link": "https://watch.plex.tv/live-tv/channel/nature-time-9"
+  },
+  {
+    "Title": "FreeTV Drama",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Sumérgete en el mundo del entretenimiento con FreeTV Drama. Tu destino único para historias de amor, crimen y romance.",
+    "Link": "https://watch.plex.tv/live-tv/channel/freetv-drama-2"
+  },
+  {
+    "Title": "FreeTV Live",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Desde acción y romances conmovedores hasta ficción y thrillers que te harán morder las uñas, FreeTV Live lo tiene todo.",
+    "Link": "https://watch.plex.tv/live-tv/channel/freetv-live"
+  },
+  {
+    "Title": "FreeTV Familia",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Sueña y explora con FreeTV Familia. Una divertida colección de películas y series que fortalecen los lazos familiares.",
+    "Link": "https://watch.plex.tv/live-tv/channel/freetv-familia"
+  },
+  {
+    "Title": "FreeTV Banda",
+    "Genre": "Music",
+    "Language": "ES",
+    "Summary": "FreeTV Banda celebra la cultura mexicana con los videos de las estrellas más populares de la música regional mexicana.",
+    "Link": "https://watch.plex.tv/live-tv/channel/freetv-banda"
+  },
+  {
+    "Title": "FreeTV Horror",
+    "Genre": "Movies",
+    "Language": "ES",
+    "Summary": "Prepárate para un escalofriante viaje y satisface tu apetito por el horror, los thrillers y el suspenso con FreeTV Horror.",
+    "Link": "https://watch.plex.tv/live-tv/channel/freetv-horror"
+  },
+  {
+    "Title": "Novelas de Siempre",
+    "Genre": "Bingeworthy",
+    "Language": "ES",
+    "Summary": "Novelas de Siempre: Pasión, traición y emoción…tus historias favoritas, siempre vivas.",
+    "Link": "https://watch.plex.tv/live-tv/channel/novelas-de-siempre-2"
+  },
+  {
+    "Title": "Monstruos De Rio",
+    "Genre": "Reality",
+    "Language": "ES",
+    "Summary": "Sigue al detective de pesca Jeremy Wade mientras viaja alrededor del mundo en busca de los asesinos submarinos más temibles.",
+    "Link": "https://watch.plex.tv/live-tv/channel/monstruos-de-rio"
+  },
+  {
+    "Title": "Newsmax en Español",
+    "Genre": "News",
+    "Language": "ES",
+    "Summary": "Newsmax en Español es Newsmax’s idioma Espanol la red que cubre noticias de última hora, política, salud, finanzas y documentales en EE. UU. y globalmente.",
+    "Link": "https://watch.plex.tv/live-tv/channel/newsmax-en-espanol"
+  },
+  {
+    "Title": "Vive Kanal D Drama",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Vive Kanal D Drama brings a selection of the most successful Turkish dramas 100% in Spanish.",
+    "Link": "https://watch.plex.tv/live-tv/channel/vive-kanal-d-drama"
+  },
+  {
+    "Title": "ITV Deportes",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "The only FAST channel covering Mexican sports addressing the growing demand for relevant content in the U.S. Hispanic market.",
+    "Link": "https://watch.plex.tv/live-tv/channel/itv-deportes"
+  },
+  {
+    "Title": "Teleonce America",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Top-rated Puerto Rican broadcast network featuring entertainment, news and information, game shows and talk shows.",
+    "Link": "https://watch.plex.tv/live-tv/channel/teleonce-america"
+  },
+  {
+    "Title": "Wedotv Amor Piel Salvaje",
+    "Genre": "Bingeworthy",
+    "Language": "ES",
+    "Summary": "wedotv Amor – Piel Salvaje es un canal dedicado exclusivamente a la apasionante y apasionante telenovela Piel Salvaje.",
+    "Link": "https://watch.plex.tv/live-tv/channel/wedotv-amor-piel-salvaje-3"
+  },
+  {
+    "Title": "Comercio TV",
+    "Genre": "News",
+    "Language": "ES",
+    "Summary": "Comercio TV is a Spanish-language business channel offering news, analysis, and insights on finance, and entrepreneurship to keep our community informed about market trends and opportunities.",
+    "Link": "https://watch.plex.tv/live-tv/channel/comercio-tv"
+  },
+  {
+    "Title": "Canela.TV Novelas y Dramas",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Prepárate para vivir cada momento intensamente, donde el drama nunca termina y la emoción está garantizada.",
+    "Link": "https://watch.plex.tv/live-tv/channel/canela-tv-novelas-y-dramas"
+  },
+  {
+    "Title": "Canela.TV Narco-Drama",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Las líneas entre el amor y el peligro. Desde el sombrío submundo de los narcotraficantes hasta los tumultuosos romances.",
+    "Link": "https://watch.plex.tv/live-tv/channel/canela-tv-narco-drama"
+  },
+  {
+    "Title": "Canela.TV Clásicos",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Lo mejor de la Época de Oro del Cine Mexicano. Películas con Pedro Infante, María Félix, El Santo y Capulina.​",
+    "Link": "https://watch.plex.tv/live-tv/channel/canela-tv-clasicos"
+  },
+  {
+    "Title": "Todo Drama",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Descubre historias llenas de pasión, secretos y emociones intensas en un canal dedicado a los mejores dramas.",
+    "Link": "https://watch.plex.tv/live-tv/channel/todo-drama"
+  },
+  {
+    "Title": "Cine Friki Latino",
+    "Genre": "Movies",
+    "Language": "ES",
+    "Summary": "Una deliciosa mezcla de thrillers de catástrofes, con un toque de dragones, dinosaurios y otros monstruos.",
+    "Link": "https://watch.plex.tv/live-tv/channel/cine-friki-latino"
+  },
+  {
+    "Title": "Wineman",
+    "Genre": "Explore",
+    "Language": "ES",
+    "Summary": "De la mano del experto Joaquín Gálvez Bauzá, descubrirá una manera fascinante de adentrarse en el apasionante universo del vino. Una excusa perfecta para explorar y maravillarse con los viñedos más emblemáticos del mundo.",
+    "Link": "https://watch.plex.tv/live-tv/channel/wineman"
+  },
+  {
+    "Title": "Platos Sucios",
+    "Genre": "Comedy",
+    "Language": "ES",
+    "Summary": "David y Lopes son dos amigos que comparten piso en Barcelona. David tiene 25 años y estudia artes escénicas. La única razón por la cual dejó el piso de sus padres fue para presumir ante sus amigos de que era independiente. En realidad es un inmaduro y sus padres pagan todos sus gastos.",
+    "Link": "https://watch.plex.tv/live-tv/channel/platos-sucios"
+  },
+  {
+    "Title": "RCN Noticias",
+    "Genre": "News",
+    "Language": "ES",
+    "Summary": "RCN Noticias delivers real-time news, analysis, and live coverage, keeping Spanish-speaking audiences informed with trusted news.",
+    "Link": "https://watch.plex.tv/live-tv/channel/rcn-noticias"
+  },
+  {
+    "Title": "Los asesinatos de Midsomer",
+    "Genre": "Bingeworthy",
+    "Language": "ES",
+    "Summary": "Un veterano detective inspector en jefe y su joven sargento investigan asesinatos en la comunidad regional del condado de Midsomer.",
+    "Link": "https://watch.plex.tv/live-tv/channel/los-asesinatos-de-midsomer"
+  },
+  {
+    "Title": "PeliMex",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Pelimex es el único en el mercado que te dejará vivir lo mejor del cine mexicano. Prepárate para ver las mejores películas y disfrutar de la cultura mexicana en tu pantalla.",
+    "Link": "https://watch.plex.tv/live-tv/channel/pelimex"
+  },
+  {
+    "Title": "Cine Romántico",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Cine Romántico warms your heart with stories full of love, joy, emotion and laughter. Escape to romance with the best in Hollywood TV movies selected especially for you, all in Spanish.",
+    "Link": "https://watch.plex.tv/live-tv/channel/cine-romantico"
+  },
+  {
+    "Title": "Grjngo - Películas Del Oeste",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Grjngo es la fuente de streaming más grande del mundo para las películas del oeste.",
+    "Link": "https://watch.plex.tv/live-tv/channel/grjngo-peliculas-del-oeste"
+  },
+  {
+    "Title": "Z Nation",
+    "Genre": "Bingeworthy",
+    "Language": "ES",
+    "Summary": "En medio de un apocalipsis zombi, un equipo de héroes cotidianos debe transportar al único superviviente conocido del virus por todo el país hasta el último laboratorio viral en funcionamiento.",
+    "Link": "https://watch.plex.tv/live-tv/channel/z-nation-6"
+  },
+  {
+    "Title": "Gata Salvaje",
+    "Genre": "Bingeworthy",
+    "Language": "ES",
+    "Summary": "Desire, obsession, and revenge. Gata Salvaje (Wild Cat) delivers everything you want from a telenovela and more.",
+    "Link": "https://watch.plex.tv/live-tv/channel/gata-salvaje"
+  },
+  {
+    "Title": "Lucha Plus",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "LUCHA PLUS, aquí vive la Lucha Libre internacional. Compartiendo el patrimonio cultural de la Lucha Libre Mexicana con el mundo. LUCHA PLUS SPORTACULAR.",
+    "Link": "https://watch.plex.tv/live-tv/channel/lucha-plus"
+  },
+  {
+    "Title": "Euronews Español",
+    "Genre": "News",
+    "Language": "ES",
+    "Summary": "Euronews es el principal canal internacional de noticias de Europa.",
+    "Link": "https://watch.plex.tv/live-tv/channel/euronews-espanol"
+  },
+  {
+    "Title": "CombaTV",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "​En vivo: Box (Mexican WBC), Lucha libre (Mexican WWE), WKB Kickboxing (Mexican Glory) WON (Mexican UFC) y programas originales.",
+    "Link": "https://watch.plex.tv/live-tv/channel/combatv"
+  },
+  {
+    "Title": "Zee Mundo",
+    "Genre": "Global",
+    "Language": "ES",
+    "Summary": "Zee Mundo offers original Indian shows and movies in Spanish, featuring heartfelt stories on relationships and family values.",
+    "Link": "https://watch.plex.tv/live-tv/channel/zee-mundo"
+  },
+  {
+    "Title": "Iron Chef en español",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "No te pierdas las batallas culinarias de la versión original de Iron Chef. IRON CHEF combina el entusiasmo de la competición deportiva con la intensidad de la cocina. ¿Preparados? Allez cuisine!",
+    "Link": "https://watch.plex.tv/live-tv/channel/iron-chef-en-espanol"
+  },
+  {
+    "Title": "wedo amor",
+    "Genre": "Bingeworthy",
+    "Language": "ES",
+    "Summary": "Vida, amor y la búsqueda de la felicidad.",
+    "Link": "https://watch.plex.tv/live-tv/channel/wedo-amor"
+  },
+  {
+    "Title": "FilmRise Series Gratis",
+    "Genre": "Bingeworthy",
+    "Language": "ES",
+    "Summary": "Este canal incluye series populares en todos tus géneros favoritos. Puedes ver éxitos populares como HELL'S KITCHEN, series clásicas como AUTOPISTA AL CIELO, aventuras fantásticas como LA CAZADORA RELIQUIAS y mucho más.",
+    "Link": "https://watch.plex.tv/live-tv/channel/filmrise-series-gratis-2"
+  },
+  {
+    "Title": "Misterios sin Resolver",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Presentada por Robert Stack, esta serie utiliza recreaciones y entrevistas para volver a contar las circunstancias de misterios que siguen sin resolverse. Cubriendo crímenes, historias de amor perdido, historia inexplicable y eventos paranormales.",
+    "Link": "https://watch.plex.tv/live-tv/channel/misterios-sin-resolver"
+  },
+  {
+    "Title": "FilmRise Crimenes Verdaderos",
+    "Genre": "True Crime",
+    "Language": "ES",
+    "Summary": "Programas clásicos de crímenes verdaderos, desde lo misterioso hasta lo ridículo, con series aclamadas como MISTERIOS SIN RESOLVER y ARCHIVOS FORENSES.",
+    "Link": "https://watch.plex.tv/live-tv/channel/filmrise-crimenes-verdaderos-2"
+  },
+  {
+    "Title": "Autopista al Cielo",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Michael Landon es Jonathan Smith, un bondadoso ángel que ayuda a la gente de buen corazón.",
+    "Link": "https://watch.plex.tv/live-tv/channel/autopista-al-cielo"
+  },
+  {
+    "Title": "Ice Pilots NWT (en español)",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Se juegan la vida a diario haciendo de mensajeros, transportando pasajeros y cargas de todo tipo e incluso sofocando incendios.",
+    "Link": "https://watch.plex.tv/live-tv/channel/ice-pilots-nwt-en-espanol"
+  },
+  {
+    "Title": "La Fiebre del Jade",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Claudia y Robin son dueños de una operación minera de jade en el remoto pueblo de Jade, Canadá.",
+    "Link": "https://watch.plex.tv/live-tv/channel/la-fiebre-del-jade"
+  },
+  {
+    "Title": "Todo Crimen",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Investigación en la escena del crimen con casos reales.",
+    "Link": "https://watch.plex.tv/live-tv/channel/todo-crimen"
+  },
+  {
+    "Title": "Buen Viaje",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Viaja por el mundo y descubre lugares increíbles.",
+    "Link": "https://watch.plex.tv/live-tv/channel/buen-viaje"
+  },
+  {
+    "Title": "Mi Casa",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Recetas, viajes, diseño y ideas para inspirarte desde Mi Casa.",
+    "Link": "https://watch.plex.tv/live-tv/channel/mi-casa"
+  },
+  {
+    "Title": "Naturaleza",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Dedicado a vida salvaje e historia natural de todo el mundo que te conecta y te acerca a nuestra planeta.",
+    "Link": "https://watch.plex.tv/live-tv/channel/naturaleza"
+  },
+  {
+    "Title": "Runtime",
+    "Genre": "Movies",
+    "Language": "ES",
+    "Summary": "Disfruta de tus películas y series favoritas cuando y donde quieras, siempre gratis.",
+    "Link": "https://watch.plex.tv/live-tv/channel/runtime-4"
+  },
+  {
+    "Title": "Runtime Crimen",
+    "Genre": "Movies",
+    "Language": "ES",
+    "Summary": "Emocionantes películas policiales llenas de misterio e intriga.",
+    "Link": "https://watch.plex.tv/live-tv/channel/runtime-crimen-2"
+  },
+  {
+    "Title": "CinEspanto",
+    "Genre": "Adrenaline & Sci-Fi",
+    "Language": "ES",
+    "Summary": "Explora los límites del suspenso en CinEspanto, nuestro canal de terror y thriller.",
+    "Link": "https://watch.plex.tv/live-tv/channel/cinespanto-2"
+  },
+  {
+    "Title": "Runtime Familia",
+    "Genre": "Movies",
+    "Language": "ES",
+    "Summary": "Runtime Familia es donde encuentras diversión garantizada para toda la familia.",
+    "Link": "https://watch.plex.tv/live-tv/channel/runtime-familia-3"
+  },
+  {
+    "Title": "Runtime Romance",
+    "Genre": "Movies",
+    "Language": "ES",
+    "Summary": "Historias apasionantes y conmovedoras en Runtime Romance.",
+    "Link": "https://watch.plex.tv/live-tv/channel/runtime-romance-3"
+  },
+  {
+    "Title": "Runtime Comedia",
+    "Genre": "Comedy",
+    "Language": "ES",
+    "Summary": "El canal perfecto para los que quieren reírse mucho. Lo mejor de la comedia está en Runtime.",
+    "Link": "https://watch.plex.tv/live-tv/channel/runtime-comedia-3"
+  },
+  {
+    "Title": "Runtime Acción",
+    "Genre": "Movies",
+    "Language": "ES",
+    "Summary": "Cientos de títulos las 24 horas del día, con lo mejor de la acción y todas sus grandes estrellas.",
+    "Link": "https://watch.plex.tv/live-tv/channel/runtime-accion-2"
+  },
+  {
+    "Title": "Sangre Fría",
+    "Genre": "True Crime",
+    "Language": "ES",
+    "Summary": "Sumérgete en historias escalofriantes de asesinatos a sangre fría y crímenes.",
+    "Link": "https://watch.plex.tv/live-tv/channel/sangre-fria"
+  },
+  {
+    "Title": "Cindie TV",
+    "Genre": "Movies",
+    "Language": "ES",
+    "Summary": "Cindie TV brings you the world's best cinematic stories.",
+    "Link": "https://watch.plex.tv/live-tv/channel/cindie-tv"
+  },
+  {
+    "Title": "FIFA+",
+    "Genre": "Sports",
+    "Language": "ES",
+    "Summary": "Los amantes del fútbol podrán disfrutar de documentales, series originales, repeticiones y resúmenes de partidos históricos.",
+    "Link": "https://watch.plex.tv/live-tv/channel/fifa-24"
+  },
+  {
+    "Title": "Canal 6 CDMX",
+    "Genre": "Bingeworthy",
+    "Language": "ES",
+    "Summary": "Canal de entretenimiento para toda la familia.",
+    "Link": "https://watch.plex.tv/live-tv/channel/canal-6-cdmx"
+  },
+  {
+    "Title": "Tastemade en Español",
+    "Genre": "Food, Home & Culture",
+    "Language": "ES",
+    "Summary": "Welcome to Tastemade en Español: a streaming channel that features hundreds of hours of Spanish-language lifestyle programming that connects viewers to experience mouthwatering recipes and storytelling that stimulates the head, heart, and hands.",
+    "Link": "https://watch.plex.tv/live-tv/channel/tastemade-en-espanol-5"
+  },
+  {
+    "Title": "Milenio Television",
+    "Genre": "News",
+    "Language": "ES",
+    "Summary": "Las noticias en vivo de México y el mundo, así como deportes, finanzas y espectáculos las encuentras aquí.",
+    "Link": "https://watch.plex.tv/live-tv/channel/milenio-television"
+  },
+  {
+    "Title": "C4 en Alerta",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Los videos policiacos más exclusivos los encuentras aquí con Carlos Jiménez. Ningún delincuentes se escapa.",
+    "Link": "https://watch.plex.tv/live-tv/channel/c4-en-alerta"
+  },
+  {
+    "Title": "The World Poker Tour",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "El WPT encendió el auge mundial del póquer con un programa de televisión único basado en una serie de torneos de altas apuestas.",
+    "Link": "https://watch.plex.tv/live-tv/channel/the-world-poker-tour-3"
+  },
+  {
+    "Title": "Andromeda",
+    "Genre": "Adrenaline & Sci-Fi",
+    "Language": "ES",
+    "Summary": "Disfruta de este canal exclusivamente dedicado a Andromeda, la celebrada serie fantástica y de ciencia ficción. No te pierdas las aventuras galácticas del capitán Dylan Hunt y su tribulación.",
+    "Link": "https://watch.plex.tv/live-tv/channel/andromeda"
+  },
+  {
+    "Title": "Mutant X",
+    "Genre": "Bingeworthy",
+    "Language": "ES",
+    "Summary": "Puedes ver los episodios de Mutant X cuando quieras. No te pierdas esta serie de ciencia ficción sobre un fugitivo y cuatro de sus creaciones que buscan a otros de su especie para protegerlos del mal.",
+    "Link": "https://watch.plex.tv/live-tv/channel/mutant-x"
+  },
+  {
+    "Title": "Cheaters en Español",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "¡Te obsesionarás con esta serie! Quienes sospechan de la fidelidad de sus parejas contratan a un equipo de cámara escondida para averiguarlo.",
+    "Link": "https://watch.plex.tv/live-tv/channel/cheaters-en-espanol"
+  },
+  {
+    "Title": "Todo Cine",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "TODO CINE is a fast channel alternative featuring titles from the leading Spanish-language movie channel in the United States, Cinelatino.",
+    "Link": "https://watch.plex.tv/live-tv/channel/todo-cine"
+  },
+  {
+    "Title": "Novelisima",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Novelisma, grandes historias que quieres revivir, descubrir y compartir. Actuaciones estelares y producciones que te emocionarán.",
+    "Link": "https://watch.plex.tv/live-tv/channel/novelisima"
+  },
+  {
+    "Title": "Azteca Internacional",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Suitable for the whole family, Aztec International offers the best entertainment content, news, reality shows & telenovelas.",
+    "Link": "https://watch.plex.tv/live-tv/channel/azteca-internacional"
+  },
+  {
+    "Title": "Corazón",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Corazón is the telenovelas channel that connects thousands of hearts with its enthralling stories.",
+    "Link": "https://watch.plex.tv/live-tv/channel/corazon"
+  },
+  {
+    "Title": "Ideas En 5 Minutos",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "La marca digital de manualidades más vista, con truyos que ofrecen una variedad de soluciones divertidas a problemas cotidianos.",
+    "Link": "https://watch.plex.tv/live-tv/channel/ideas-en-5-minutos"
+  },
+  {
+    "Title": "Clic",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Science Fiction, Comedy, Horror and Impact, Clic offers a variety of entertainment for everyone.",
+    "Link": "https://watch.plex.tv/live-tv/channel/clic"
+  },
+  {
+    "Title": "Cops en Español",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Cops en Espanol lleva a los espectadores de costa a costa, en primera línea con los hombres y mujeres de las fuerzas del orden estadounidenses, donde la acción es visceral, impredecible y real.",
+    "Link": "https://watch.plex.tv/live-tv/channel/cops-en-espanol"
+  },
+  {
+    "Title": "Pitufo TV",
+    "Genre": "Classics",
+    "Language": "ES",
+    "Summary": "¡Bienvenido a SMURF TV, el único canal dedicado a los Pitufos, con tus episodios favoritos 24/7!",
+    "Link": "https://watch.plex.tv/live-tv/channel/pitufo-tv"
+  },
+  {
+    "Title": "TRACE Latina",
+    "Genre": "Music",
+    "Language": "ES",
+    "Summary": "TRACE Latina is the ultimate premium channel entirely dedicated to Latin music and culture 24/7.",
+    "Link": "https://watch.plex.tv/live-tv/channel/trace-latina"
+  },
+  {
+    "Title": "Stingray Karaoke",
+    "Genre": "Music",
+    "Language": "ES",
+    "Summary": "Canta tus canciones favoritas, los clásicos de ayer y los éxitos de hoy. ¡Ideal para romper el hielo en cualquier fiesta!",
+    "Link": "https://watch.plex.tv/live-tv/channel/stingray-karaoke"
+  },
+  {
+    "Title": "Stingray Naturescape",
+    "Genre": "Explore",
+    "Language": "ES",
+    "Summary": "Viaja a las maravillas panorámicas del mundo con imágenes deslumbrantes, desde chimeneas crepitantes hasta vuelos sobre paraísos tropicales.",
+    "Link": "https://watch.plex.tv/live-tv/channel/stingray-naturescape-3"
+  },
+  {
+    "Title": "Éxitos del Momento",
+    "Genre": "Music",
+    "Language": "ES",
+    "Summary": "Turn up the heat with today’s great rhythms and beats guaranteed to bring out the Latin flare in everyone.",
+    "Link": "https://watch.plex.tv/live-tv/channel/exitos-del-momento"
+  },
+  {
+    "Title": "El Conflicto TV",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "Court TV 24/7. Former Marine Corps Officer and East LA Cop, Judge Mario Acosta runs a tough, no nonsense courtroom.",
+    "Link": "https://watch.plex.tv/live-tv/channel/el-conflicto-tv-2"
+  },
+  {
+    "Title": "Nosey Escándalos",
+    "Genre": "En Español",
+    "Language": "ES",
+    "Summary": "¡Traición! ¡Peleas! ¡Infidelidad! ¿Quién es el padre? ¡Descubra el drama y la verdad con Jerry Springer, Maury Povich y Juez Dad!",
+    "Link": "https://watch.plex.tv/live-tv/channel/nosey-escandalos"
+  },
+  {
+    "Title": "Motorvision TV en Español",
+    "Genre": "Sports",
+    "Language": "ES",
+    "Summary": "Automóviles deportivos únicos, todoterrenos y coches antiguos: MOTORVISION TV presenta el apasionante mundo de la automoción.",
+    "Link": "https://watch.plex.tv/live-tv/channel/motorvision-tv-en-espanol"
+  },
+  {
+    "Title": "Toon Goggles en Español",
+    "Genre": "Kids & Family",
+    "Language": "ES",
+    "Summary": "Toon Goggles tiene tus programas infantiles favoritos gratis, como Angry Birds, Los Pitufos, Om Nom y muchos más.",
+    "Link": "https://watch.plex.tv/live-tv/channel/toon-goggles-en-espanol"
+  },
+  {
+    "Title": "Toon Goggles",
+    "Genre": "Kids & Family",
+    "Language": "ES",
+    "Summary": "All your favorite kids shows for free including fan favorites such as Angry Birds, Talking Tom, Om Nom, Gummy Bears, and more!",
+    "Link": "https://watch.plex.tv/live-tv/channel/toon-goggles"
+  }
+]
