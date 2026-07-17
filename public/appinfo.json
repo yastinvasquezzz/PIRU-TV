@@ -1,0 +1,12 @@
+{
+  "id": "com.pirutv.app",
+  "version": "1.0.0",
+  "vendor": "PIRU TV",
+  "type": "web",
+  "main": "index.html",
+  "title": "PIRU TV",
+  "icon": "favicon.svg",
+  "largeIcon": "favicon.svg",
+  "bgImage": "favicon.svg",
+  "resolution": "1920x1080"
+}

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:tv": "vite build && ares-package dist",
     "lint": "oxlint",
     "preview": "vite preview"
   },
