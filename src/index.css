@@ -1120,3 +1120,156 @@ body {
     0 0 15px var(--primary-glow);
 }
 
+/* --- Mobile App Responsiveness --- */
+
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    justify-content: center;
+    padding: 1rem;
+    position: sticky;
+  }
+  
+  .app-header .app-nav {
+    display: none !important;
+  }
+  
+  .app-content {
+    padding: 1rem !important;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  
+  .media-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+  }
+  
+  .media-card {
+    border-radius: 12px !important;
+  }
+  
+  .card-info {
+    padding: 0.75rem !important;
+  }
+  
+  .card-title {
+    font-size: 0.95rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  .card-summary {
+    font-size: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+    -webkit-line-clamp: 1 !important;
+  }
+  
+  .card-footer {
+    font-size: 0.7rem !important;
+    padding-top: 0.5rem !important;
+  }
+  
+  .card-hover-popup {
+    display: none !important;
+  }
+  
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(9, 9, 16, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    justify-content: space-around;
+    padding: 0.6rem 0;
+    z-index: 9999;
+    padding-bottom: calc(0.6rem + env(safe-area-inset-bottom, 0px));
+  }
+  
+  .mobile-nav-item {
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-secondary);
+    font-family: var(--font-title);
+    font-size: 0.75rem;
+    font-weight: 600;
+    gap: 0.2rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    flex: 1;
+  }
+  
+  .mobile-nav-item.active {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-glow);
+  }
+  
+  .mobile-nav-icon {
+    font-size: 1.3rem;
+  }
+  
+  .section-header {
+    margin-bottom: 1.5rem !important;
+    gap: 1rem !important;
+  }
+  
+  .section-title {
+    font-size: 1.75rem !important;
+    text-align: center;
+  }
+  
+  .controls-group {
+    justify-content: center;
+  }
+  
+  .search-container {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  
+  .modal-overlay {
+    padding: 0.75rem !important;
+  }
+  
+  .modal-content {
+    border-radius: 16px !important;
+    max-height: 95vh !important;
+  }
+  
+  .modal-body {
+    padding: 1.25rem !important;
+  }
+  
+  .modal-title {
+    font-size: 1.4rem !important;
+  }
+  
+  .player-control-bar {
+    padding: 0.6rem 1rem !important;
+    gap: 0.6rem !important;
+    justify-content: center !important;
+  }
+  
+  .control-left, .control-center, .control-right {
+    gap: 0.5rem !important;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .control-title {
+    max-width: 150px !important;
+  }
+  
+  .filters-wrapper {
+    margin-bottom: 1rem !important;
+  }
+}
+
