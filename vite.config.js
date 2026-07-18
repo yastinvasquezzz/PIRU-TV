@@ -7,5 +7,14 @@ export default defineConfig({
   build: {
     target: 'es2015',
     cssTarget: 'chrome68'
+  },
+  server: {
+    proxy: {
+      '/api/gql': {
+        target: 'https://sv1.fluxcedene.net',
+        changeOrigin: true,
+        secure: true,
+      }
+    }
   }
 });

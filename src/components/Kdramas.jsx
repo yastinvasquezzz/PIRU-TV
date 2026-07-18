@@ -91,8 +91,17 @@ const LINKS_FLIX_QUERY = `
   }
 `;
 
+
+// En desarrollo (npm run dev): usa el proxy de Vite /api/gql -> sv1.fluxcedene.net
+// En producción: usa el Cloudflare Worker que reenvía sin header Origin
+// INSTRUCCIONES: Si la app está en GitHub Pages, despliega el cloudflare-worker.js
+// en https://workers.cloudflare.com/ y reemplaza la URL de abajo con la tuya.
+const PROXY_URL = import.meta.env.DEV
+  ? '/api/gql'
+  : 'https://pirutv-proxy.skillful-part.workers.dev';
+
 const queryFlix = async (query, variables = {}) => {
-  const res = await fetch('https://sv1.fluxcedene.net/api/gql', {
+  const res = await fetch(PROXY_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query, variables })
@@ -102,6 +111,7 @@ const queryFlix = async (query, variables = {}) => {
   }
   return await res.json();
 };
+
 
 const SERVER_NAMES = {
   "60ac0eb8ac46a43f59a5b21f": "Streamtape",
