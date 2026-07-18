@@ -77,6 +77,85 @@ const VideoPlayer = ({ playerUrl }) => {
   );
 };
 
+const SEARCH_FLIX_QUERY = `
+  query searchDorama($input: String!) {
+    searchDorama(input: $input, limit: 10) {
+      _id
+      slug
+      name
+      name_es
+      names
+    }
+  }
+`;
+
+const EPISODES_FLIX_QUERY = `
+  query listEpisodes($slug: String!, $season: Float!) {
+    listEpisodes(
+      sort: NUMBER_ASC
+      filter: {
+        type_serie: "dorama"
+        serie_slug: $slug
+        season_number: $season
+      }
+    ) {
+      _id
+      name
+      name_es
+      slug
+      episode_number
+      languages
+    }
+  }
+`;
+
+const LINKS_FLIX_QUERY = `
+  query GetEpisodeLinks($id: MongoID!, $app: String) {
+    getEpisodeLinks(id: $id, app: $app) {
+      links_online
+    }
+  }
+`;
+
+const queryFlix = async (query, variables = {}) => {
+  const res = await fetch('https://sv1.fluxcedene.net/api/gql', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, variables })
+  });
+  if (!res.ok) {
+    throw new Error(`GraphQL request failed: status ${res.status}`);
+  }
+  return await res.json();
+};
+
+const SERVER_NAMES = {
+  "60ac0eb8ac46a43f59a5b21f": "Streamtape",
+  "60ac0d08ac46a43f59a5b21d": "Mixdrop",
+  "60ac0f2eac46a43f59a5b221": "Uqload",
+  "60ac0f52ac46a43f59a5b222": "Mp4Upload",
+  "60ac0abeac46a43f59a5b21b": "Okru",
+  "60ac0f0eac46a43f59a5b220": "Voe",
+  "60ac0e7eac46a43f59a5b21e": "Dood",
+  "64b19a4035461c5d64ef5b84": "Filemoon",
+  "64b18fdc35461c5d64ef5b59": "Streamwish",
+  "65c6b7f9149d4675d1547a5c": "VidHide",
+  "61707703fa461256758155c5": "Mega"
+};
+
+const getHostName = (url, server_ref) => {
+  if (SERVER_NAMES[server_ref]) {
+    return SERVER_NAMES[server_ref];
+  }
+  try {
+    const hostname = new URL(url).hostname;
+    const parts = hostname.replace('www.', '').split('.');
+    return parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+  } catch (e) {
+    return "Servidor";
+  }
+};
+
 export default function Kdramas() {
   const [dramas, setDramas] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
@@ -99,6 +178,18 @@ export default function Kdramas() {
   const [isTheater, setIsTheater] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
+
+  const [allEpisodeLinks, setAllEpisodeLinks] = useState([]);
+  const [episodesData, setEpisodesData] = useState([]);
+
+  const { hasLatino, hasSubbed } = useMemo(() => {
+    if (!hasResolvedOnSite || !allEpisodeLinks || allEpisodeLinks.length === 0) {
+      return { hasLatino: true, hasSubbed: true };
+    }
+    const lat = allEpisodeLinks.some(l => l.lang === '38' || l.language_code === 'es');
+    const sub = allEpisodeLinks.some(l => l.lang !== '38' && l.language_code !== 'es');
+    return { hasLatino: lat, hasSubbed: sub };
+  }, [allEpisodeLinks, hasResolvedOnSite]);
 
   useEffect(() => {
     const loadDramas = async () => {
@@ -161,70 +252,6 @@ export default function Kdramas() {
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);
 
-  const searchDoramaOnSite = async (title) => {
-    try {
-      const res = await fetch(`https://corsproxy.io/?https://www.doramas.org/ajax/search.php`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `title=${encodeURIComponent(title)}`
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.fichas && data.fichas.length > 0) {
-          return data.fichas[0].slug.replace(/\/$/, '');
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return null;
-  };
-
-  const loadChaptersFromSite = async (slug) => {
-    try {
-      const res = await fetch(`https://corsproxy.io/?https://www.doramas.org/${slug}/`);
-      if (res.ok) {
-        const html = await res.text();
-        const chapRegex = new RegExp(`href="https:\\/\\/www\\.doramas\\.org\\/${slug}-c(\\d+)\\/`, 'g');
-        const chaps = [];
-        let match;
-        while ((match = chapRegex.exec(html)) !== null) {
-          chaps.push(parseInt(match[1]));
-        }
-        return Array.from(new Set(chaps)).sort((a, b) => a - b);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return [];
-  };
-
-  const loadChapterDetails = async (slug, epNum) => {
-    try {
-      const res = await fetch(`https://corsproxy.io/?https://www.doramas.org/${slug}-c${epNum}/`);
-      if (res.ok) {
-        const html = await res.text();
-        const iframeMatch = html.match(/<iframe[^>]*src="([^"]+)"/i);
-        const defaultUrl = iframeMatch ? iframeMatch[1] : '';
-
-        const serverRegex = /<li\s+data-lang="([^"]+)"\s+data-langname="([^"]+)"[^>]*>\s*<a[^>]*>\s*(.*?)\s*<\/a>/gi;
-        const parsedServers = [];
-        let sMatch;
-        while ((sMatch = serverRegex.exec(html)) !== null) {
-          parsedServers.push({
-            hash: sMatch[1],
-            langId: sMatch[2],
-            name: sMatch[3].replace(/<[^>]*>/g, '').trim()
-          });
-        }
-        return { defaultUrl, servers: parsedServers };
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return { defaultUrl: '', servers: [] };
-  };
-
   const handleOpenDrama = async (drama) => {
     setIsDetailsLoading(true);
     setSelectedDrama(drama);
@@ -232,24 +259,41 @@ export default function Kdramas() {
     setDoramaSlug('');
     setChaptersList([]);
     setServersList([]);
+    setAllEpisodeLinks([]);
+    setEpisodesData([]);
     setActiveServer(null);
     setActivePlayerUrl('');
     
     try {
-      const slug = await searchDoramaOnSite(drama.titulo);
-      if (slug) {
-        setDoramaSlug(slug);
-        const chaps = await loadChaptersFromSite(slug);
-        if (chaps.length > 0) {
+      const searchRes = await queryFlix(SEARCH_FLIX_QUERY, { input: drama.titulo });
+      let matchedDorama = null;
+      if (searchRes.data && searchRes.data.searchDorama && searchRes.data.searchDorama.length > 0) {
+        const matches = searchRes.data.searchDorama;
+        matchedDorama = matches.find(m => 
+          m.name.toLowerCase() === drama.titulo.toLowerCase() || 
+          (m.name_es && m.name_es.toLowerCase() === drama.titulo.toLowerCase())
+        ) || matches[0];
+      }
+
+      if (matchedDorama) {
+        setDoramaSlug(matchedDorama.slug);
+        const epRes = await queryFlix(EPISODES_FLIX_QUERY, { slug: matchedDorama.slug, season: 1 });
+        const episodes = (epRes.data && epRes.data.listEpisodes) || [];
+        if (episodes.length > 0) {
+          setEpisodesData(episodes);
+          const chaps = episodes.map(ep => ep.episode_number);
           setChaptersList(chaps);
           setHasResolvedOnSite(true);
-          const { defaultUrl, servers } = await loadChapterDetails(slug, chaps[0]);
-          setActiveEpisode(chaps[0]);
-          setActivePlayerUrl(defaultUrl);
-          setServersList(servers);
-          if (servers.length > 0) {
-            setActiveServer(servers[0]);
-          }
+          
+          const firstEp = episodes[0];
+          setActiveEpisode(firstEp.episode_number);
+          const linksRes = await queryFlix(LINKS_FLIX_QUERY, { id: firstEp._id, app: 'com.asiapp.doramasgo' });
+          const links = (linksRes.data && linksRes.data.getEpisodeLinks && linksRes.data.getEpisodeLinks.links_online) || [];
+          setAllEpisodeLinks(links);
+          
+          const hasLat = links.some(l => l.lang === '38' || l.language_code === 'es');
+          setLangFilter(hasLat ? 'lat' : 'sub');
+          
           setIsDetailsLoading(false);
           return;
         }
@@ -291,12 +335,28 @@ export default function Kdramas() {
     setIsDetailsLoading(true);
     setActiveEpisode(epNum);
     
-    if (hasResolvedOnSite && doramaSlug) {
-      const { defaultUrl, servers } = await loadChapterDetails(doramaSlug, epNum);
-      setActivePlayerUrl(defaultUrl);
-      setServersList(servers);
-      if (servers.length > 0) {
-        setActiveServer(servers[0]);
+    if (hasResolvedOnSite && episodesData.length > 0) {
+      const activeEp = episodesData.find(ep => ep.episode_number === epNum);
+      if (activeEp) {
+        try {
+          const linksRes = await queryFlix(LINKS_FLIX_QUERY, { id: activeEp._id, app: 'com.asiapp.doramasgo' });
+          const links = (linksRes.data && linksRes.data.getEpisodeLinks && linksRes.data.getEpisodeLinks.links_online) || [];
+          setAllEpisodeLinks(links);
+          
+          const hasLat = links.some(l => l.lang === '38' || l.language_code === 'es');
+          const hasSub = links.some(l => l.lang !== '38' && l.language_code !== 'es');
+          
+          if (langFilter === 'lat' && !hasLat) {
+            setLangFilter('sub');
+          } else if (langFilter === 'sub' && !hasSub && hasLat) {
+            setLangFilter('lat');
+          }
+        } catch (e) {
+          console.error(e);
+          setAllEpisodeLinks([]);
+        }
+      } else {
+        setAllEpisodeLinks([]);
       }
     } else if (selectedDrama) {
       setActivePlayerUrl(`https://multiembed.mov/?video_id=${selectedDrama.id}&tmdb=1&s=${activeSeason}&e=${epNum}`);
@@ -305,28 +365,37 @@ export default function Kdramas() {
     setIsDetailsLoading(false);
   };
 
-  const handleServerClick = async (server) => {
-    setIsDetailsLoading(true);
+  const handleServerClick = (server) => {
     setActiveServer(server);
-    try {
-      const res = await fetch(`https://corsproxy.io/?https://www.doramas.org/ajax/play.php`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `id=${server.hash}`
-      });
-      if (res.ok) {
-        const text = await res.text();
-        const iframeMatch = text.match(/src="([^"]+)"/i);
-        if (iframeMatch) {
-          setActivePlayerUrl(iframeMatch[1]);
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsDetailsLoading(false);
+    if (server && server.embed) {
+      setActivePlayerUrl(server.embed);
     }
   };
+
+  useEffect(() => {
+    if (hasResolvedOnSite && allEpisodeLinks && allEpisodeLinks.length > 0) {
+      const isLatino = langFilter === 'lat';
+      const filtered = allEpisodeLinks
+        .filter(link => {
+          const isLinkLatino = link.lang === '38' || link.language_code === 'es';
+          return isLatino ? isLinkLatino : !isLinkLatino;
+        })
+        .map(link => ({
+          hash: link._id,
+          name: getHostName(link.embed, link.server_ref),
+          embed: link.embed,
+          lang: link.lang
+        }));
+      setServersList(filtered);
+      if (filtered.length > 0) {
+        setActiveServer(filtered[0]);
+        setActivePlayerUrl(filtered[0].embed);
+      } else {
+        setActiveServer(null);
+        setActivePlayerUrl('');
+      }
+    }
+  }, [langFilter, allEpisodeLinks, hasResolvedOnSite]);
 
   const itemsToRender = searchTerm.trim() ? searchResults : dramas;
 
@@ -736,8 +805,12 @@ export default function Kdramas() {
                         value={langFilter} 
                         onChange={(e) => setLangFilter(e.target.value)}
                       >
-                        <option value="sub" style={{ background: '#0b0b14', color: '#fff' }}>💬 Sub Español</option>
-                        <option value="lat" style={{ background: '#0b0b14', color: '#fff' }}>🗣️ Español Latino</option>
+                        {(!hasResolvedOnSite || hasSubbed) && (
+                          <option value="sub" style={{ background: '#0b0b14', color: '#fff' }}>💬 Sub Español</option>
+                        )}
+                        {(!hasResolvedOnSite || hasLatino) && (
+                          <option value="lat" style={{ background: '#0b0b14', color: '#fff' }}>🗣️ Español Latino</option>
+                        )}
                       </select>
 
                       {hasResolvedOnSite && serversList.length > 0 && (
@@ -838,8 +911,12 @@ export default function Kdramas() {
                     value={langFilter} 
                     onChange={(e) => setLangFilter(e.target.value)}
                   >
-                    <option value="sub" style={{ background: '#0b0b14', color: '#fff' }}>💬 Sub Español</option>
-                    <option value="lat" style={{ background: '#0b0b14', color: '#fff' }}>🗣️ Latino</option>
+                    {(!hasResolvedOnSite || hasSubbed) && (
+                      <option value="sub" style={{ background: '#0b0b14', color: '#fff' }}>💬 Sub Español</option>
+                    )}
+                    {(!hasResolvedOnSite || hasLatino) && (
+                      <option value="lat" style={{ background: '#0b0b14', color: '#fff' }}>🗣️ Latino</option>
+                    )}
                   </select>
 
                   {hasResolvedOnSite && serversList.length > 0 && (
