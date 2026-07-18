@@ -7,36 +7,19 @@ const HDR  = { Authorization: `Bearer ${TMDB_KEY}` };
 
 const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
 
-const SERVERS = {
-  korii: {
-    name: 'Korii (VidSrc)',
-    getUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}-${e}?ds_lang=es`
-  },
-  maru: {
-    name: 'Maru (VidSrcPM)',
-    getUrl: (id, s, e) => `https://vidsrc.pm/embed/tv/${id}/${s}-${e}?ds_lang=es`
-  },
-  okru: {
-    name: 'Okru (Vimeus)',
-    getUrl: (id, s, e) => `https://vimeus.com/e/serie?tmdb=${id}&se=${s}&ep=${e}&view_key=${encodeURIComponent(VIMEUS_VIEW_KEY)}&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3`
-  },
-  hiplay: {
-    name: 'Hiplay (2Embed)',
-    getUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}&lang=es`
-  },
-  pdrive: {
-    name: 'PDrive (VidSrcCC)',
-    getUrl: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}-${e}?ds_lang=es`
-  },
-  evo: {
-    name: 'Evo (VidSrcNet)',
-    getUrl: (id, s, e) => `https://vidsrc.net/embed/tv/${id}/${s}-${e}?ds_lang=es`
-  },
-  dodo: {
-    name: 'Dodo (VidSrcIn)',
-    getUrl: (id, s, e) => `https://vidsrc.in/embed/tv/${id}/${s}-${e}?ds_lang=es`
-  }
-};
+const SERVERS_SUB = [
+  { id: 'maru',   name: 'Maru',   getUrl: (id, s, e) => `https://vidsrc.pm/embed/tv/${id}/${s}-${e}` },
+  { id: 'okru',   name: 'Okru',   getUrl: (id, s, e) => `https://vimeus.com/e/serie?tmdb=${id}&se=${s}&ep=${e}&view_key=${encodeURIComponent(VIMEUS_VIEW_KEY)}&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3` },
+  { id: 'hiplay', name: 'Hiplay', getUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}&lang=es` },
+  { id: 'pdrive', name: 'PDrive', getUrl: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}-${e}?ds_lang=es` },
+];
+
+const SERVERS_LAT = [
+  { id: 'korii',  name: 'Maru',   getUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}-${e}?ds_lang=es` },
+  { id: 'evo',    name: 'Okru',   getUrl: (id, s, e) => `https://vidsrc.net/embed/tv/${id}/${s}-${e}?ds_lang=es` },
+  { id: 'dodo',   name: 'Hiplay', getUrl: (id, s, e) => `https://vidsrc.in/embed/tv/${id}/${s}-${e}?ds_lang=es` },
+];
+
 
 const GENRES_MAP = {
   10759: "Acción & Aventura",
@@ -84,21 +67,23 @@ export default function Kdramas() {
   const [page, setPage] = useState(1);
   const [langCode, setLangCode] = useState('ko');
   const [langFilter, setLangFilter] = useState('sub');
-  
+
   const [selectedDrama, setSelectedDrama] = useState(null);
-  
-  const [hasResolvedOnSite, setHasResolvedOnSite] = useState(false);
-  const [doramaSlug, setDoramaSlug] = useState('');
   const [chaptersList, setChaptersList] = useState([]);
   const [activeEpisode, setActiveEpisode] = useState(1);
   const [activeSeason, setActiveSeason] = useState(1);
-  const [serversList, setServersList] = useState([]);
-  const [activeServer, setActiveServer] = useState(null);
-  const [activePlayerUrl, setActivePlayerUrl] = useState('');
-  
+  const [activeServerId, setActiveServerId] = useState('maru');
+
   const [isTheater, setIsTheater] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
+
+  const currentServers = langFilter === 'sub' ? SERVERS_SUB : SERVERS_LAT;
+  const activeServer = currentServers.find(s => s.id === activeServerId) || currentServers[0];
+
+  const activePlayerUrl = selectedDrama
+    ? activeServer.getUrl(selectedDrama.id, activeSeason, activeEpisode)
+    : '';
 
   useEffect(() => {
     const loadDramas = async () => {
@@ -170,13 +155,9 @@ export default function Kdramas() {
       });
       if (res.ok) {
         const data = await res.json();
-        if (data.fichas && data.fichas.length > 0) {
-          return data.fichas[0].slug.replace(/\/$/, '');
-        }
+        if (data.fichas && data.fichas.length > 0) return data.fichas[0].slug.replace(/\/$/, '');
       }
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) { console.error(e); }
     return null;
   };
 
@@ -188,80 +169,36 @@ export default function Kdramas() {
         const chapRegex = new RegExp(`href="https:\\/\\/www\\.doramas\\.org\\/${slug}-c(\\d+)\\/`, 'g');
         const chaps = [];
         let match;
-        while ((match = chapRegex.exec(html)) !== null) {
-          chaps.push(parseInt(match[1]));
-        }
+        while ((match = chapRegex.exec(html)) !== null) chaps.push(parseInt(match[1]));
         return Array.from(new Set(chaps)).sort((a, b) => a - b);
       }
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) { console.error(e); }
     return [];
-  };
-
-  const loadChapterDetails = async (slug, epNum) => {
-    try {
-      const res = await fetch(`https://corsproxy.io/?https://www.doramas.org/${slug}-c${epNum}/`);
-      if (res.ok) {
-        const html = await res.text();
-        const iframeMatch = html.match(/<iframe[^>]*src="([^"]+)"/i);
-        const defaultUrl = iframeMatch ? iframeMatch[1] : '';
-
-        const serverRegex = /<li\s+data-lang="([^"]+)"\s+data-langname="([^"]+)"[^>]*>\s*<a[^>]*>\s*(.*?)\s*<\/a>/gi;
-        const parsedServers = [];
-        let sMatch;
-        while ((sMatch = serverRegex.exec(html)) !== null) {
-          parsedServers.push({
-            hash: sMatch[1],
-            langId: sMatch[2],
-            name: sMatch[3].replace(/<[^>]*>/g, '').trim()
-          });
-        }
-        return { defaultUrl, servers: parsedServers };
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return { defaultUrl: '', servers: [] };
   };
 
   const handleOpenDrama = async (drama) => {
     setIsDetailsLoading(true);
     setSelectedDrama(drama);
-    setHasResolvedOnSite(false);
-    setDoramaSlug('');
     setChaptersList([]);
-    setServersList([]);
-    setActiveServer(null);
-    setActivePlayerUrl('');
-    
+    setActiveEpisode(1);
+    setActiveSeason(1);
+    setActiveServerId(langFilter === 'sub' ? 'maru' : 'korii');
+
     try {
       const slug = await searchDoramaOnSite(drama.titulo);
       if (slug) {
-        setDoramaSlug(slug);
         const chaps = await loadChaptersFromSite(slug);
         if (chaps.length > 0) {
           setChaptersList(chaps);
-          setHasResolvedOnSite(true);
-          const { defaultUrl, servers } = await loadChapterDetails(slug, chaps[0]);
           setActiveEpisode(chaps[0]);
-          setServersList(servers);
-          const best = pickServerByLang(servers, langFilter);
-          if (best) {
-            setActiveServer(best);
-            const url = await getServerUrl(best.hash);
-            setActivePlayerUrl(url || defaultUrl);
-          } else {
-            setActivePlayerUrl(defaultUrl);
-          }
           setIsDetailsLoading(false);
           return;
         }
       }
-      
+
       const res = await fetch(`${TMDB}/tv/${drama.id}?language=es-ES`, { headers: HDR });
       if (res.ok) {
-        let details = await res.json();
+        const details = await res.json();
         if (!details.overview) {
           const enRes = await fetch(`${TMDB}/tv/${drama.id}?language=en-US`, { headers: HDR });
           if (enRes.ok) {
@@ -270,88 +207,28 @@ export default function Kdramas() {
           }
         }
         setSelectedDrama(prev => ({ ...prev, description: details.overview || prev.description }));
-        
-        const firstSeason = details.seasons ? details.seasons.find(s => s.season_number === 1) || details.seasons[0] : null;
+        const firstSeason = details.seasons?.find(s => s.season_number === 1) || details.seasons?.[0];
         if (firstSeason) {
           const epRes = await fetch(`${TMDB}/tv/${drama.id}/season/${firstSeason.season_number}?language=es-ES`, { headers: HDR });
           if (epRes.ok) {
             const epData = await epRes.json();
-            const tmdbChaps = (epData.episodes || []).map(ep => ep.episode_number);
-            setChaptersList(tmdbChaps);
-            setActiveEpisode(1);
+            setChaptersList((epData.episodes || []).map(ep => ep.episode_number));
             setActiveSeason(firstSeason.season_number);
-            setActivePlayerUrl(`https://multiembed.mov/?video_id=${drama.id}&tmdb=1&s=${firstSeason.season_number}&e=1`);
+            setActiveEpisode(1);
           }
         }
       }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsDetailsLoading(false);
-    }
-  };
-
-  const handleEpisodeChange = async (epNum) => {
-    setIsDetailsLoading(true);
-    setActiveEpisode(epNum);
-    
-    if (hasResolvedOnSite && doramaSlug) {
-      const { defaultUrl, servers } = await loadChapterDetails(doramaSlug, epNum);
-      setServersList(servers);
-      const best = pickServerByLang(servers, langFilter);
-      if (best) {
-        setActiveServer(best);
-        const url = await getServerUrl(best.hash);
-        setActivePlayerUrl(url || defaultUrl);
-      } else {
-        setActivePlayerUrl(defaultUrl);
-      }
-    } else if (selectedDrama) {
-      setActivePlayerUrl(`https://multiembed.mov/?video_id=${selectedDrama.id}&tmdb=1&s=${activeSeason}&e=${epNum}`);
-    }
-    
-    setIsDetailsLoading(false);
-  };
-
-  const getServerUrl = async (hash) => {
-    try {
-      const res = await fetch(`https://corsproxy.io/?https://www.doramas.org/ajax/play.php`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `id=${hash}`
-      });
-      if (res.ok) {
-        const text = await res.text();
-        const iframeMatch = text.match(/src="([^"]+)"/i);
-        if (iframeMatch) return iframeMatch[1];
-      }
     } catch (e) { console.error(e); }
-    return null;
+    finally { setIsDetailsLoading(false); }
   };
 
-  const pickServerByLang = (servers, filter) => {
-    if (!servers || servers.length === 0) return null;
-    const keyword = filter === 'lat' ? 'lat' : 'sub';
-    return servers.find(s =>
-      (s.langId || '').toLowerCase().includes(keyword) ||
-      (s.name || '').toLowerCase().includes(keyword)
-    ) || servers[0];
+  const handleEpisodeChange = (epNum) => {
+    setActiveEpisode(epNum);
   };
 
-  const handleServerClick = async (server) => {
-    setIsDetailsLoading(true);
-    setActiveServer(server);
-    const url = await getServerUrl(server.hash);
-    if (url) setActivePlayerUrl(url);
-    setIsDetailsLoading(false);
-  };
-
-  const handleLangFilterChange = async (newFilter) => {
+  const handleLangFilterChange = (newFilter) => {
     setLangFilter(newFilter);
-    if (serversList.length > 0) {
-      const best = pickServerByLang(serversList, newFilter);
-      if (best) await handleServerClick(best);
-    }
+    setActiveServerId(newFilter === 'sub' ? 'maru' : 'korii');
   };
 
   const itemsToRender = searchTerm.trim() ? searchResults : dramas;
@@ -736,20 +613,22 @@ export default function Kdramas() {
                         </div>
                       </div>
 
-                      {hasResolvedOnSite && serversList.length > 0 && (
-                        <div className="control-dropdown">
-                          <button className="control-btn">
-                            🎛️ Server: {activeServer ? activeServer.name : 'Cargando...'}
-                          </button>
-                          <div className="dropdown-content">
-                            {serversList.map((server, index) => (
-                              <button key={`${server.hash}-${index}`} onClick={() => handleServerClick(server)}>
-                                {server.name}
-                              </button>
-                            ))}
-                          </div>
+                      <div className="control-dropdown">
+                        <button className="control-btn">
+                          🎛️ {activeServer.name}
+                        </button>
+                        <div className="dropdown-content">
+                          {currentServers.map(srv => (
+                            <button
+                              key={srv.id}
+                              onClick={() => setActiveServerId(srv.id)}
+                              style={{ fontWeight: activeServerId === srv.id ? '700' : '400', color: activeServerId === srv.id ? '#a78bfa' : undefined }}
+                            >
+                              {activeServerId === srv.id ? '✓ ' : ''}{srv.name}
+                            </button>
+                          ))}
                         </div>
-                      )}
+                      </div>
                     </div>
 
                     <div className="control-right">
@@ -828,25 +707,27 @@ export default function Kdramas() {
                       💬 {langFilter === 'sub' ? 'Sub Español' : 'Español Latino'}
                     </button>
                     <div className="dropdown-content">
-                      <button onClick={() => setLangFilter('sub')}>Sub Español</button>
-                      <button onClick={() => setLangFilter('lat')}>Español Latino</button>
+                      <button onClick={() => handleLangFilterChange('sub')}>Sub Español</button>
+                      <button onClick={() => handleLangFilterChange('lat')}>Español Latino</button>
                     </div>
                   </div>
 
-                  {hasResolvedOnSite && serversList.length > 0 && (
-                    <div className="control-dropdown">
-                      <button className="control-btn">
-                        🎛️ Server: {activeServer ? activeServer.name : 'Cargando...'}
-                      </button>
-                      <div className="dropdown-content">
-                        {serversList.map((server, index) => (
-                          <button key={`${server.hash}-${index}`} onClick={() => handleServerClick(server)}>
-                            {server.name}
-                          </button>
-                        ))}
-                      </div>
+                  <div className="control-dropdown">
+                    <button className="control-btn">
+                      🎛️ {activeServer.name}
+                    </button>
+                    <div className="dropdown-content">
+                      {currentServers.map(srv => (
+                        <button
+                          key={srv.id}
+                          onClick={() => setActiveServerId(srv.id)}
+                          style={{ fontWeight: activeServerId === srv.id ? '700' : '400', color: activeServerId === srv.id ? '#a78bfa' : undefined }}
+                        >
+                          {activeServerId === srv.id ? '✓ ' : ''}{srv.name}
+                        </button>
+                      ))}
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 <div className="control-right">
