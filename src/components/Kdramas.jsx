@@ -379,43 +379,55 @@ export default function Kdramas() {
           white-space: nowrap;
           max-width: 200px;
         }
-        .control-dropdown {
-          position: relative;
-          display: inline-block;
-        }
-        .dropdown-content {
-          display: none;
-          position: absolute;
-          bottom: 100%;
-          left: 0;
-          background-color: #0b0b14;
-          min-width: 160px;
+        .control-select {
+          background: rgba(255, 255, 255, 0.05);
           border: 1px solid var(--border-color);
-          border-radius: 8px;
-          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.6);
-          z-index: 10;
-          margin-bottom: 5px;
-          overflow: hidden;
-        }
-        .dropdown-content button {
-          color: #ccc;
-          padding: 0.6rem 1rem;
-          text-decoration: none;
-          display: block;
-          width: 100%;
-          border: none;
-          background: transparent;
-          text-align: left;
-          cursor: pointer;
+          color: #fff;
+          padding: 0.5rem 2rem 0.5rem 1rem;
+          border-radius: 6px;
           font-size: 0.85rem;
+          cursor: pointer;
+          font-weight: 500;
+          outline: none;
+          appearance: none;
+          -webkit-appearance: none;
+          background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+          background-repeat: no-repeat;
+          background-position: right 0.8rem center;
+          background-size: 0.8em;
           transition: all 0.2s ease;
         }
-        .dropdown-content button:hover {
+        .control-select:hover {
           background-color: var(--primary);
-          color: white;
+          border-color: var(--primary);
         }
-        .control-dropdown:hover .dropdown-content {
-          display: block;
+        .kdrama-modal-body {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 1.5rem;
+          padding: 1.25rem;
+        }
+        .kdrama-player-col {
+          flex: 1 1 500px;
+          display: flex;
+          flex-direction: column;
+        }
+        .player-container {
+          height: 380px;
+          background: #020205;
+          border-radius: 12px 12px 0 0;
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .kdrama-info-col {
+          flex: 1 1 300px;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          min-width: 260px;
         }
         .theater-mode-layout {
           position: fixed;
@@ -427,6 +439,25 @@ export default function Kdramas() {
           background: #000;
           display: flex;
           flex-direction: column;
+        }
+        @media (max-width: 768px) {
+          .kdrama-modal-body {
+            flex-direction: column;
+            padding: 0.5rem;
+            gap: 1rem;
+          }
+          .kdrama-player-col {
+            flex: unset;
+            width: 100%;
+          }
+          .player-container {
+            height: 220px !important;
+          }
+          .kdrama-info-col {
+            flex: unset;
+            width: 100%;
+            min-width: unset;
+          }
         }
         .media-card {
           position: relative;
@@ -680,9 +711,9 @@ export default function Kdramas() {
                 {activePlayerUrl ? <VideoPlayer playerUrl={activePlayerUrl} /> : <div className="player-loading-spinner" />}
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '1.5rem', padding: '1rem' }}>
-                <div style={{ flex: '1 1 500px', display: 'flex', flexDirection: 'column' }}>
-                  <div className="player-container" style={{ height: '380px', background: '#020205', borderRadius: '12px 12px 0 0' }}>
+              <div className="kdrama-modal-body">
+                <div className="kdrama-player-col">
+                  <div className="player-container">
                     {activePlayerUrl ? <VideoPlayer playerUrl={activePlayerUrl} /> : <div className="player-loading-spinner" />}
                   </div>
                   
@@ -700,29 +731,34 @@ export default function Kdramas() {
                     </div>
 
                     <div className="control-center">
-                      <div className="control-dropdown">
-                        <button className="control-btn">
-                          💬 {langFilter === 'sub' ? 'Sub Español' : 'Español Latino'}
-                        </button>
-                        <div className="dropdown-content">
-                          <button onClick={() => setLangFilter('sub')}>Sub Español</button>
-                          <button onClick={() => setLangFilter('lat')}>Español Latino</button>
-                        </div>
-                      </div>
+                      <select 
+                        className="control-select" 
+                        value={langFilter} 
+                        onChange={(e) => setLangFilter(e.target.value)}
+                      >
+                        <option value="sub" style={{ background: '#0b0b14', color: '#fff' }}>💬 Sub Español</option>
+                        <option value="lat" style={{ background: '#0b0b14', color: '#fff' }}>🗣️ Español Latino</option>
+                      </select>
 
                       {hasResolvedOnSite && serversList.length > 0 && (
-                        <div className="control-dropdown">
-                          <button className="control-btn">
-                            🎛️ Server: {activeServer ? activeServer.name : 'Cargando...'}
-                          </button>
-                          <div className="dropdown-content">
-                            {serversList.map((server, index) => (
-                              <button key={`${server.hash}-${index}`} onClick={() => handleServerClick(server)}>
-                                {server.name}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
+                        <select 
+                          className="control-select"
+                          value={activeServer ? activeServer.hash : ''}
+                          onChange={(e) => {
+                            const match = serversList.find(s => s.hash === e.target.value);
+                            if (match) handleServerClick(match);
+                          }}
+                        >
+                          {serversList.map((server) => (
+                            <option 
+                              key={server.hash} 
+                              value={server.hash}
+                              style={{ background: '#0b0b14', color: '#fff' }}
+                            >
+                              🎛️ {server.name}
+                            </option>
+                          ))}
+                        </select>
                       )}
                     </div>
 
@@ -734,7 +770,7 @@ export default function Kdramas() {
                   </div>
                 </div>
 
-                <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: '260px' }}>
+                <div className="kdrama-info-col">
                   <div className="modal-meta">
                     <span className="modal-genre" style={{ background: '#a855f7', color: '#fff' }}>
                       {langCode === 'ko' ? 'K-DRAMA' : langCode === 'zh' ? 'C-DRAMA' : 'J-DRAMA'}
@@ -797,29 +833,34 @@ export default function Kdramas() {
                 </div>
 
                 <div className="control-center">
-                  <div className="control-dropdown">
-                    <button className="control-btn">
-                      💬 {langFilter === 'sub' ? 'Sub Español' : 'Español Latino'}
-                    </button>
-                    <div className="dropdown-content">
-                      <button onClick={() => setLangFilter('sub')}>Sub Español</button>
-                      <button onClick={() => setLangFilter('lat')}>Español Latino</button>
-                    </div>
-                  </div>
+                  <select 
+                    className="control-select" 
+                    value={langFilter} 
+                    onChange={(e) => setLangFilter(e.target.value)}
+                  >
+                    <option value="sub" style={{ background: '#0b0b14', color: '#fff' }}>💬 Sub Español</option>
+                    <option value="lat" style={{ background: '#0b0b14', color: '#fff' }}>🗣️ Latino</option>
+                  </select>
 
                   {hasResolvedOnSite && serversList.length > 0 && (
-                    <div className="control-dropdown">
-                      <button className="control-btn">
-                        🎛️ Server: {activeServer ? activeServer.name : 'Cargando...'}
-                      </button>
-                      <div className="dropdown-content">
-                        {serversList.map((server, index) => (
-                          <button key={`${server.hash}-${index}`} onClick={() => handleServerClick(server)}>
-                            {server.name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                    <select 
+                      className="control-select"
+                      value={activeServer ? activeServer.hash : ''}
+                      onChange={(e) => {
+                        const match = serversList.find(s => s.hash === e.target.value);
+                        if (match) handleServerClick(match);
+                      }}
+                    >
+                      {serversList.map((server) => (
+                        <option 
+                          key={server.hash} 
+                          value={server.hash}
+                          style={{ background: '#0b0b14', color: '#fff' }}
+                        >
+                          🎛️ {server.name}
+                        </option>
+                      ))}
+                    </select>
                   )}
                 </div>
 
