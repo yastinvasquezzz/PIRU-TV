@@ -623,29 +623,58 @@ export default function Peliculas() {
                 )}
               </div>
               {activeCategory !== 'Dramas Chinos' && currentItems.length > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'center', margin: '2.5rem 0 1rem' }}>
-                  <button 
-                    className="btn-hero-play" 
-                    style={{ 
-                      background: 'rgba(255, 255, 255, 0.05)', 
-                      border: '1px solid var(--border-color)', 
-                      color: '#fff', 
-                      padding: '0.8rem 2.5rem', 
-                      borderRadius: '30px',
-                      cursor: 'pointer', 
-                      boxShadow: 'none',
-                      fontSize: '0.9rem'
-                    }}
-                    onClick={() => {
-                      setCategoryPages(prev => ({
-                        ...prev,
-                        [activeCategory]: (prev[activeCategory] || 1) + 1
-                      }));
-                    }}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Cargando más...' : 'Cargar más películas / series ➕'}
-                  </button>
+                <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '0.4rem', margin: '2.5rem 0 1rem' }}>
+                  {Array.from({ length: (categoryPages[activeCategory] || 1) + 1 }, (_, i) => i + 1).map(pageNum => (
+                    <button
+                      key={pageNum}
+                      onClick={() => {
+                        setCategoryPages(prev => ({
+                          ...prev,
+                          [activeCategory]: pageNum
+                        }));
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      disabled={isLoading}
+                      style={{
+                        background: (categoryPages[activeCategory] || 1) === pageNum
+                          ? 'linear-gradient(135deg, #6c63ff, #9b59b6)'
+                          : 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid var(--border-color)',
+                        color: '#fff',
+                        padding: '0.5rem 1rem',
+                        borderRadius: '8px',
+                        cursor: isLoading ? 'not-allowed' : 'pointer',
+                        fontSize: '0.9rem',
+                        fontWeight: (categoryPages[activeCategory] || 1) === pageNum ? '700' : '400',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+                  {!isLoading && (
+                    <button
+                      onClick={() => {
+                        setCategoryPages(prev => ({
+                          ...prev,
+                          [activeCategory]: (prev[activeCategory] || 1) + 1
+                        }));
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid var(--border-color)',
+                        color: '#aaa',
+                        padding: '0.5rem 1rem',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        fontSize: '0.9rem',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      Siguiente →
+                    </button>
+                  )}
                 </div>
               )}
             </>
