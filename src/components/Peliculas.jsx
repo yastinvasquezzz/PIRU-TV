@@ -513,34 +513,16 @@ export default function Peliculas() {
                   <h2 className="dashboard-section-title" style={{ margin: 0, border: 'none' }}>
                     {category}
                   </h2>
-                  <div style={{ display: 'flex', justifyContent: 'center', margin: '0.5rem 0' }}>
-                    {[...Array(Math.max(1, Math.ceil(((homeCategoriesData[category] || []).length + (discoverCache[category] || []).length) / 12))).keys()].map(i => (
-                      <button
-                        key={i}
-                        className={`page-btn ${categoryPages[category] === i + 1 ? 'active' : ''}`}
-                        style={{
-                          background: 'rgba(255, 255, 255, 0.05)',
-                          border: '1px solid var(--border-color)',
-                          color: '#fff',
-                          padding: '0.3rem 0.6rem',
-                          borderRadius: '4px',
-                          margin: '0 0.2rem',
-                          cursor: 'pointer',
-                          fontSize: '0.75rem'
-                        }}
-                        onClick={() => {
-                          setActiveCategory(category);
-                          setCategoryPages(prev => ({
-                            ...prev,
-                            [category]: i + 1
-                          }));
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
-                      >
-                        {i + 1}
-                      </button>
-                    ))}
-                  </div>
+                  <button
+                    className="server-btn active"
+                    style={{ fontSize: '0.8rem', padding: '0.4rem 1rem', cursor: 'pointer' }}
+                    onClick={() => {
+                      setActiveCategory(category);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                  >
+                    Ver más →
+                  </button>
                 </div>
                 <div className="carousel-row">
                   <div className="carousel-scroll">
