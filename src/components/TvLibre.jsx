@@ -354,7 +354,7 @@ export default function TvLibre() {
               ✕
             </button>
             
-            <div className="player-container">
+            <div className="movie-player-container">
               <VideoPlayer streamUrl={selectedChannel.url} />
             </div>
 

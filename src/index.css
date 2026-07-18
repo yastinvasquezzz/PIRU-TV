@@ -487,22 +487,26 @@ body {
 }
 
 /* Embedded Player styles */
-.player-container {
+.movie-player-container {
   width: 100%;
-  aspect-ratio: 16 / 9;
-  max-height: 480px;
+  height: 0;
+  padding-top: 56.25%; /* 16:9 Aspect Ratio Fallback for Smart TV browsers */
   background: #020205;
   position: relative;
   border-bottom: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
 }
 
-.player-iframe {
-  width: 100%;
-  height: 100%;
+.player-iframe,
+.player-placeholder-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
   border: none;
+  margin: 0;
+  padding: 0;
 }
 
 .fallback-box {

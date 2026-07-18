@@ -730,7 +730,7 @@ export default function Peliculas() {
             </button>
 
             {/* Video player section or Preview */}
-            <div className="player-container">
+            <div className="movie-player-container">
               {isPlaying ? (
                 <iframe
                   src={embedUrl}
@@ -742,7 +742,7 @@ export default function Peliculas() {
               ) : (
                 <button 
                   type="button"
-                  className="player-container" 
+                  className="player-placeholder-btn" 
                   style={{ 
                     backgroundImage: `linear-gradient(to top, rgba(15,15,28,0.95), rgba(15,15,28,0.4)), url(${selectedItem.poster})`,
                     backgroundSize: 'cover',
