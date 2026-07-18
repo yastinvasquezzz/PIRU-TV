@@ -100,6 +100,25 @@ export default function Kdramas() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
 
+  const hasLatino = useMemo(() => serversList.some(s => s.langId === '1'), [serversList]);
+  const hasSub = useMemo(() => serversList.some(s => s.langId === '2'), [serversList]);
+
+  const filteredServers = useMemo(() => {
+    const targetLangId = langFilter === 'lat' ? '1' : '2';
+    const filtered = serversList.filter(s => s.langId === targetLangId);
+    return filtered.length > 0 ? filtered : serversList;
+  }, [serversList, langFilter]);
+
+  useEffect(() => {
+    if (hasResolvedOnSite && serversList.length > 0) {
+      if (langFilter === 'sub' && !hasSub && hasLatino) {
+        setLangFilter('lat');
+      } else if (langFilter === 'lat' && !hasLatino && hasSub) {
+        setLangFilter('sub');
+      }
+    }
+  }, [serversList, hasResolvedOnSite, hasLatino, hasSub, langFilter]);
+
   useEffect(() => {
     const loadDramas = async () => {
       setIsLoading(true);
@@ -245,11 +264,49 @@ export default function Kdramas() {
           setHasResolvedOnSite(true);
           const { defaultUrl, servers } = await loadChapterDetails(slug, chaps[0]);
           setActiveEpisode(chaps[0]);
-          setActivePlayerUrl(defaultUrl);
           setServersList(servers);
+          
           if (servers.length > 0) {
-            setActiveServer(servers[0]);
+            // Determine active language filter (auto-switch if preferred is missing)
+            const hasLat = servers.some(s => s.langId === '1');
+            const hasS = servers.some(s => s.langId === '2');
+            let activeFilter = langFilter;
+            if (langFilter === 'sub' && !hasS && hasLat) {
+              activeFilter = 'lat';
+              setLangFilter('lat');
+            } else if (langFilter === 'lat' && !hasLat && hasS) {
+              activeFilter = 'sub';
+              setLangFilter('sub');
+            }
+
+            const targetLangname = activeFilter === 'lat' ? '1' : '2';
+            const match = servers.find(s => s.langId === targetLangname);
+            const best = match || servers[0];
+            
+            setActiveServer(best);
+            
+            // Resolve the play URL via play.php
+            try {
+              const playRes = await fetch(`https://corsproxy.io/?https://www.doramas.org/ajax/play.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `id=${best.hash}`
+              });
+              if (playRes.ok) {
+                const text = await playRes.text();
+                const iframeMatch = text.match(/src="([^"]+)"/i);
+                if (iframeMatch) {
+                  setActivePlayerUrl(iframeMatch[1]);
+                  setIsDetailsLoading(false);
+                  return;
+                }
+              }
+            } catch (e) {
+              console.error(e);
+            }
           }
+          
+          setActivePlayerUrl(defaultUrl);
           setIsDetailsLoading(false);
           return;
         }
@@ -293,11 +350,49 @@ export default function Kdramas() {
     
     if (hasResolvedOnSite && doramaSlug) {
       const { defaultUrl, servers } = await loadChapterDetails(doramaSlug, epNum);
-      setActivePlayerUrl(defaultUrl);
       setServersList(servers);
+      
       if (servers.length > 0) {
-        setActiveServer(servers[0]);
+        // Determine active language filter (auto-switch if preferred is missing)
+        const hasLat = servers.some(s => s.langId === '1');
+        const hasS = servers.some(s => s.langId === '2');
+        let activeFilter = langFilter;
+        if (langFilter === 'sub' && !hasS && hasLat) {
+          activeFilter = 'lat';
+          setLangFilter('lat');
+        } else if (langFilter === 'lat' && !hasLat && hasS) {
+          activeFilter = 'sub';
+          setLangFilter('sub');
+        }
+
+        const targetLangname = activeFilter === 'lat' ? '1' : '2';
+        const match = servers.find(s => s.langId === targetLangname);
+        const best = match || servers[0];
+        
+        setActiveServer(best);
+        
+        // Resolve play URL
+        try {
+          const playRes = await fetch(`https://corsproxy.io/?https://www.doramas.org/ajax/play.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `id=${best.hash}`
+          });
+          if (playRes.ok) {
+            const text = await playRes.text();
+            const iframeMatch = text.match(/src="([^"]+)"/i);
+            if (iframeMatch) {
+              setActivePlayerUrl(iframeMatch[1]);
+              setIsDetailsLoading(false);
+              return;
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
       }
+      
+      setActivePlayerUrl(defaultUrl);
     } else if (selectedDrama) {
       setActivePlayerUrl(`https://multiembed.mov/?video_id=${selectedDrama.id}&tmdb=1&s=${activeSeason}&e=${epNum}`);
     }
@@ -328,7 +423,6 @@ export default function Kdramas() {
     }
   };
 
-  // langname: "1" = Audio Latino, "2" = Sub Español
   const handleLangFilterChange = async (newFilter) => {
     setLangFilter(newFilter);
     if (serversList.length > 0) {
@@ -380,6 +474,11 @@ export default function Kdramas() {
         .control-btn:disabled {
           opacity: 0.3;
           cursor: not-allowed;
+        }
+        .control-btn.active {
+          background: var(--primary) !important;
+          border-color: var(--primary) !important;
+          box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
         }
         .control-title {
           font-size: 0.9rem;
@@ -711,28 +810,54 @@ export default function Kdramas() {
                     </div>
 
                     <div className="control-center">
-                      <div className="control-dropdown">
-                        <button className="control-btn">
-                          💬 {langFilter === 'sub' ? 'Sub Español' : 'Español Latino'}
-                        </button>
-                        <div className="dropdown-content">
-                          <button onClick={() => handleLangFilterChange('sub')}>Sub Español</button>
-                          <button onClick={() => handleLangFilterChange('lat')}>Español Latino</button>
-                        </div>
-                      </div>
-
-                      {hasResolvedOnSite && serversList.length > 0 && (
-                        <div className="control-dropdown">
-                          <button className="control-btn">
-                            🎛️ Server: {activeServer ? activeServer.name : 'Cargando...'}
+                      {hasResolvedOnSite && serversList.length > 0 ? (
+                        <>
+                          {hasSub && (
+                            <button
+                              className={`control-btn ${langFilter === 'sub' ? 'active' : ''}`}
+                              onClick={() => handleLangFilterChange('sub')}
+                            >
+                              💬 Sub Español
+                            </button>
+                          )}
+                          {hasLatino && (
+                            <button
+                              className={`control-btn ${langFilter === 'lat' ? 'active' : ''}`}
+                              onClick={() => handleLangFilterChange('lat')}
+                            >
+                              🗣️ Latino
+                            </button>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            className={`control-btn ${langFilter === 'sub' ? 'active' : ''}`}
+                            onClick={() => handleLangFilterChange('sub')}
+                          >
+                            💬 Sub Español
                           </button>
-                          <div className="dropdown-content">
-                            {serversList.map((server, index) => (
-                              <button key={`${server.hash}-${index}`} onClick={() => handleServerClick(server)}>
-                                {server.name}
-                              </button>
-                            ))}
-                          </div>
+                          <button
+                            className={`control-btn ${langFilter === 'lat' ? 'active' : ''}`}
+                            onClick={() => handleLangFilterChange('lat')}
+                          >
+                            🗣️ Latino
+                          </button>
+                        </>
+                      )}
+
+                      {hasResolvedOnSite && filteredServers.length > 0 && (
+                        <div style={{ display: 'flex', gap: '0.4rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '0.8rem', marginLeft: '0.4rem' }}>
+                          {filteredServers.map((server) => (
+                            <button
+                              key={server.hash}
+                              className={`control-btn ${activeServer && activeServer.hash === server.hash ? 'active' : ''}`}
+                              onClick={() => handleServerClick(server)}
+                              style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+                            >
+                              {server.name}
+                            </button>
+                          ))}
                         </div>
                       )}
                     </div>
@@ -808,28 +933,54 @@ export default function Kdramas() {
                 </div>
 
                 <div className="control-center">
-                  <div className="control-dropdown">
-                    <button className="control-btn">
-                      💬 {langFilter === 'sub' ? 'Sub Español' : 'Español Latino'}
-                    </button>
-                    <div className="dropdown-content">
-                      <button onClick={() => setLangFilter('sub')}>Sub Español</button>
-                      <button onClick={() => setLangFilter('lat')}>Español Latino</button>
-                    </div>
-                  </div>
-
-                  {hasResolvedOnSite && serversList.length > 0 && (
-                    <div className="control-dropdown">
-                      <button className="control-btn">
-                        🎛️ Server: {activeServer ? activeServer.name : 'Cargando...'}
+                  {hasResolvedOnSite && serversList.length > 0 ? (
+                    <>
+                      {hasSub && (
+                        <button
+                          className={`control-btn ${langFilter === 'sub' ? 'active' : ''}`}
+                          onClick={() => handleLangFilterChange('sub')}
+                        >
+                          💬 Sub Español
+                        </button>
+                      )}
+                      {hasLatino && (
+                        <button
+                          className={`control-btn ${langFilter === 'lat' ? 'active' : ''}`}
+                          onClick={() => handleLangFilterChange('lat')}
+                        >
+                          🗣️ Latino
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        className={`control-btn ${langFilter === 'sub' ? 'active' : ''}`}
+                        onClick={() => handleLangFilterChange('sub')}
+                      >
+                        💬 Sub Español
                       </button>
-                      <div className="dropdown-content">
-                        {serversList.map((server, index) => (
-                          <button key={`${server.hash}-${index}`} onClick={() => handleServerClick(server)}>
-                            {server.name}
-                          </button>
-                        ))}
-                      </div>
+                      <button
+                        className={`control-btn ${langFilter === 'lat' ? 'active' : ''}`}
+                        onClick={() => handleLangFilterChange('lat')}
+                      >
+                        🗣️ Latino
+                      </button>
+                    </>
+                  )}
+
+                  {hasResolvedOnSite && filteredServers.length > 0 && (
+                    <div style={{ display: 'flex', gap: '0.4rem', borderLeft: '1px solid var(--border-color)', paddingLeft: '0.8rem', marginLeft: '0.4rem' }}>
+                      {filteredServers.map((server) => (
+                        <button
+                          key={server.hash}
+                          className={`control-btn ${activeServer && activeServer.hash === server.hash ? 'active' : ''}`}
+                          onClick={() => handleServerClick(server)}
+                          style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+                        >
+                          {server.name}
+                        </button>
+                      ))}
                     </div>
                   )}
                 </div>
