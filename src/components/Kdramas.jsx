@@ -245,10 +245,14 @@ export default function Kdramas() {
           setHasResolvedOnSite(true);
           const { defaultUrl, servers } = await loadChapterDetails(slug, chaps[0]);
           setActiveEpisode(chaps[0]);
-          setActivePlayerUrl(defaultUrl);
           setServersList(servers);
-          if (servers.length > 0) {
-            setActiveServer(servers[0]);
+          const best = pickServerByLang(servers, langFilter);
+          if (best) {
+            setActiveServer(best);
+            const url = await getServerUrl(best.hash);
+            setActivePlayerUrl(url || defaultUrl);
+          } else {
+            setActivePlayerUrl(defaultUrl);
           }
           setIsDetailsLoading(false);
           return;
@@ -293,10 +297,14 @@ export default function Kdramas() {
     
     if (hasResolvedOnSite && doramaSlug) {
       const { defaultUrl, servers } = await loadChapterDetails(doramaSlug, epNum);
-      setActivePlayerUrl(defaultUrl);
       setServersList(servers);
-      if (servers.length > 0) {
-        setActiveServer(servers[0]);
+      const best = pickServerByLang(servers, langFilter);
+      if (best) {
+        setActiveServer(best);
+        const url = await getServerUrl(best.hash);
+        setActivePlayerUrl(url || defaultUrl);
+      } else {
+        setActivePlayerUrl(defaultUrl);
       }
     } else if (selectedDrama) {
       setActivePlayerUrl(`https://multiembed.mov/?video_id=${selectedDrama.id}&tmdb=1&s=${activeSeason}&e=${epNum}`);
@@ -305,26 +313,44 @@ export default function Kdramas() {
     setIsDetailsLoading(false);
   };
 
-  const handleServerClick = async (server) => {
-    setIsDetailsLoading(true);
-    setActiveServer(server);
+  const getServerUrl = async (hash) => {
     try {
       const res = await fetch(`https://corsproxy.io/?https://www.doramas.org/ajax/play.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `id=${server.hash}`
+        body: `id=${hash}`
       });
       if (res.ok) {
         const text = await res.text();
         const iframeMatch = text.match(/src="([^"]+)"/i);
-        if (iframeMatch) {
-          setActivePlayerUrl(iframeMatch[1]);
-        }
+        if (iframeMatch) return iframeMatch[1];
       }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsDetailsLoading(false);
+    } catch (e) { console.error(e); }
+    return null;
+  };
+
+  const pickServerByLang = (servers, filter) => {
+    if (!servers || servers.length === 0) return null;
+    const keyword = filter === 'lat' ? 'lat' : 'sub';
+    return servers.find(s =>
+      (s.langId || '').toLowerCase().includes(keyword) ||
+      (s.name || '').toLowerCase().includes(keyword)
+    ) || servers[0];
+  };
+
+  const handleServerClick = async (server) => {
+    setIsDetailsLoading(true);
+    setActiveServer(server);
+    const url = await getServerUrl(server.hash);
+    if (url) setActivePlayerUrl(url);
+    setIsDetailsLoading(false);
+  };
+
+  const handleLangFilterChange = async (newFilter) => {
+    setLangFilter(newFilter);
+    if (serversList.length > 0) {
+      const best = pickServerByLang(serversList, newFilter);
+      if (best) await handleServerClick(best);
     }
   };
 
@@ -705,8 +731,8 @@ export default function Kdramas() {
                           💬 {langFilter === 'sub' ? 'Sub Español' : 'Español Latino'}
                         </button>
                         <div className="dropdown-content">
-                          <button onClick={() => setLangFilter('sub')}>Sub Español</button>
-                          <button onClick={() => setLangFilter('lat')}>Español Latino</button>
+                          <button onClick={() => handleLangFilterChange('sub')}>Sub Español</button>
+                          <button onClick={() => handleLangFilterChange('lat')}>Español Latino</button>
                         </div>
                       </div>
 
