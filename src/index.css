@@ -436,45 +436,40 @@ body {
   font-weight: 600;
 }
 
-/* Modal Details View */
+/* Modal Details View - FULL PAGE INTERFACE FOR PREMIUM TV EXPERIENCE */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(3, 3, 7, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: #06060c; /* Completely opaque dark background matching body */
   z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  animation: fadeIn 0.25s ease-out;
+  display: block; /* Allows natural block layout and vertical scrolling */
+  overflow-y: auto;
+  animation: fadeIn 0.2s ease-out;
 }
 
 .modal-content {
-  background: #0f0f1c;
-  border: 1px solid var(--border-hover);
-  border-radius: 24px;
+  background: #06060c; /* Dark background matching body */
+  border: none;
+  border-radius: 0;
   width: 100%;
-  max-width: 900px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.8),
-    0 0 40px rgba(139, 92, 246, 0.25);
-  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: 1200px; /* Centered content row on very large TV displays */
+  margin: 0 auto;
+  min-height: 100vh;
+  box-shadow: none;
   position: relative;
+  padding: 3rem 2rem;
+  animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .modal-close-btn {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: rgba(6, 6, 12, 0.6);
+  top: 2rem;
+  right: 2rem;
+  background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  color: var(--text-secondary);
-  width: 36px;
-  height: 36px;
+  color: #fff;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -482,13 +477,13 @@ body {
   cursor: pointer;
   transition: var(--transition-fast);
   z-index: 100;
-  backdrop-filter: blur(4px);
 }
 
 .modal-close-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  color: var(--text-primary);
-  transform: rotate(90deg);
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  transform: scale(1.1);
 }
 
 /* Embedded Player styles */
