@@ -7,75 +7,33 @@ const HDR  = { Authorization: `Bearer ${TMDB_KEY}` };
 
 const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
 
-const SERVERS = {
-  korii: {
-    name: 'Korii (VidSrc)',
-    getUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}-${e}?ds_lang=es`
-  },
-  maru: {
-    name: 'Maru (VidSrcPM)',
-    getUrl: (id, s, e) => `https://vidsrc.pm/embed/tv/${id}/${s}-${e}?ds_lang=es`
-  },
-  okru: {
-    name: 'Okru (Vimeus)',
-    getUrl: (id, s, e) => `https://vimeus.com/e/serie?tmdb=${id}&se=${s}&ep=${e}&view_key=${encodeURIComponent(VIMEUS_VIEW_KEY)}&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3`
-  },
-  hiplay: {
-    name: 'Hiplay (2Embed)',
-    getUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}&lang=es`
-  },
-  pdrive: {
-    name: 'PDrive (VidSrcCC)',
-    getUrl: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}-${e}?ds_lang=es`
-  },
-  evo: {
-    name: 'Evo (VidSrcNet)',
-    getUrl: (id, s, e) => `https://vidsrc.net/embed/tv/${id}/${s}-${e}?ds_lang=es`
-  },
-  dodo: {
-    name: 'Dodo (VidSrcIn)',
-    getUrl: (id, s, e) => `https://vidsrc.in/embed/tv/${id}/${s}-${e}?ds_lang=es`
+const buildPlayerUrl = (id, season, episode, langFilter) => {
+  if (langFilter === 'lat') {
+    return `https://vidsrc.xyz/embed/tv/${id}/${season}-${episode}?ds_lang=es`;
   }
+  return `https://vimeus.com/e/serie?tmdb=${id}&se=${season}&ep=${episode}&view_key=${encodeURIComponent(VIMEUS_VIEW_KEY)}&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3`;
 };
 
 const GENRES_MAP = {
-  10759: "Acción & Aventura",
-  16: "Animación",
-  35: "Comedia",
-  80: "Crimen",
-  99: "Documental",
-  18: "Drama",
-  10751: "Familia",
-  10762: "Infantil",
-  9648: "Misterio",
-  10763: "Noticias",
-  10764: "Reality",
-  10765: "Sci-Fi & Fantasía",
-  10766: "Telenovela",
-  10767: "Talk Show",
-  10768: "Guerra & Política",
-  37: "Western"
+  10759: 'Acción & Aventura', 16: 'Animación', 35: 'Comedia', 80: 'Crimen',
+  99: 'Documental', 18: 'Drama', 10751: 'Familia', 10762: 'Infantil',
+  9648: 'Misterio', 10763: 'Noticias', 10764: 'Reality', 10765: 'Sci-Fi & Fantasía',
+  10766: 'Telenovela', 10767: 'Talk Show', 10768: 'Guerra & Política', 37: 'Western'
 };
 
 const COUNTRY_MAP = {
-  KR: "Corea del Sur",
-  CN: "China",
-  JP: "Japón",
-  TW: "Taiwán",
-  TH: "Tailandia"
+  KR: 'Corea del Sur', CN: 'China', JP: 'Japón', TW: 'Taiwán', TH: 'Tailandia'
 };
 
-const VideoPlayer = ({ playerUrl }) => {
-  return (
-    <iframe
-      src={playerUrl}
-      style={{ width: '100%', height: '100%', border: 'none', borderRadius: '12px 12px 0 0' }}
-      allow="autoplay; encrypted-media"
-      allowFullScreen
-      title="Kdrama Player"
-    />
-  );
-};
+const VideoPlayer = ({ playerUrl }) => (
+  <iframe
+    src={playerUrl}
+    style={{ width: '100%', height: '100%', border: 'none', borderRadius: '12px 12px 0 0' }}
+    allow="autoplay; encrypted-media"
+    allowFullScreen
+    title="Kdrama Player"
+  />
+);
 
 export default function Kdramas() {
   const [dramas, setDramas] = useState([]);
@@ -84,18 +42,14 @@ export default function Kdramas() {
   const [page, setPage] = useState(1);
   const [langCode, setLangCode] = useState('ko');
   const [langFilter, setLangFilter] = useState('sub');
-  
+
   const [selectedDrama, setSelectedDrama] = useState(null);
-  
-  const [hasResolvedOnSite, setHasResolvedOnSite] = useState(false);
-  const [doramaSlug, setDoramaSlug] = useState('');
-  const [chaptersList, setChaptersList] = useState([]);
-  const [activeEpisode, setActiveEpisode] = useState(1);
   const [activeSeason, setActiveSeason] = useState(1);
-  const [serversList, setServersList] = useState([]);
-  const [activeServer, setActiveServer] = useState(null);
+  const [activeEpisode, setActiveEpisode] = useState(1);
+  const [chaptersList, setChaptersList] = useState([]);
   const [activePlayerUrl, setActivePlayerUrl] = useState('');
-  
+  const [showSubtitleInfo, setShowSubtitleInfo] = useState(false);
+
   const [isTheater, setIsTheater] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
@@ -115,9 +69,9 @@ export default function Kdramas() {
             rating: x.vote_average ? Math.round(x.vote_average * 10) / 10 : null,
             year: (x.first_air_date || '').slice(0, 4) || '—',
             genres: (x.genre_ids || []).map(id => GENRES_MAP[id]).filter(Boolean).join(', '),
-            country: x.origin_country && x.origin_country[0] ? COUNTRY_MAP[x.origin_country[0]] || x.origin_country[0] : 'Corea del Sur'
+            country: x.origin_country?.[0] ? COUNTRY_MAP[x.origin_country[0]] || x.origin_country[0] : 'Corea del Sur'
           }));
-          setDramas(prev => page === 1 ? results : [...prev, ...results]);
+          setDramas(results);
         }
       } catch (e) {
         console.error(e);
@@ -129,18 +83,14 @@ export default function Kdramas() {
   }, [langCode, page]);
 
   useEffect(() => {
-    if (!searchTerm.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
-    const delayDebounceFn = setTimeout(async () => {
+    if (!searchTerm.trim()) { setSearchResults([]); return; }
+    const t = setTimeout(async () => {
       try {
         const res = await fetch(`${TMDB}/search/tv?query=${encodeURIComponent(searchTerm)}&language=es-ES&page=1`, { headers: HDR });
         if (res.ok) {
           const data = await res.json();
-          const results = (data.results || [])
-            .filter(x => x.original_language === 'ko' || x.original_language === 'zh' || x.original_language === 'ja')
+          setSearchResults((data.results || [])
+            .filter(x => ['ko','zh','ja'].includes(x.original_language))
             .map(x => ({
               id: x.id,
               titulo: x.name || x.original_name || '—',
@@ -149,134 +99,35 @@ export default function Kdramas() {
               rating: x.vote_average ? Math.round(x.vote_average * 10) / 10 : null,
               year: (x.first_air_date || '').slice(0, 4) || '—',
               genres: (x.genre_ids || []).map(id => GENRES_MAP[id]).filter(Boolean).join(', '),
-              country: x.origin_country && x.origin_country[0] ? COUNTRY_MAP[x.origin_country[0]] || x.origin_country[0] : 'Corea del Sur'
-            }));
-          setSearchResults(results);
+              country: x.origin_country?.[0] ? COUNTRY_MAP[x.origin_country[0]] || x.origin_country[0] : 'Corea del Sur'
+            })));
         }
-      } catch (e) {
-        console.error(e);
-      }
+      } catch (e) { console.error(e); }
     }, 450);
-
-    return () => clearTimeout(delayDebounceFn);
+    return () => clearTimeout(t);
   }, [searchTerm]);
-
-  const searchDoramaOnSite = async (title) => {
-    try {
-      const res = await fetch(`https://corsproxy.io/?https://www.doramas.org/ajax/search.php`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `title=${encodeURIComponent(title)}`
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.fichas && data.fichas.length > 0) {
-          return data.fichas[0].slug.replace(/\/$/, '');
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return null;
-  };
-
-  const loadChaptersFromSite = async (slug) => {
-    try {
-      const res = await fetch(`https://corsproxy.io/?https://www.doramas.org/${slug}/`);
-      if (res.ok) {
-        const html = await res.text();
-        const chapRegex = new RegExp(`href="https:\\/\\/www\\.doramas\\.org\\/${slug}-c(\\d+)\\/`, 'g');
-        const chaps = [];
-        let match;
-        while ((match = chapRegex.exec(html)) !== null) {
-          chaps.push(parseInt(match[1]));
-        }
-        return Array.from(new Set(chaps)).sort((a, b) => a - b);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return [];
-  };
-
-  const loadChapterDetails = async (slug, epNum) => {
-    try {
-      const res = await fetch(`https://corsproxy.io/?https://www.doramas.org/${slug}-c${epNum}/`);
-      if (res.ok) {
-        const html = await res.text();
-        const iframeMatch = html.match(/<iframe[^>]*src="([^"]+)"/i);
-        const defaultUrl = iframeMatch ? iframeMatch[1] : '';
-
-        const serverRegex = /<li\s+data-lang="([^"]+)"\s+data-langname="([^"]+)"[^>]*>\s*<a[^>]*>\s*(.*?)\s*<\/a>/gi;
-        const parsedServers = [];
-        let sMatch;
-        while ((sMatch = serverRegex.exec(html)) !== null) {
-          parsedServers.push({
-            hash: sMatch[1],
-            langId: sMatch[2],
-            name: sMatch[3].replace(/<[^>]*>/g, '').trim()
-          });
-        }
-        return { defaultUrl, servers: parsedServers };
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return { defaultUrl: '', servers: [] };
-  };
 
   const handleOpenDrama = async (drama) => {
     setIsDetailsLoading(true);
     setSelectedDrama(drama);
-    setHasResolvedOnSite(false);
-    setDoramaSlug('');
     setChaptersList([]);
-    setServersList([]);
-    setActiveServer(null);
     setActivePlayerUrl('');
-    
+    setShowSubtitleInfo(false);
+
     try {
-      const slug = await searchDoramaOnSite(drama.titulo);
-      if (slug) {
-        setDoramaSlug(slug);
-        const chaps = await loadChaptersFromSite(slug);
-        if (chaps.length > 0) {
-          setChaptersList(chaps);
-          setHasResolvedOnSite(true);
-          const { defaultUrl, servers } = await loadChapterDetails(slug, chaps[0]);
-          setActiveEpisode(chaps[0]);
-          setActivePlayerUrl(defaultUrl);
-          setServersList(servers);
-          if (servers.length > 0) {
-            setActiveServer(servers[0]);
-          }
-          setIsDetailsLoading(false);
-          return;
-        }
-      }
-      
       const res = await fetch(`${TMDB}/tv/${drama.id}?language=es-ES`, { headers: HDR });
       if (res.ok) {
-        let details = await res.json();
-        if (!details.overview) {
-          const enRes = await fetch(`${TMDB}/tv/${drama.id}?language=en-US`, { headers: HDR });
-          if (enRes.ok) {
-            const enDetails = await enRes.json();
-            details.overview = enDetails.overview;
-          }
-        }
-        setSelectedDrama(prev => ({ ...prev, description: details.overview || prev.description }));
-        
-        const firstSeason = details.seasons ? details.seasons.find(s => s.season_number === 1) || details.seasons[0] : null;
+        const details = await res.json();
+        const firstSeason = details.seasons?.find(s => s.season_number === 1) || details.seasons?.[0];
         if (firstSeason) {
           const epRes = await fetch(`${TMDB}/tv/${drama.id}/season/${firstSeason.season_number}?language=es-ES`, { headers: HDR });
           if (epRes.ok) {
             const epData = await epRes.json();
-            const tmdbChaps = (epData.episodes || []).map(ep => ep.episode_number);
-            setChaptersList(tmdbChaps);
-            setActiveEpisode(1);
+            const eps = (epData.episodes || []).map(ep => ep.episode_number);
+            setChaptersList(eps);
             setActiveSeason(firstSeason.season_number);
-            setActivePlayerUrl(`https://multiembed.mov/?video_id=${drama.id}&tmdb=1&s=${firstSeason.season_number}&e=1`);
+            setActiveEpisode(1);
+            setActivePlayerUrl(buildPlayerUrl(drama.id, firstSeason.season_number, 1, langFilter));
           }
         }
       }
@@ -287,52 +138,48 @@ export default function Kdramas() {
     }
   };
 
-  const handleEpisodeChange = async (epNum) => {
-    setIsDetailsLoading(true);
+  const handleEpisodeChange = (epNum) => {
     setActiveEpisode(epNum);
-    
-    if (hasResolvedOnSite && doramaSlug) {
-      const { defaultUrl, servers } = await loadChapterDetails(doramaSlug, epNum);
-      setActivePlayerUrl(defaultUrl);
-      setServersList(servers);
-      if (servers.length > 0) {
-        setActiveServer(servers[0]);
-      }
-    } else if (selectedDrama) {
-      setActivePlayerUrl(`https://multiembed.mov/?video_id=${selectedDrama.id}&tmdb=1&s=${activeSeason}&e=${epNum}`);
-    }
-    
-    setIsDetailsLoading(false);
+    setActivePlayerUrl(buildPlayerUrl(selectedDrama.id, activeSeason, epNum, langFilter));
   };
 
-  const handleServerClick = async (server) => {
-    setIsDetailsLoading(true);
-    setActiveServer(server);
-    try {
-      const res = await fetch(`https://corsproxy.io/?https://www.doramas.org/ajax/play.php`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `id=${server.hash}`
-      });
-      if (res.ok) {
-        const text = await res.text();
-        const iframeMatch = text.match(/src="([^"]+)"/i);
-        if (iframeMatch) {
-          setActivePlayerUrl(iframeMatch[1]);
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsDetailsLoading(false);
+  const handleLangFilterChange = (newFilter) => {
+    setLangFilter(newFilter);
+    if (selectedDrama) {
+      setActivePlayerUrl(buildPlayerUrl(selectedDrama.id, activeSeason, activeEpisode, newFilter));
     }
   };
 
   const itemsToRender = searchTerm.trim() ? searchResults : dramas;
 
+  const PAGES_TO_SHOW = 10;
+
   return (
     <div className="kdramas-container">
       <style>{`
+        .kdramas-container {
+          width: 100%;
+          box-sizing: border-box;
+        }
+        .filter-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.8rem;
+          margin-bottom: 2rem;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .filter-group {
+          display: flex;
+          gap: 0.6rem;
+          flex-wrap: wrap;
+        }
+        .lang-label {
+          font-size: 0.75rem;
+          color: var(--text-secondary);
+          align-self: center;
+          white-space: nowrap;
+        }
         .player-control-bar {
           display: flex;
           justify-content: space-between;
@@ -344,104 +191,105 @@ export default function Kdramas() {
           border-radius: 0 0 12px 12px;
           color: #fff;
           flex-wrap: wrap;
-          gap: 1rem;
+          gap: 0.8rem;
         }
         .control-left, .control-center, .control-right {
           display: flex;
           align-items: center;
-          gap: 0.8rem;
+          gap: 0.6rem;
+          flex-wrap: wrap;
         }
         .control-btn {
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid var(--border-color);
           color: #fff;
-          padding: 0.5rem 1rem;
+          padding: 0.45rem 0.9rem;
           border-radius: 6px;
-          font-size: 0.85rem;
+          font-size: 0.82rem;
           cursor: pointer;
           transition: all 0.2s ease;
           font-weight: 500;
+          white-space: nowrap;
         }
         .control-btn:hover:not(:disabled) {
           background: var(--primary);
           border-color: var(--primary);
         }
-        .control-btn:disabled {
-          opacity: 0.3;
-          cursor: not-allowed;
+        .control-btn.active-filter {
+          background: linear-gradient(135deg, #6c63ff, #9b59b6);
+          border-color: #6c63ff;
         }
+        .control-btn:disabled { opacity: 0.3; cursor: not-allowed; }
         .control-title {
-          font-size: 0.9rem;
+          font-size: 0.85rem;
           font-weight: 600;
           color: #fff;
+          overflow: hidden;
           text-overflow: ellipsis;
-          overflow: hidden;
           white-space: nowrap;
-          max-width: 200px;
+          max-width: 160px;
         }
-        .control-dropdown {
-          position: relative;
-          display: inline-block;
+        .media-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+          gap: 1rem;
         }
-        .dropdown-content {
-          display: none;
-          position: absolute;
-          bottom: 100%;
-          left: 0;
-          background-color: #0b0b14;
-          min-width: 160px;
-          border: 1px solid var(--border-color);
+        .pagination {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 0.4rem;
+          margin: 2rem 0;
+        }
+        .modal-content {
+          overflow-y: auto;
+          max-height: 95vh;
+        }
+        .kdrama-modal-body {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 1.5rem;
+          padding: 1rem;
+        }
+        .kdrama-player-col {
+          flex: 1 1 480px;
+          display: flex;
+          flex-direction: column;
+        }
+        .kdrama-info-col {
+          flex: 1 1 260px;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          min-width: 200px;
+        }
+        .subtitle-info-box {
+          background: rgba(108, 99, 255, 0.12);
+          border: 1px solid rgba(108, 99, 255, 0.4);
           border-radius: 8px;
-          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.6);
-          z-index: 10;
-          margin-bottom: 5px;
-          overflow: hidden;
-        }
-        .dropdown-content button {
+          padding: 0.8rem 1rem;
+          font-size: 0.82rem;
           color: #ccc;
-          padding: 0.6rem 1rem;
-          text-decoration: none;
-          display: block;
-          width: 100%;
-          border: none;
-          background: transparent;
-          text-align: left;
-          cursor: pointer;
-          font-size: 0.85rem;
-          transition: all 0.2s ease;
-        }
-        .dropdown-content button:hover {
-          background-color: var(--primary);
-          color: white;
-        }
-        .control-dropdown:hover .dropdown-content {
-          display: block;
+          line-height: 1.5;
+          margin-top: 0.5rem;
         }
         .theater-mode-layout {
           position: fixed;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
+          top: 0; left: 0;
+          width: 100vw; height: 100vh;
           z-index: 99999;
           background: #000;
           display: flex;
           flex-direction: column;
         }
-        .media-card {
-          position: relative;
-          overflow: visible !important;
-        }
-        .card-thumbnail-wrapper {
-          position: relative;
-        }
+        .media-card { position: relative; }
+        .card-thumbnail-wrapper { position: relative; }
         .card-hover-popup {
           display: none;
           position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
           background: rgba(9, 9, 16, 0.96);
           border: 1.5px solid var(--primary);
           border-radius: 12px;
@@ -457,54 +305,56 @@ export default function Kdramas() {
           flex-direction: column;
           justify-content: flex-start;
         }
-        .hover-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 0.5rem;
-          font-size: 0.75rem;
-        }
-        .hover-year {
-          font-weight: 600;
-          color: #fff;
-          background: rgba(255,255,255,0.08);
-          padding: 0.15rem 0.4rem;
-          border-radius: 4px;
-        }
-        .hover-rating {
-          color: #fbbf24;
-          font-weight: bold;
-          display: flex;
-          align-items: center;
-          gap: 0.15rem;
-        }
-        .hover-title {
-          font-size: 0.9rem;
-          font-weight: 700;
-          color: #fff;
-          margin: 0 0 0.5rem 0;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        .hover-overview {
-          font-size: 0.75rem;
-          color: #ddd;
-          line-height: 1.4;
-          margin-bottom: 0.6rem;
-          display: -webkit-box;
-          -webkit-line-clamp: 5;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        .hover-meta, .hover-country {
-          font-size: 0.75rem;
-          color: var(--text-secondary);
-          margin-top: 0.25rem;
-          line-height: 1.3;
-        }
-        .hover-meta strong, .hover-country strong {
-          color: #fff;
+        .hover-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-size: 0.75rem; }
+        .hover-year { font-weight: 600; color: #fff; background: rgba(255,255,255,0.08); padding: 0.15rem 0.4rem; border-radius: 4px; }
+        .hover-rating { color: #fbbf24; font-weight: bold; display: flex; align-items: center; gap: 0.15rem; }
+        .hover-title { font-size: 0.9rem; font-weight: 700; color: #fff; margin: 0 0 0.5rem 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .hover-overview { font-size: 0.75rem; color: #ddd; line-height: 1.4; margin-bottom: 0.6rem; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+        .hover-meta, .hover-country { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem; line-height: 1.3; }
+        .hover-meta strong, .hover-country strong { color: #fff; }
+
+        @media (max-width: 600px) {
+          .media-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .filter-row {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .kdrama-modal-body {
+            flex-direction: column;
+            padding: 0.75rem;
+            gap: 1rem;
+          }
+          .kdrama-player-col {
+            flex: unset;
+            width: 100%;
+          }
+          .kdrama-info-col {
+            flex: unset;
+            width: 100%;
+            min-width: unset;
+          }
+          .player-container {
+            height: 220px !important;
+          }
+          .player-control-bar {
+            padding: 0.6rem 0.8rem;
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .control-title {
+            max-width: 100%;
+          }
+          .modal-content {
+            width: 98vw !important;
+            max-width: 98vw !important;
+            border-radius: 12px;
+          }
+          .modal-close-btn {
+            top: 0.5rem !important;
+            right: 0.5rem !important;
+          }
         }
       `}</style>
 
@@ -518,63 +368,40 @@ export default function Kdramas() {
               placeholder="Buscar Kdrama, Cdrama, Jdrama..."
               className="search-input"
               value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setPage(1);
-              }}
+              onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
             />
           </div>
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
-          <button
-            className={`filter-badge ${langCode === 'ko' ? 'active' : ''}`}
-            onClick={() => {
-              setLangCode('ko');
-              setPage(1);
-              setSearchTerm('');
-            }}
-          >
+      <div className="filter-row">
+        <div className="filter-group">
+          <button className={`filter-badge ${langCode === 'ko' ? 'active' : ''}`} onClick={() => { setLangCode('ko'); setPage(1); setSearchTerm(''); }}>
             Coreanos (K-Dramas) 🇰🇷
           </button>
-          <button
-            className={`filter-badge ${langCode === 'zh' ? 'active' : ''}`}
-            onClick={() => {
-              setLangCode('zh');
-              setPage(1);
-              setSearchTerm('');
-            }}
-          >
+          <button className={`filter-badge ${langCode === 'zh' ? 'active' : ''}`} onClick={() => { setLangCode('zh'); setPage(1); setSearchTerm(''); }}>
             Chinos (C-Dramas) 🇨🇳
           </button>
-          <button
-            className={`filter-badge ${langCode === 'ja' ? 'active' : ''}`}
-            onClick={() => {
-              setLangCode('ja');
-              setPage(1);
-              setSearchTerm('');
-            }}
-          >
+          <button className={`filter-badge ${langCode === 'ja' ? 'active' : ''}`} onClick={() => { setLangCode('ja'); setPage(1); setSearchTerm(''); }}>
             Japoneses (J-Dramas) 🇯🇵
           </button>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.8rem' }}>
+        <div className="filter-group">
+          <span className="lang-label">Audio / Subs:</span>
           <button
             className={`filter-badge ${langFilter === 'sub' ? 'active' : ''}`}
             style={{ border: '1px solid rgba(139, 92, 246, 0.4)' }}
-            onClick={() => setLangFilter('sub')}
+            onClick={() => handleLangFilterChange('sub')}
           >
-            Sub Español 💬
+            💬 Sub Español
           </button>
           <button
             className={`filter-badge ${langFilter === 'lat' ? 'active' : ''}`}
             style={{ border: '1px solid rgba(139, 92, 246, 0.4)' }}
-            onClick={() => setLangFilter('lat')}
+            onClick={() => handleLangFilterChange('lat')}
           >
-            Español Latino 🗣️
+            🗣️ Español Latino
           </button>
         </div>
       </div>
@@ -582,43 +409,28 @@ export default function Kdramas() {
       <div className="media-grid">
         {itemsToRender.length > 0 ? (
           itemsToRender.map((drama) => (
-            <div
-              key={drama.id}
-              className="media-card"
-              onClick={() => handleOpenDrama(drama)}
-            >
+            <div key={drama.id} className="media-card" onClick={() => handleOpenDrama(drama)}>
               <div className="card-thumbnail-wrapper" style={{ aspectRatio: '2/3' }}>
                 <div className="card-thumbnail-glow"></div>
                 <img
                   src={drama.portada}
                   alt={drama.titulo}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/160x240?text=?';
-                  }}
+                  onError={(e) => { e.target.src = 'https://via.placeholder.com/160x240?text=?'; }}
                 />
-                
                 <div className="card-hover-popup">
                   <div className="hover-header">
                     <span className="hover-year">{drama.year}</span>
-                    <span className="hover-rating">👍 {Math.round(drama.rating * 60) || 500}</span>
+                    <span className="hover-rating">👍 {Math.round((drama.rating || 5) * 60)}</span>
                   </div>
                   <h4 className="hover-title">{drama.titulo}</h4>
                   <p className="hover-overview">{drama.description}</p>
-                  <div className="hover-meta">
-                    <strong>Géneros:</strong> {drama.genres || 'Drama'}
-                  </div>
-                  <div className="hover-country">
-                    <strong>País:</strong> {drama.country}
-                  </div>
+                  <div className="hover-meta"><strong>Géneros:</strong> {drama.genres || 'Drama'}</div>
+                  <div className="hover-country"><strong>País:</strong> {drama.country}</div>
                 </div>
-
-                <div className="play-hover-btn">
-                  <div className="play-icon">▶</div>
-                </div>
+                <div className="play-hover-btn"><div className="play-icon">▶</div></div>
                 {drama.year && <span className="card-badge">{drama.year}</span>}
               </div>
-
               <div className="card-info">
                 <span className="card-genre" style={{ color: '#c084fc' }}>
                   {langCode === 'ko' ? '🇰🇷 K-Drama' : langCode === 'zh' ? '🇨🇳 C-Drama' : '🇯🇵 J-Drama'}
@@ -642,37 +454,32 @@ export default function Kdramas() {
       </div>
 
       {!searchTerm.trim() && dramas.length > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'center', margin: '2.5rem 0 1rem' }}>
-          <button
-            className="btn-hero-play"
-            style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid var(--border-color)',
-              color: '#fff',
-              padding: '0.8rem 2.5rem',
-              borderRadius: '30px',
-              cursor: 'pointer',
-              fontSize: '0.9rem'
-            }}
-            onClick={() => setPage(prev => prev + 1)}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Cargando...' : 'Cargar más dramas ➕'}
-          </button>
+        <div className="pagination">
+          <button className="control-btn" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1 || isLoading}>◀</button>
+          {Array.from({ length: PAGES_TO_SHOW }, (_, i) => i + 1).map(p => (
+            <button
+              key={p}
+              className="control-btn"
+              style={{ background: p === page ? 'var(--primary)' : undefined, borderColor: p === page ? 'var(--primary)' : undefined, fontWeight: p === page ? '700' : '400' }}
+              onClick={() => setPage(p)}
+              disabled={isLoading}
+            >
+              {p}
+            </button>
+          ))}
+          <button className="control-btn" onClick={() => setPage(p => p + 1)} disabled={isLoading}>▶</button>
         </div>
       )}
 
       {selectedDrama && (
         <div className="modal-overlay" onClick={() => { setSelectedDrama(null); setIsTheater(false); }}>
-          <div 
-            className={isTheater ? "theater-mode-layout" : "modal-content"} 
-            onClick={(e) => e.stopPropagation()} 
-            style={isTheater ? {} : { maxWidth: '950px' }}
+          <div
+            className={isTheater ? 'theater-mode-layout' : 'modal-content'}
+            onClick={(e) => e.stopPropagation()}
+            style={isTheater ? {} : { maxWidth: '960px' }}
           >
             {!isTheater && (
-              <button className="modal-close-btn" onClick={() => setSelectedDrama(null)}>
-                ✕
-              </button>
+              <button className="modal-close-btn" onClick={() => setSelectedDrama(null)}>✕</button>
             )}
 
             {isTheater ? (
@@ -680,50 +487,58 @@ export default function Kdramas() {
                 {activePlayerUrl ? <VideoPlayer playerUrl={activePlayerUrl} /> : <div className="player-loading-spinner" />}
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '1.5rem', padding: '1rem' }}>
-                <div style={{ flex: '1 1 500px', display: 'flex', flexDirection: 'column' }}>
-                  <div className="player-container" style={{ height: '380px', background: '#020205', borderRadius: '12px 12px 0 0' }}>
-                    {activePlayerUrl ? <VideoPlayer playerUrl={activePlayerUrl} /> : <div className="player-loading-spinner" />}
+              <div className="kdrama-modal-body">
+                <div className="kdrama-player-col">
+                  <div className="player-container" style={{ height: '360px', background: '#020205', borderRadius: '12px 12px 0 0' }}>
+                    {isDetailsLoading
+                      ? <div className="player-loading-spinner" />
+                      : activePlayerUrl
+                        ? <VideoPlayer playerUrl={activePlayerUrl} />
+                        : <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '0.5rem', color: 'var(--text-secondary)' }}>
+                            <span style={{ fontSize: '2rem' }}>🌸</span>
+                            <span style={{ fontSize: '0.85rem' }}>Cargando reproductor...</span>
+                          </div>
+                    }
                   </div>
-                  
+
                   <div className="player-control-bar">
                     <div className="control-left">
-                      <button className="control-btn" onClick={() => handleEpisodeChange(Math.max(1, activeEpisode - 1))} disabled={activeEpisode <= 1}>
-                        ◀
-                      </button>
-                      <span className="control-title" style={{ fontSize: '0.8rem' }}>
-                        Cap. {activeEpisode}
-                      </span>
-                      <button className="control-btn" onClick={() => handleEpisodeChange(Math.min(chaptersList.length, activeEpisode + 1))} disabled={activeEpisode >= chaptersList.length}>
-                        ▶
-                      </button>
+                      <button
+                        className="control-btn"
+                        onClick={() => handleEpisodeChange(Math.max(1, activeEpisode - 1))}
+                        disabled={activeEpisode <= 1}
+                      >◀</button>
+                      <span className="control-title">Cap. {activeEpisode}</span>
+                      <button
+                        className="control-btn"
+                        onClick={() => handleEpisodeChange(Math.min(chaptersList.length, activeEpisode + 1))}
+                        disabled={activeEpisode >= chaptersList.length}
+                      >▶</button>
                     </div>
 
                     <div className="control-center">
-                      <div className="control-dropdown">
-                        <button className="control-btn">
-                          💬 {langFilter === 'sub' ? 'Sub Español' : 'Español Latino'}
-                        </button>
-                        <div className="dropdown-content">
-                          <button onClick={() => setLangFilter('sub')}>Sub Español</button>
-                          <button onClick={() => setLangFilter('lat')}>Español Latino</button>
-                        </div>
-                      </div>
-
-                      {hasResolvedOnSite && serversList.length > 0 && (
-                        <div className="control-dropdown">
-                          <button className="control-btn">
-                            🎛️ Server: {activeServer ? activeServer.name : 'Cargando...'}
-                          </button>
-                          <div className="dropdown-content">
-                            {serversList.map((server, index) => (
-                              <button key={`${server.hash}-${index}`} onClick={() => handleServerClick(server)}>
-                                {server.name}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                      <button
+                        className={`control-btn ${langFilter === 'sub' ? 'active-filter' : ''}`}
+                        onClick={() => handleLangFilterChange('sub')}
+                        title="Subtítulos en Español"
+                      >
+                        💬 Sub ES
+                      </button>
+                      <button
+                        className={`control-btn ${langFilter === 'lat' ? 'active-filter' : ''}`}
+                        onClick={() => handleLangFilterChange('lat')}
+                        title="Audio o subtítulos en Español Latino"
+                      >
+                        🗣️ Latino
+                      </button>
+                      <button
+                        className="control-btn"
+                        onClick={() => setShowSubtitleInfo(v => !v)}
+                        title="Activar subtítulos en el reproductor"
+                        style={{ opacity: 0.85 }}
+                      >
+                        CC Subs
+                      </button>
                     </div>
 
                     <div className="control-right">
@@ -732,23 +547,33 @@ export default function Kdramas() {
                       </button>
                     </div>
                   </div>
+
+                  {showSubtitleInfo && (
+                    <div className="subtitle-info-box">
+                      <strong style={{ color: '#a78bfa' }}>💡 Cómo activar subtítulos:</strong><br />
+                      Dentro del reproductor busca el ícono <strong>CC</strong> o el engranaje ⚙️ para activar subtítulos en Español.<br />
+                      Si el servidor seleccionado es <em>Sub Español</em>, los subtítulos se cargan automáticamente.<br />
+                      Si no aparecen, cambia de servidor usando los botones de arriba.
+                    </div>
+                  )}
                 </div>
 
-                <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: '260px' }}>
+                <div className="kdrama-info-col">
                   <div className="modal-meta">
                     <span className="modal-genre" style={{ background: '#a855f7', color: '#fff' }}>
                       {langCode === 'ko' ? 'K-DRAMA' : langCode === 'zh' ? 'C-DRAMA' : 'J-DRAMA'}
                     </span>
                     <span className="modal-lang">★ {selectedDrama.rating || 'N/A'}</span>
+                    <span className="modal-lang">{langFilter === 'sub' ? '💬 Sub ES' : '🗣️ Latino'}</span>
                   </div>
-                  <h2 className="modal-title" style={{ margin: 0, fontSize: '1.4rem' }}>{selectedDrama.titulo}</h2>
-                  <p className="modal-summary" style={{ maxHeight: '110px', overflowY: 'auto', fontSize: '0.85rem' }}>
+                  <h2 className="modal-title" style={{ margin: 0, fontSize: '1.3rem' }}>{selectedDrama.titulo}</h2>
+                  <p className="modal-summary" style={{ maxHeight: '100px', overflowY: 'auto', fontSize: '0.85rem' }}>
                     {selectedDrama.description}
                   </p>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Seleccionar Capítulo:</span>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', maxHeight: '140px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', maxHeight: '180px', overflowY: 'auto', paddingRight: '0.4rem' }}>
                       {isDetailsLoading ? (
                         <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', padding: '0.5rem' }}>Cargando capítulos...</div>
                       ) : chaptersList.length > 0 ? (
@@ -757,12 +582,12 @@ export default function Kdramas() {
                             key={epNum}
                             onClick={() => handleEpisodeChange(epNum)}
                             style={{
-                              flex: '1 0 70px',
+                              flex: '1 0 60px',
                               background: activeEpisode === epNum ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
                               border: '1px solid',
                               borderColor: activeEpisode === epNum ? 'var(--primary)' : 'var(--border-color)',
                               color: '#fff',
-                              padding: '0.5rem',
+                              padding: '0.45rem',
                               borderRadius: '8px',
                               fontSize: '0.8rem',
                               fontWeight: '600',
@@ -785,48 +610,16 @@ export default function Kdramas() {
             {isTheater && (
               <div className="player-control-bar" style={{ borderRadius: 0, padding: '0.8rem 2rem' }}>
                 <div className="control-left">
-                  <button className="control-btn" onClick={() => handleEpisodeChange(Math.max(1, activeEpisode - 1))} disabled={activeEpisode <= 1}>
-                    ◀
-                  </button>
-                  <span className="control-title">
-                    {selectedDrama.titulo} - Cap. {activeEpisode}
-                  </span>
-                  <button className="control-btn" onClick={() => handleEpisodeChange(Math.min(chaptersList.length, activeEpisode + 1))} disabled={activeEpisode >= chaptersList.length}>
-                    ▶
-                  </button>
+                  <button className="control-btn" onClick={() => handleEpisodeChange(Math.max(1, activeEpisode - 1))} disabled={activeEpisode <= 1}>◀</button>
+                  <span className="control-title">{selectedDrama.titulo} - Cap. {activeEpisode}</span>
+                  <button className="control-btn" onClick={() => handleEpisodeChange(Math.min(chaptersList.length, activeEpisode + 1))} disabled={activeEpisode >= chaptersList.length}>▶</button>
                 </div>
-
                 <div className="control-center">
-                  <div className="control-dropdown">
-                    <button className="control-btn">
-                      💬 {langFilter === 'sub' ? 'Sub Español' : 'Español Latino'}
-                    </button>
-                    <div className="dropdown-content">
-                      <button onClick={() => setLangFilter('sub')}>Sub Español</button>
-                      <button onClick={() => setLangFilter('lat')}>Español Latino</button>
-                    </div>
-                  </div>
-
-                  {hasResolvedOnSite && serversList.length > 0 && (
-                    <div className="control-dropdown">
-                      <button className="control-btn">
-                        🎛️ Server: {activeServer ? activeServer.name : 'Cargando...'}
-                      </button>
-                      <div className="dropdown-content">
-                        {serversList.map((server, index) => (
-                          <button key={`${server.hash}-${index}`} onClick={() => handleServerClick(server)}>
-                            {server.name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  <button className={`control-btn ${langFilter === 'sub' ? 'active-filter' : ''}`} onClick={() => handleLangFilterChange('sub')}>💬 Sub ES</button>
+                  <button className={`control-btn ${langFilter === 'lat' ? 'active-filter' : ''}`} onClick={() => handleLangFilterChange('lat')}>🗣️ Latino</button>
                 </div>
-
                 <div className="control-right">
-                  <button className="control-btn" onClick={() => setIsTheater(false)}>
-                    ✕ Salir Modo Cine
-                  </button>
+                  <button className="control-btn" onClick={() => setIsTheater(false)}>✕ Salir Modo Cine</button>
                 </div>
               </div>
             )}
