@@ -157,7 +157,14 @@ export default function Peliculas() {
 
   // Fetch TMDB data for catalog items and discover items when category is active
   useEffect(() => {
-    if (activeCategory === 'Home' || activeCategory === 'Dramas Chinos' || activeCategory === 'Search') return;
+    if (activeCategory === 'Home' || activeCategory === 'Dramas Chinos' || activeCategory === 'Search') {
+      setSelectedItem(null);
+      setIsPlaying(false);
+      return;
+    }
+
+    setSelectedItem(null);
+    setIsPlaying(false);
 
     const curatedRefs = catalogData[activeCategory] || [];
     const activePage = categoryPages[activeCategory] || 1;
@@ -384,6 +391,8 @@ export default function Peliculas() {
               className="search-input"
               value={searchTerm}
               onChange={(e) => {
+                setSelectedItem(null);
+                setIsPlaying(false);
                 setSearchTerm(e.target.value);
                 if (e.target.value.trim() !== '') {
                   setActiveCategory('Search');
@@ -403,6 +412,8 @@ export default function Peliculas() {
             key={cat}
             className={`filter-badge ${activeCategory === cat ? 'active' : ''}`}
             onClick={() => {
+              setSelectedItem(null);
+              setIsPlaying(false);
               setActiveCategory(cat);
               setSearchTerm('');
             }}
@@ -425,11 +436,27 @@ export default function Peliculas() {
             <div className="media-grid">
               {searchResults.length > 0 ? (
                 searchResults.map((item) => (
-                  <div key={`${item.type}-${item.id}`} className="media-card" onClick={() => handleOpenItem(item)}>
+                  <button 
+                    type="button"
+                    key={`${item.type}-${item.id}`} 
+                    className="media-card" 
+                    onClick={() => handleOpenItem(item)}
+                    style={{ textAlign: 'left', font: 'inherit', color: 'inherit', padding: 0 }}
+                  >
                     <div className="card-thumbnail-wrapper" style={{ aspectRatio: '2/3' }}>
                       <div className="card-thumbnail-glow"></div>
                       <img src={item.poster} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = 'https://via.placeholder.com/160x240?text=?'; }} />
-                      <div className="play-hover-btn"><div className="play-icon">▶</div></div>
+                      <button
+                        type="button"
+                        className="play-hover-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenItem(item);
+                        }}
+                        style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer' }}
+                      >
+                        <div className="play-icon">▶</div>
+                      </button>
                       {item.year && <span className="card-badge">{item.year}</span>}
                     </div>
                     <div className="card-info">
@@ -441,7 +468,7 @@ export default function Peliculas() {
                         <span className="card-lang">ES</span>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 ))
               ) : (
                 <div className="empty-state">
@@ -484,10 +511,12 @@ export default function Peliculas() {
               <h2 className="dashboard-section-title">Top 5 Películas de Hoy</h2>
               <div className="top5-row">
                 {top5Items.map((item, index) => (
-                  <div 
+                  <button 
+                    type="button"
                     key={`${item.type}-${item.id}`} 
                     className="top5-card"
                     onClick={() => handleOpenItem(item)}
+                    style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'inherit', cursor: 'pointer' }}
                   >
                     <div className="top5-number-container">{index + 1}</div>
                     <div className="top5-poster-container">
@@ -497,7 +526,7 @@ export default function Peliculas() {
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -517,6 +546,8 @@ export default function Peliculas() {
                     className="server-btn active"
                     style={{ fontSize: '0.8rem', padding: '0.4rem 1rem', cursor: 'pointer' }}
                     onClick={() => {
+                      setSelectedItem(null);
+                      setIsPlaying(false);
                       setActiveCategory(category);
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
@@ -527,10 +558,12 @@ export default function Peliculas() {
                 <div className="carousel-row">
                   <div className="carousel-scroll">
                     {items.map((item) => (
-                      <div 
+                      <button 
+                        type="button"
                         key={`${item.type}-${item.id}`} 
                         className="carousel-item-card media-card"
                         onClick={() => handleOpenItem(item)}
+                        style={{ textAlign: 'left', font: 'inherit', color: 'inherit', padding: 0 }}
                       >
                         <div className="card-thumbnail-wrapper" style={{ aspectRatio: '2/3', width: '150px' }}>
                           <img 
@@ -538,12 +571,22 @@ export default function Peliculas() {
                             alt={item.title} 
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                           />
-                          <div className="play-hover-btn"><div className="play-icon">▶</div></div>
+                          <button
+                            type="button"
+                            className="play-hover-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenItem(item);
+                            }}
+                            style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer' }}
+                          >
+                            <div className="play-icon">▶</div>
+                          </button>
                         </div>
                         <div className="card-info" style={{ width: '150px', padding: '0.5rem 0 0' }}>
                           <h4 className="card-title" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.title}</h4>
                         </div>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -564,10 +607,12 @@ export default function Peliculas() {
               <div className="media-grid">
                 {currentItems.length > 0 ? (
                   currentItems.map((item) => (
-                    <div 
+                    <button 
+                      type="button"
                       key={item.id} 
                       className="media-card"
                       onClick={() => handleOpenItem(item)}
+                      style={{ textAlign: 'left', font: 'inherit', color: 'inherit', padding: 0 }}
                     >
                       <div className="card-thumbnail-wrapper" style={{ aspectRatio: '2/3' }}>
                         <div className="card-thumbnail-glow"></div>
@@ -579,9 +624,17 @@ export default function Peliculas() {
                             e.target.src = 'https://via.placeholder.com/160x240?text=?';
                           }}
                         />
-                        <div className="play-hover-btn">
+                        <button
+                          type="button"
+                          className="play-hover-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenItem(item);
+                          }}
+                          style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer' }}
+                        >
                           <div className="play-icon">▶</div>
-                        </div>
+                        </button>
                         {item.year && <span className="card-badge">{item.year}</span>}
                       </div>
                       <div className="card-info">
@@ -595,7 +648,7 @@ export default function Peliculas() {
                           <span className="card-lang">ES</span>
                         </div>
                       </div>
-                    </div>
+                    </button>
                   ))
                 ) : (
                   <div className="empty-state">
@@ -610,6 +663,8 @@ export default function Peliculas() {
                     <button
                       key={pageNum}
                       onClick={() => {
+                        setSelectedItem(null);
+                        setIsPlaying(false);
                         setCategoryPages(prev => ({
                           ...prev,
                           [activeCategory]: pageNum
@@ -637,6 +692,8 @@ export default function Peliculas() {
                   {!isLoading && (
                     <button
                       onClick={() => {
+                        setSelectedItem(null);
+                        setIsPlaying(false);
                         setCategoryPages(prev => ({
                           ...prev,
                           [activeCategory]: (prev[activeCategory] || 1) + 1
@@ -683,7 +740,8 @@ export default function Peliculas() {
                   title={selectedItem.title}
                 />
               ) : (
-                <div 
+                <button 
+                  type="button"
                   className="player-container" 
                   style={{ 
                     backgroundImage: `linear-gradient(to top, rgba(15,15,28,0.95), rgba(15,15,28,0.4)), url(${selectedItem.poster})`,
@@ -691,15 +749,21 @@ export default function Peliculas() {
                     backgroundPosition: 'center 30%',
                     flexDirection: 'column', 
                     gap: '1rem',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    font: 'inherit'
                   }}
                   onClick={() => setIsPlaying(true)}
                 >
-                  <div className="play-icon" style={{ transform: 'scale(1.4)', background: '#fff', color: '#000', cursor: 'pointer' }}>▶</div>
+                  <div className="play-icon" style={{ transform: 'scale(1.4)', background: '#fff', color: '#000' }}>▶</div>
                   <strong style={{ color: '#fff', fontSize: '1.25rem', textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
                     Haga clic para reproducir
                   </strong>
-                </div>
+                </button>
               )}
             </div>
 
