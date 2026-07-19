@@ -229,17 +229,18 @@ export default function Kdramas() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
 
-  // Load catalog doramas or movies (Latino only)
+  // Load catalog doramas or movies (Latino only or Subtitled)
   useEffect(() => {
     const loadCatalog = async () => {
       setIsLoading(true);
       try {
         const query = activeSubTab === 'movies' ? LIST_MOVIES_QUERY : LIST_DORAMAS_QUERY;
+        const filter = activeSubTab === 'sub' ? {} : { languages: "38" };
         const res = await queryFlix(query, {
           page: page,
           perPage: 20,
           sort: 'POPULARITY_DESC',
-          filter: { languages: "38" } // Only Latino
+          filter: filter
         });
         
         if (activeSubTab === 'movies') {
@@ -291,7 +292,7 @@ export default function Kdramas() {
     }
   }, [page, searchTerm, activeSubTab]);
 
-  // Search doramas or movies (Latino only filter)
+  // Search doramas or movies (Latino only or Subtitled)
   useEffect(() => {
     if (!searchTerm.trim()) {
       setSearchResults([]);
@@ -307,8 +308,11 @@ export default function Kdramas() {
         if (activeSubTab === 'movies') {
           if (res.data && res.data.searchMovie) {
             const items = res.data.searchMovie || [];
-            // Filter to keep only those with Latino audio
-            const filtered = items.filter(x => x.languages && x.languages.includes("38"));
+            // For sub/movies tab, do we filter languages?
+            // Latino tab: languages: "38". Sub tab: no language filter since all are sub.
+            const filtered = activeSubTab === 'sub' 
+              ? items 
+              : items.filter(x => x.languages && x.languages.includes("38"));
             const formatted = filtered.map(x => ({
               id: x._id,
               type: 'movie',
@@ -324,8 +328,10 @@ export default function Kdramas() {
         } else {
           if (res.data && res.data.searchDorama) {
             const items = res.data.searchDorama || [];
-            // Filter to keep only those with Latino audio
-            const filtered = items.filter(x => x.languages && x.languages.includes("38"));
+            // For sub/doramas tab: no language filter. For Latino: filter: "38".
+            const filtered = activeSubTab === 'sub' 
+              ? items 
+              : items.filter(x => x.languages && x.languages.includes("38"));
             const formatted = filtered.map(x => ({
               id: x._id,
               type: 'dorama',
@@ -486,11 +492,33 @@ export default function Kdramas() {
     }
   };
 
-  // Keep only Latino servers by default
+  // Select default server based on activeSubTab
   useEffect(() => {
     if (allEpisodeLinks && allEpisodeLinks.length > 0) {
+      const isSubTab = activeSubTab === 'sub';
+
+      const primaryFilter = (link) => {
+        if (isSubTab) {
+          // Sub tab: prefer subtitled (not 38)
+          return link.lang !== '38' && link.language_code !== 'es';
+        } else {
+          // Latino tab: prefer latino (38)
+          return link.lang === '38' || link.language_code === 'es';
+        }
+      };
+
+      const secondaryFilter = (link) => {
+        if (isSubTab) {
+          // Sub tab fallback: latino
+          return link.lang === '38' || link.language_code === 'es';
+        } else {
+          // Latino tab fallback: subtitled
+          return link.lang !== '38' && link.language_code !== 'es';
+        }
+      };
+
       const filtered = allEpisodeLinks
-        .filter(link => link.lang === '38' || link.language_code === 'es')
+        .filter(primaryFilter)
         .map(link => ({
           hash: link._id,
           name: getHostName(link.embed, link.server_ref),
@@ -503,12 +531,12 @@ export default function Kdramas() {
         setActiveServer(filtered[0]);
         setActivePlayerUrl(filtered[0].embed);
       } else {
-        // Fallback to subtitled if no Latino server exists for this episode
+        // Fallback if no primary language server exists
         const subbed = allEpisodeLinks
-          .filter(link => link.lang !== '38' && link.language_code !== 'es')
+          .filter(secondaryFilter)
           .map(link => ({
             hash: link._id,
-            name: getHostName(link.embed, link.server_ref) + " (Sub)",
+            name: getHostName(link.embed, link.server_ref) + (isSubTab ? " (Latino)" : " (Sub)"),
             embed: link.embed,
             lang: link.lang
           }));
@@ -526,7 +554,7 @@ export default function Kdramas() {
       setActiveServer(null);
       setActivePlayerUrl('');
     }
-  }, [allEpisodeLinks]);
+  }, [allEpisodeLinks, activeSubTab]);
 
   const handlePageChange = (pageNum) => {
     setSelectedDrama(null);
@@ -777,7 +805,7 @@ export default function Kdramas() {
         </div>
 
         {/* Tab Selector */}
-        <div className="filters-wrapper" style={{ margin: 0, padding: 0, display: 'flex', gap: '0.8rem' }}>
+        <div className="filters-wrapper" style={{ margin: 0, padding: 0, display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
           <button
             type="button"
             className={`filter-badge ${activeSubTab === 'doramas' ? 'active' : ''}`}
@@ -789,7 +817,20 @@ export default function Kdramas() {
               setSelectedDrama(null);
             }}
           >
-            🌸 Doramas / Series
+            🌸 Doramas Latino
+          </button>
+          <button
+            type="button"
+            className={`filter-badge ${activeSubTab === 'sub' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveSubTab('sub');
+              setPage(1);
+              setSearchTerm('');
+              setSearchResults([]);
+              setSelectedDrama(null);
+            }}
+          >
+            💬 Doramas Sub Español
           </button>
           <button
             type="button"
@@ -802,7 +843,7 @@ export default function Kdramas() {
               setSelectedDrama(null);
             }}
           >
-            🎬 Películas en Latino
+            🎬 Películas Latino
           </button>
         </div>
       </div>
@@ -862,23 +903,33 @@ export default function Kdramas() {
 
                 <div className="card-info">
                   <span className="card-genre" style={{ color: '#c084fc' }}>
-                    {activeSubTab === 'movies' ? '🎬 Película' : '🌸 Dorama'}
+                    {activeSubTab === 'movies' 
+                      ? '🎬 Película' 
+                      : activeSubTab === 'sub' 
+                      ? '💬 Sub Español' 
+                      : '🌸 Latino'}
                   </span>
                   <h3 className="card-title">{drama.titulo}</h3>
                   <p className="card-summary">{drama.description}</p>
                   <div className="card-footer">
                     <span>⭐ 8.5</span>
-                    <span className="card-lang">LAT</span>
+                    <span className="card-lang">
+                      {activeSubTab === 'movies' ? 'LAT' : activeSubTab === 'sub' ? 'SUB' : 'LAT'}
+                    </span>
                   </div>
                 </div>
               </button>
             ))
           ) : (
             <div className="empty-state">
-              <span className="empty-icon">{activeSubTab === 'movies' ? '🎬' : '🌸'}</span>
+              <span className="empty-icon">
+                {activeSubTab === 'movies' ? '🎬' : activeSubTab === 'sub' ? '💬' : '🌸'}
+              </span>
               <h3 className="empty-title">
                 {activeSubTab === 'movies' 
                   ? 'No se encontraron películas en latino' 
+                  : activeSubTab === 'sub'
+                  ? 'No se encontraron doramas sub español'
                   : 'No se encontraron doramas en latino'}
               </h3>
               <p>Prueba buscando con palabras clave diferentes.</p>
@@ -998,7 +1049,7 @@ export default function Kdramas() {
                 <div className="kdrama-info-col">
                   <div className="modal-meta">
                     <span className="modal-genre" style={{ background: '#a855f7', color: '#fff' }}>
-                      🗣️ {selectedDrama.type === 'movie' ? 'PELÍCULA LATINO' : 'DORAMA LATINO'}
+                      🗣️ {selectedDrama.type === 'movie' ? 'PELÍCULA LATINO' : activeSubTab === 'sub' ? 'DORAMA SUB ESPAÑOL' : 'DORAMA LATINO'}
                     </span>
                     <span className="modal-lang">★ 8.5</span>
                   </div>
