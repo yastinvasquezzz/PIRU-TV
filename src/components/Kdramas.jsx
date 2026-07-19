@@ -485,10 +485,22 @@ export default function Kdramas() {
     setIsDetailsLoading(false);
   };
 
+  const getPlayerUrl = (embed) => {
+    if (!embed) return '';
+    if (embed.includes('primeload.co')) {
+      if (import.meta.env.DEV) {
+        return embed.replace('https://primeload.co', '/primeload-proxy');
+      } else {
+        return embed.replace('https://primeload.co', PROXY_URL);
+      }
+    }
+    return embed;
+  };
+
   const handleServerClick = (server) => {
     setActiveServer(server);
     if (server && server.embed) {
-      setActivePlayerUrl(server.embed);
+      setActivePlayerUrl(getPlayerUrl(server.embed));
     }
   };
 
@@ -529,7 +541,7 @@ export default function Kdramas() {
       setServersList(filtered);
       if (filtered.length > 0) {
         setActiveServer(filtered[0]);
-        setActivePlayerUrl(filtered[0].embed);
+        setActivePlayerUrl(getPlayerUrl(filtered[0].embed));
       } else {
         // Fallback if no primary language server exists
         const subbed = allEpisodeLinks
@@ -543,7 +555,7 @@ export default function Kdramas() {
         setServersList(subbed);
         if (subbed.length > 0) {
           setActiveServer(subbed[0]);
-          setActivePlayerUrl(subbed[0].embed);
+          setActivePlayerUrl(getPlayerUrl(subbed[0].embed));
         } else {
           setActiveServer(null);
           setActivePlayerUrl('');

@@ -497,7 +497,15 @@ export default function Peliculas() {
   const embedUrl = useMemo(() => {
     if (!selectedItem) return '';
     if (selectedItem.type === 'drama') return selectedItem.embedUrl;
-    if (selectedItem.type === 'latino-movie') return activeLatinoServer?.embed || '';
+    if (selectedItem.type === 'latino-movie') {
+      const embed = activeLatinoServer?.embed || '';
+      if (embed.includes('primeload.co')) {
+        return import.meta.env.DEV
+          ? embed.replace('https://primeload.co', '/primeload-proxy')
+          : embed.replace('https://primeload.co', DFLIX_PROXY);
+      }
+      return embed;
+    }
 
     const id = selectedItem.id;
     if (selectedServer === 'vimeus') {
