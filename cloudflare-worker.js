@@ -27,7 +27,7 @@ async function handleRequest(request) {
   const isPrimeload = path.startsWith('/embed/') || 
                        path.startsWith('/player/') || 
                        path.startsWith('/player-dist/') || 
-                       path.startsWith('/api/v1/') ||
+                       path.startsWith('/api/v1') ||
                        url.searchParams.has('primeload');
 
   if (isPrimeload) {

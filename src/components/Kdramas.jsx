@@ -180,6 +180,16 @@ const SERVER_NAMES = {
   "61707703fa461256758155c5": "Mega"
 };
 
+const LANG_NAMES = {
+  "38": "Latino 🗣️",
+  "13109": "Coreano 🇰🇷",
+  "13110": "Japonés 🇯🇵",
+  "13111": "Chino 🇨🇳",
+  "13112": "Japonés/Tailandés 🇯🇵🇹🇭",
+  "13113": "Taiwanés 🇹🇼",
+  "36": "Inglés 🇬🇧"
+};
+
 const getHostName = (url, server_ref) => {
   if (SERVER_NAMES[server_ref]) {
     return SERVER_NAMES[server_ref];
@@ -589,6 +599,13 @@ export default function Kdramas() {
   };
 
   const itemsToRender = searchTerm.trim() ? searchResults : dramas;
+
+  const activeLangName = useMemo(() => {
+    if (activeServer && LANG_NAMES[activeServer.lang]) {
+      return LANG_NAMES[activeServer.lang];
+    }
+    return activeSubTab === 'sub' ? 'Sub Español 💬' : 'Latino 🗣️';
+  }, [activeServer, activeSubTab]);
 
   return (
     <div className="kdramas-container">
@@ -1024,8 +1041,8 @@ export default function Kdramas() {
                     )}
 
                     <div className="control-center">
-                      <select className="control-select" value="lat" disabled>
-                        <option value="lat" style={{ background: '#0b0b14', color: '#fff' }}>🗣️ Latino</option>
+                      <select className="control-select" value="active" disabled>
+                        <option value="active" style={{ background: '#0b0b14', color: '#fff' }}>{activeLangName}</option>
                       </select>
 
                       {serversList.length > 0 && (
@@ -1152,8 +1169,8 @@ export default function Kdramas() {
                 )}
 
                 <div className="control-center">
-                  <select className="control-select" value="lat" disabled>
-                    <option value="lat" style={{ background: '#0b0b14', color: '#fff' }}>🗣️ Latino</option>
+                  <select className="control-select" value="active" disabled>
+                    <option value="active" style={{ background: '#0b0b14', color: '#fff' }}>{activeLangName}</option>
                   </select>
 
                   {serversList.length > 0 && (
