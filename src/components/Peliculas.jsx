@@ -11,6 +11,73 @@ const HDR  = { Authorization: `Bearer ${TMDB_KEY}` };
 const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
 const VIMEUS_PARAMS = '&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3';
 
+// ── Doramasflix Latino Movies (via Cloudflare Worker proxy) ──
+const DFLIX_PROXY = import.meta.env.DEV
+  ? '/api/gql'
+  : 'https://pirutv-proxy.skillful-part.workers.dev';
+
+const DFLIX_LIST_MOVIES = `
+  query listMovies($page: Int, $perPage: Int, $sort: SortFindManyMovieInput, $filter: FilterFindManyMovieInput) {
+    paginationMovie(page: $page, perPage: $perPage, sort: $sort, filter: $filter) {
+      count
+      items {
+        _id
+        name
+        name_es
+        slug
+        poster_path
+        backdrop_path
+        release_date
+        overview
+        languages
+        vote_average
+      }
+    }
+  }
+`;
+
+const DFLIX_MOVIE_LINKS = `
+  query getMovieLinks($slug: String!) {
+    getMovieLinks(slug: $slug) {
+      links_online
+    }
+  }
+`;
+
+const queryDflix = async (query, variables = {}) => {
+  const res = await fetch(DFLIX_PROXY, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, variables })
+  });
+  if (!res.ok) throw new Error(`Dflix proxy error: ${res.status}`);
+  return res.json();
+};
+
+const DFLIX_SERVER_NAMES = {
+  '60ac0eb8ac46a43f59a5b21f': 'Streamtape',
+  '60ac0d08ac46a43f59a5b21d': 'Mixdrop',
+  '60ac0f2eac46a43f59a5b221': 'Uqload',
+  '60ac0f52ac46a43f59a5b222': 'Mp4Upload',
+  '60ac0abeac46a43f59a5b21b': 'Okru',
+  '60ac0f0eac46a43f59a5b220': 'Voe',
+  '60ac0e7eac46a43f59a5b21e': 'Dood',
+  '64b19a4035461c5d64ef5b84': 'Filemoon',
+  '64b18fdc35461c5d64ef5b59': 'Streamwish',
+  '65c6b7f9149d4675d1547a5c': 'VidHide',
+  '61707703fa461256758155c5': 'Mega'
+};
+
+const getDflixServerName = (url, ref) => {
+  if (DFLIX_SERVER_NAMES[ref]) return DFLIX_SERVER_NAMES[ref];
+  try {
+    const h = new URL(url).hostname.replace('www.', '').split('.');
+    return h[0].charAt(0).toUpperCase() + h[0].slice(1);
+  } catch { return 'Servidor'; }
+};
+
+const LATINO_MOVIES_CAT = '🗣️ Películas Latino';
+
 const DISCOVER_MAP = {
   'Acción': '/discover/movie?with_genres=28',
   'Animación': '/discover/movie?with_genres=16',
@@ -56,9 +123,16 @@ export default function Peliculas() {
   const [selectedEpisode, setSelectedEpisode] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Doramasflix Latino Movies state
+  const [latinoMovies, setLatinoMovies] = useState([]);
+  const [latinoMoviePage, setLatinoMoviePage] = useState(1);
+  const [latinoMovieTotalPages, setLatinoMovieTotalPages] = useState(1);
+  const [latinoMovieLinks, setLatinoMovieLinks] = useState([]);
+  const [activeLatinoServer, setActiveLatinoServer] = useState(null);
+
   // Combine categories: Home + catalog genres + Dramas Chinos
   const categories = useMemo(() => {
-    return ['Home', ...Object.keys(catalogData), 'Dramas Chinos'];
+    return ['Home', ...Object.keys(catalogData), 'Dramas Chinos', LATINO_MOVIES_CAT];
   }, []);
 
   // Fetch TMDB helper function
@@ -155,9 +229,51 @@ export default function Peliculas() {
     loadDashboard();
   }, []);
 
+  // Load Doramasflix Latino Movies when that category is selected
+  useEffect(() => {
+    if (activeCategory !== LATINO_MOVIES_CAT) return;
+    setSelectedItem(null);
+    setIsPlaying(false);
+
+    const load = async () => {
+      setIsLoading(true);
+      try {
+        const res = await queryDflix(DFLIX_LIST_MOVIES, {
+          page: latinoMoviePage,
+          perPage: 20,
+          sort: 'POPULARITY_DESC',
+          filter: { languages: '38' }
+        });
+        const data = res.data?.paginationMovie;
+        if (data) {
+          const total = data.count || 0;
+          setLatinoMovieTotalPages(Math.ceil(total / 20));
+          const items = (data.items || []).map(x => ({
+            id: x._id,
+            type: 'latino-movie',
+            slug: x.slug,
+            title: x.name_es || x.name || '—',
+            poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://via.placeholder.com/160x240?text=?',
+            backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
+            overview: x.overview || 'Sin descripción disponible.',
+            year: (x.release_date || '').slice(0, 4) || '—',
+            rating: x.vote_average ? Math.round(x.vote_average * 10) / 10 : null,
+            category: LATINO_MOVIES_CAT
+          }));
+          setLatinoMovies(items);
+        }
+      } catch (e) {
+        console.error('Dflix movies error:', e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    load();
+  }, [activeCategory, latinoMoviePage]);
+
   // Fetch TMDB data for catalog items and discover items when category is active
   useEffect(() => {
-    if (activeCategory === 'Home' || activeCategory === 'Dramas Chinos' || activeCategory === 'Search') {
+    if (activeCategory === 'Home' || activeCategory === 'Dramas Chinos' || activeCategory === LATINO_MOVIES_CAT || activeCategory === 'Search') {
       setSelectedItem(null);
       setIsPlaying(false);
       return;
@@ -289,6 +405,7 @@ export default function Peliculas() {
   // Resolve current active items list for standard categories
   const currentItems = useMemo(() => {
     if (activeCategory === 'Home') return [];
+    if (activeCategory === LATINO_MOVIES_CAT) return latinoMovies;
     if (activeCategory === 'Dramas Chinos') {
       return dramasData.map((d, index) => ({
         id: `drama-${index}`,
@@ -313,10 +430,40 @@ export default function Peliculas() {
     const filteredDiscovered = discovered.filter(d => !curatedIds.has(d.id));
 
     return [...curated, ...filteredDiscovered];
-  }, [activeCategory, tmdbCache, discoverCache]);
+  }, [activeCategory, tmdbCache, discoverCache, latinoMovies]);
 
   // Open modal handler
   const handleOpenItem = async (item) => {
+    // Latino movie: load doramasflix links
+    if (item.type === 'latino-movie') {
+      setSelectedItem(item);
+      setIsPlaying(false);
+      setLatinoMovieLinks([]);
+      setActiveLatinoServer(null);
+      setIsLoading(true);
+      try {
+        const res = await queryDflix(DFLIX_MOVIE_LINKS, { slug: item.slug });
+        const links = res.data?.getMovieLinks?.links_online || [];
+        // Prefer Latino (lang=38), fallback to any available
+        const latino = links.filter(l => String(l.lang) === '38');
+        const servers = (latino.length > 0 ? latino : links)
+          .filter(l => l.embed && l.is_active !== false)
+          .map(l => ({
+            id: l._id,
+            name: getDflixServerName(l.embed, l.server_ref),
+            embed: l.embed,
+            lang: String(l.lang) === '38' ? 'LAT' : 'SUB'
+          }));
+        setLatinoMovieLinks(servers);
+        if (servers.length > 0) setActiveLatinoServer(servers[0]);
+      } catch (e) {
+        console.error('Dflix links error:', e);
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
+
     // If the item doesn't have seasons loaded yet (e.g. from search results of type TV show),
     // we fetch full details to load the seasons array!
     let fullItem = item;
@@ -350,6 +497,7 @@ export default function Peliculas() {
   const embedUrl = useMemo(() => {
     if (!selectedItem) return '';
     if (selectedItem.type === 'drama') return selectedItem.embedUrl;
+    if (selectedItem.type === 'latino-movie') return activeLatinoServer?.embed || '';
 
     const id = selectedItem.id;
     if (selectedServer === 'vimeus') {
@@ -376,7 +524,7 @@ export default function Peliculas() {
     }
 
     return '';
-  }, [selectedItem, selectedServer, selectedSeason, selectedEpisode]);
+  }, [selectedItem, selectedServer, selectedSeason, selectedEpisode, activeLatinoServer]);
 
   return (
     <div className="peliculas-container">
@@ -768,7 +916,7 @@ export default function Peliculas() {
             </div>
 
             {/* Server and Episode selectors if playing and item is TV Series */}
-            {isPlaying && selectedItem.type !== 'drama' && (
+            {isPlaying && selectedItem.type !== 'drama' && selectedItem.type !== 'latino-movie' && (
               <div className="player-header">
                 <div className="player-title-info">
                   <span className="pulse-dot"></span>
@@ -797,6 +945,42 @@ export default function Peliculas() {
                     2Embed
                   </button>
                 </div>
+              </div>
+            )}
+
+            {/* Latino Movie: server selector from doramasflix */}
+            {selectedItem.type === 'latino-movie' && latinoMovieLinks.length > 0 && (
+              <div className="player-header">
+                <div className="player-title-info">
+                  <span className="pulse-dot"></span>
+                  <span>🗣️ {selectedItem.title}</span>
+                </div>
+                <div className="server-selector">
+                  {latinoMovieLinks.map(srv => (
+                    <button
+                      key={srv.id}
+                      className={`server-btn ${activeLatinoServer?.id === srv.id ? 'active' : ''}`}
+                      onClick={() => { setActiveLatinoServer(srv); setIsPlaying(true); }}
+                    >
+                      {srv.name} <span style={{ fontSize: '0.7rem', opacity: 0.7 }}>[{srv.lang}]</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Loading indicator for latino movie links */}
+            {selectedItem.type === 'latino-movie' && isLoading && (
+              <div className="player-header" style={{ justifyContent: 'center', padding: '1rem' }}>
+                <div className="player-loading-spinner" style={{ position: 'relative', margin: '0' }}></div>
+                <span style={{ marginLeft: '1rem', color: 'var(--text-secondary)' }}>Cargando servidores...</span>
+              </div>
+            )}
+
+            {/* No servers available for latino movie */}
+            {selectedItem.type === 'latino-movie' && !isLoading && latinoMovieLinks.length === 0 && (
+              <div className="player-header" style={{ justifyContent: 'center', padding: '1rem' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>⚠️ No hay servidores disponibles para esta película.</span>
               </div>
             )}
 
@@ -844,7 +1028,7 @@ export default function Peliculas() {
             <div className="modal-body">
               <div className="modal-meta">
                 <span className="modal-genre">
-                  {selectedItem.type === 'tv' ? '📺 Serie' : selectedItem.type === 'drama' ? '🎭 Chino' : '🎬 Película'}
+                  {selectedItem.type === 'tv' ? '📺 Serie' : selectedItem.type === 'drama' ? '🎭 Chino' : selectedItem.type === 'latino-movie' ? '🗣️ Latino' : '🎬 Película'}
                 </span>
                 {selectedItem.year && <span className="modal-lang">{selectedItem.year}</span>}
                 {selectedItem.rating && <span className="modal-lang">⭐ {selectedItem.rating}</span>}
