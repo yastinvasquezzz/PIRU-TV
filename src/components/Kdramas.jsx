@@ -91,6 +91,59 @@ const LINKS_FLIX_QUERY = `
   }
 `;
 
+const LIST_MOVIES_QUERY = `
+  query listMovies(
+    $page: Int
+    $perPage: Int
+    $sort: SortFindManyMovieInput
+    $filter: FilterFindManyMovieInput
+  ) {
+    paginationMovie(
+      page: $page
+      perPage: $perPage
+      sort: $sort
+      filter: $filter
+    ) {
+      count
+      items {
+        _id
+        name
+        name_es
+        slug
+        poster_path
+        backdrop_path
+        release_date
+        overview
+        languages
+      }
+    }
+  }
+`;
+
+const SEARCH_MOVIES_QUERY = `
+  query searchMovie($input: String!) {
+    searchMovie(input: $input, limit: 20) {
+      _id
+      slug
+      name
+      name_es
+      languages
+      poster_path
+      backdrop_path
+      release_date
+      overview
+    }
+  }
+`;
+
+const MOVIE_LINKS_QUERY = `
+  query getMovieLinks($slug: String!) {
+    getMovieLinks(slug: $slug) {
+      links_online
+    }
+  }
+`;
+
 
 // En desarrollo (npm run dev): usa el proxy de Vite /api/gql -> sv1.fluxcedene.net
 // En producción: usa el Cloudflare Worker que reenvía sin header Origin
@@ -153,6 +206,7 @@ const VideoPlayer = ({ playerUrl }) => {
 };
 
 export default function Kdramas() {
+  const [activeSubTab, setActiveSubTab] = useState('doramas'); // 'doramas' or 'movies'
   const [dramas, setDramas] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -175,32 +229,55 @@ export default function Kdramas() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
 
-  // Load catalog doramas (Latino only)
+  // Load catalog doramas or movies (Latino only)
   useEffect(() => {
     const loadCatalog = async () => {
       setIsLoading(true);
       try {
-        const res = await queryFlix(LIST_DORAMAS_QUERY, {
+        const query = activeSubTab === 'movies' ? LIST_MOVIES_QUERY : LIST_DORAMAS_QUERY;
+        const res = await queryFlix(query, {
           page: page,
           perPage: 20,
           sort: 'POPULARITY_DESC',
           filter: { languages: "38" } // Only Latino
         });
-        if (res.data && res.data.paginationDorama) {
-          const items = res.data.paginationDorama.items || [];
-          const count = res.data.paginationDorama.count || 0;
-          setTotalPages(Math.ceil(count / 20));
-          
-          const formatted = items.map(x => ({
-            id: x._id,
-            titulo: x.name_es || x.name || '—',
-            portada: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://via.placeholder.com/160x240?text=?',
-            backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
-            description: x.overview || 'Sin descripción disponible.',
-            slug: x.slug,
-            year: (x.first_air_date || '').slice(0, 4) || '—'
-          }));
-          setDramas(formatted);
+        
+        if (activeSubTab === 'movies') {
+          if (res.data && res.data.paginationMovie) {
+            const items = res.data.paginationMovie.items || [];
+            const count = res.data.paginationMovie.count || 0;
+            setTotalPages(Math.ceil(count / 20));
+            
+            const formatted = items.map(x => ({
+              id: x._id,
+              type: 'movie',
+              titulo: x.name_es || x.name || '—',
+              portada: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://via.placeholder.com/160x240?text=?',
+              backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
+              description: x.overview || 'Sin descripción disponible.',
+              slug: x.slug,
+              year: (x.release_date || '').slice(0, 4) || '—'
+            }));
+            setDramas(formatted);
+          }
+        } else {
+          if (res.data && res.data.paginationDorama) {
+            const items = res.data.paginationDorama.items || [];
+            const count = res.data.paginationDorama.count || 0;
+            setTotalPages(Math.ceil(count / 20));
+            
+            const formatted = items.map(x => ({
+              id: x._id,
+              type: 'dorama',
+              titulo: x.name_es || x.name || '—',
+              portada: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://via.placeholder.com/160x240?text=?',
+              backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
+              description: x.overview || 'Sin descripción disponible.',
+              slug: x.slug,
+              year: (x.first_air_date || '').slice(0, 4) || '—'
+            }));
+            setDramas(formatted);
+          }
         }
       } catch (e) {
         console.error(e);
@@ -212,9 +289,9 @@ export default function Kdramas() {
     if (!searchTerm.trim()) {
       loadCatalog();
     }
-  }, [page, searchTerm]);
+  }, [page, searchTerm, activeSubTab]);
 
-  // Search doramas (Latino only filter)
+  // Search doramas or movies (Latino only filter)
   useEffect(() => {
     if (!searchTerm.trim()) {
       setSearchResults([]);
@@ -224,21 +301,43 @@ export default function Kdramas() {
     const delayDebounceFn = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const res = await queryFlix(SEARCH_FLIX_QUERY, { input: searchTerm });
-        if (res.data && res.data.searchDorama) {
-          const items = res.data.searchDorama || [];
-          // Filter to keep only those with Latino audio
-          const filtered = items.filter(x => x.languages && x.languages.includes("38"));
-          const formatted = filtered.map(x => ({
-            id: x._id,
-            titulo: x.name_es || x.name || '—',
-            portada: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://via.placeholder.com/160x240?text=?',
-            backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
-            description: x.overview || 'Sin descripción disponible.',
-            slug: x.slug,
-            year: (x.first_air_date || '').slice(0, 4) || '—'
-          }));
-          setSearchResults(formatted);
+        const query = activeSubTab === 'movies' ? SEARCH_MOVIES_QUERY : SEARCH_FLIX_QUERY;
+        const res = await queryFlix(query, { input: searchTerm });
+        
+        if (activeSubTab === 'movies') {
+          if (res.data && res.data.searchMovie) {
+            const items = res.data.searchMovie || [];
+            // Filter to keep only those with Latino audio
+            const filtered = items.filter(x => x.languages && x.languages.includes("38"));
+            const formatted = filtered.map(x => ({
+              id: x._id,
+              type: 'movie',
+              titulo: x.name_es || x.name || '—',
+              portada: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://via.placeholder.com/160x240?text=?',
+              backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
+              description: x.overview || 'Sin descripción disponible.',
+              slug: x.slug,
+              year: (x.release_date || '').slice(0, 4) || '—'
+            }));
+            setSearchResults(formatted);
+          }
+        } else {
+          if (res.data && res.data.searchDorama) {
+            const items = res.data.searchDorama || [];
+            // Filter to keep only those with Latino audio
+            const filtered = items.filter(x => x.languages && x.languages.includes("38"));
+            const formatted = filtered.map(x => ({
+              id: x._id,
+              type: 'dorama',
+              titulo: x.name_es || x.name || '—',
+              portada: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://via.placeholder.com/160x240?text=?',
+              backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
+              description: x.overview || 'Sin descripción disponible.',
+              slug: x.slug,
+              year: (x.first_air_date || '').slice(0, 4) || '—'
+            }));
+            setSearchResults(formatted);
+          }
         }
       } catch (e) {
         console.error(e);
@@ -248,7 +347,7 @@ export default function Kdramas() {
     }, 450);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]);
+  }, [searchTerm, activeSubTab]);
 
   const handleOpenDrama = async (drama) => {
     setIsDetailsLoading(true);
@@ -263,6 +362,21 @@ export default function Kdramas() {
     setActivePlayerUrl('');
     setIsTheater(false);
     
+    if (drama.type === 'movie') {
+      try {
+        const linksRes = await queryFlix(MOVIE_LINKS_QUERY, {
+          slug: drama.slug
+        });
+        const links = (linksRes.data && linksRes.data.getMovieLinks && linksRes.data.getMovieLinks.links_online) || [];
+        setAllEpisodeLinks(links);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsDetailsLoading(false);
+      }
+      return;
+    }
+
     try {
       const res = await queryFlix(DETAIL_DORAMA_EXTRA_QUERY, {
         slug: drama.slug,
@@ -645,19 +759,51 @@ export default function Kdramas() {
         }
       `}</style>
 
-      <div className="section-header">
-        <h1 className="section-title">Kdramas en Latino 🗣️</h1>
-        <div className="controls-group">
-          <div className="search-container">
-            <span className="search-icon">🔍</span>
-            <input
-              type="text"
-              placeholder="Buscar dorama en español latino..."
-              className="search-input"
-              value={searchTerm}
-              onChange={(e) => handleSearchChange(e.target.value)}
-            />
+      <div className="section-header" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '1.25rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          <h1 className="section-title" style={{ margin: 0 }}>Kdramas en Latino 🗣️</h1>
+          <div className="controls-group">
+            <div className="search-container">
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                placeholder={activeSubTab === 'movies' ? "Buscar película en español latino..." : "Buscar dorama en español latino..."}
+                className="search-input"
+                value={searchTerm}
+                onChange={(e) => handleSearchChange(e.target.value)}
+              />
+            </div>
           </div>
+        </div>
+
+        {/* Tab Selector */}
+        <div className="filters-wrapper" style={{ margin: 0, padding: 0, display: 'flex', gap: '0.8rem' }}>
+          <button
+            type="button"
+            className={`filter-badge ${activeSubTab === 'doramas' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveSubTab('doramas');
+              setPage(1);
+              setSearchTerm('');
+              setSearchResults([]);
+              setSelectedDrama(null);
+            }}
+          >
+            🌸 Doramas / Series
+          </button>
+          <button
+            type="button"
+            className={`filter-badge ${activeSubTab === 'movies' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveSubTab('movies');
+              setPage(1);
+              setSearchTerm('');
+              setSearchResults([]);
+              setSelectedDrama(null);
+            }}
+          >
+            🎬 Películas en Latino
+          </button>
         </div>
       </div>
 
@@ -716,7 +862,7 @@ export default function Kdramas() {
 
                 <div className="card-info">
                   <span className="card-genre" style={{ color: '#c084fc' }}>
-                    🗣️ Latino
+                    {activeSubTab === 'movies' ? '🎬 Película' : '🌸 Dorama'}
                   </span>
                   <h3 className="card-title">{drama.titulo}</h3>
                   <p className="card-summary">{drama.description}</p>
@@ -729,8 +875,12 @@ export default function Kdramas() {
             ))
           ) : (
             <div className="empty-state">
-              <span className="empty-icon">🌸</span>
-              <h3 className="empty-title">No se encontraron doramas en latino</h3>
+              <span className="empty-icon">{activeSubTab === 'movies' ? '🎬' : '🌸'}</span>
+              <h3 className="empty-title">
+                {activeSubTab === 'movies' 
+                  ? 'No se encontraron películas en latino' 
+                  : 'No se encontraron doramas en latino'}
+              </h3>
               <p>Prueba buscando con palabras clave diferentes.</p>
             </div>
           )}
@@ -790,17 +940,25 @@ export default function Kdramas() {
                   </div>
                   
                   <div className="player-control-bar">
-                    <div className="control-left">
-                      <button className="control-btn" onClick={() => handleEpisodeChange(Math.max(1, activeEpisode - 1))} disabled={activeEpisode <= 1}>
-                        ◀
-                      </button>
-                      <span className="control-title" style={{ fontSize: '0.8rem' }}>
-                        Cap. {activeEpisode}
-                      </span>
-                      <button className="control-btn" onClick={() => handleEpisodeChange(Math.min(chaptersList.length, activeEpisode + 1))} disabled={activeEpisode >= chaptersList.length}>
-                        ▶
-                      </button>
-                    </div>
+                    {selectedDrama.type === 'movie' ? (
+                      <div className="control-left">
+                        <span className="control-title" style={{ fontSize: '0.85rem' }}>
+                          🎥 Película Latino
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="control-left">
+                        <button className="control-btn" onClick={() => handleEpisodeChange(Math.max(1, activeEpisode - 1))} disabled={activeEpisode <= 1}>
+                          ◀
+                        </button>
+                        <span className="control-title" style={{ fontSize: '0.8rem' }}>
+                          Cap. {activeEpisode}
+                        </span>
+                        <button className="control-btn" onClick={() => handleEpisodeChange(Math.min(chaptersList.length, activeEpisode + 1))} disabled={activeEpisode >= chaptersList.length}>
+                          ▶
+                        </button>
+                      </div>
+                    )}
 
                     <div className="control-center">
                       <select className="control-select" value="lat" disabled>
@@ -840,7 +998,7 @@ export default function Kdramas() {
                 <div className="kdrama-info-col">
                   <div className="modal-meta">
                     <span className="modal-genre" style={{ background: '#a855f7', color: '#fff' }}>
-                      🗣️ LATINO
+                      🗣️ {selectedDrama.type === 'movie' ? 'PELÍCULA LATINO' : 'DORAMA LATINO'}
                     </span>
                     <span className="modal-lang">★ 8.5</span>
                   </div>
@@ -849,74 +1007,86 @@ export default function Kdramas() {
                     {selectedDrama.description}
                   </p>
 
-                  {/* Seasons selection dropdown if multiple seasons exist */}
-                  {seasonsList.length > 1 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                      <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Seleccionar Temporada:</span>
-                      <select 
-                        className="control-select"
-                        value={activeSeason}
-                        onChange={(e) => handleSeasonChange(Number(e.target.value))}
-                        style={{ width: '100%' }}
-                      >
-                        {seasonsList.map(s => (
-                          <option key={s.season_number} value={s.season_number} style={{ background: '#0b0b14', color: '#fff' }}>
-                            Temporada {s.season_number}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Seleccionar Capítulo:</span>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', maxHeight: '140px', overflowY: 'auto', paddingRight: '0.5rem' }}>
-                      {isDetailsLoading ? (
-                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', padding: '0.5rem' }}>Cargando capítulos...</div>
-                      ) : chaptersList.length > 0 ? (
-                        chaptersList.map((epNum) => (
-                          <button
-                            key={epNum}
-                            onClick={() => handleEpisodeChange(epNum)}
-                            style={{
-                              flex: '1 0 70px',
-                              background: activeEpisode === epNum ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
-                              border: '1px solid',
-                              borderColor: activeEpisode === epNum ? 'var(--primary)' : 'var(--border-color)',
-                              color: '#fff',
-                              padding: '0.5rem',
-                              borderRadius: '8px',
-                              fontSize: '0.8rem',
-                              fontWeight: '600',
-                              cursor: 'pointer',
-                              textAlign: 'center'
-                            }}
+                  {selectedDrama.type !== 'movie' && (
+                    <>
+                      {/* Seasons selection dropdown if multiple seasons exist */}
+                      {seasonsList.length > 1 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Seleccionar Temporada:</span>
+                          <select 
+                            className="control-select"
+                            value={activeSeason}
+                            onChange={(e) => handleSeasonChange(Number(e.target.value))}
+                            style={{ width: '100%' }}
                           >
-                            Cap. {epNum}
-                          </button>
-                        ))
-                      ) : (
-                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No hay capítulos disponibles.</div>
+                            {seasonsList.map(s => (
+                              <option key={s.season_number} value={s.season_number} style={{ background: '#0b0b14', color: '#fff' }}>
+                                Temporada {s.season_number}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       )}
-                    </div>
-                  </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Seleccionar Capítulo:</span>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', maxHeight: '140px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+                          {isDetailsLoading ? (
+                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', padding: '0.5rem' }}>Cargando capítulos...</div>
+                          ) : chaptersList.length > 0 ? (
+                            chaptersList.map((epNum) => (
+                              <button
+                                key={epNum}
+                                onClick={() => handleEpisodeChange(epNum)}
+                                style={{
+                                  flex: '1 0 70px',
+                                  background: activeEpisode === epNum ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
+                                  border: '1px solid',
+                                  borderColor: activeEpisode === epNum ? 'var(--primary)' : 'var(--border-color)',
+                                  color: '#fff',
+                                  padding: '0.5rem',
+                                  borderRadius: '8px',
+                                  fontSize: '0.8rem',
+                                  fontWeight: '600',
+                                  cursor: 'pointer',
+                                  textAlign: 'center'
+                                }}
+                              >
+                                Cap. {epNum}
+                              </button>
+                            ))
+                          ) : (
+                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No hay capítulos disponibles.</div>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             )}
 
             {isTheater && (
               <div className="player-control-bar" style={{ borderRadius: 0, padding: '0.8rem 2rem' }}>
-                <div className="control-left">
-                  <button className="control-btn" onClick={() => handleEpisodeChange(Math.max(1, activeEpisode - 1))} disabled={activeEpisode <= 1}>
-                    ◀
-                  </button>
-                  <span className="control-title">
-                    {selectedDrama.titulo} - Cap. {activeEpisode}
-                  </span>
-                  <button className="control-btn" onClick={() => handleEpisodeChange(Math.min(chaptersList.length, activeEpisode + 1))} disabled={activeEpisode >= chaptersList.length}>
-                    ▶
-                  </button>
-                </div>
+                {selectedDrama.type === 'movie' ? (
+                  <div className="control-left">
+                    <span className="control-title">
+                      {selectedDrama.titulo}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="control-left">
+                    <button className="control-btn" onClick={() => handleEpisodeChange(Math.max(1, activeEpisode - 1))} disabled={activeEpisode <= 1}>
+                      ◀
+                    </button>
+                    <span className="control-title">
+                      {selectedDrama.titulo} - Cap. {activeEpisode}
+                    </span>
+                    <button className="control-btn" onClick={() => handleEpisodeChange(Math.min(chaptersList.length, activeEpisode + 1))} disabled={activeEpisode >= chaptersList.length}>
+                      ▶
+                    </button>
+                  </div>
+                )}
 
                 <div className="control-center">
                   <select className="control-select" value="lat" disabled>
