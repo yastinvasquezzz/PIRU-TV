@@ -23,18 +23,14 @@ async function handleRequest(request) {
     });
   }
 
-  // 1. Proxy GET/POST requests for primeload.co (stripping CSP to bypass ERR_BLOCKED_BY_RESPONSE)
-  const isPrimeload = path.startsWith('/embed/') || 
-                       path.startsWith('/player/') || 
-                       path.startsWith('/player-dist/') || 
-                       path.startsWith('/api/v1') ||
-                       url.searchParams.has('primeload');
+  // 1. If it's NOT the root path, proxy to primeload.co (stripping CSP to bypass ERR_BLOCKED_BY_RESPONSE)
+  const isGraphQL = path === '/';
 
-  if (isPrimeload) {
+  if (!isGraphQL) {
     const targetHost = 'primeload.co';
     const targetUrl = `https://${targetHost}${path}${url.search}`;
     
-    // Copy headers and filter out host/referer
+    // Copy headers and filter out host/referer/origin
     const newHeaders = new Headers(request.headers);
     newHeaders.set('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
     newHeaders.delete('host');
@@ -89,7 +85,7 @@ async function handleRequest(request) {
     });
   }
 
-  // 2. Default: GraphQL API Proxy for Doramasflix
+  // 2. Default (Root Path): GraphQL API Proxy for Doramasflix
   if (request.method !== 'POST') {
     return new Response('Method not allowed', { status: 405 });
   }

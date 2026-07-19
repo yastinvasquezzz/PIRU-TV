@@ -30,6 +30,22 @@ export default defineConfig({
             proxyRes.headers['access-control-allow-origin'] = '*';
           });
         }
+      },
+      '/player-dist': {
+        target: 'https://primeload.co',
+        changeOrigin: true,
+        secure: true,
+      },
+      '/socket.io': {
+        target: 'https://primeload.co',
+        changeOrigin: true,
+        secure: true,
+        ws: true
+      },
+      '/api/v1': {
+        target: 'https://primeload.co',
+        changeOrigin: true,
+        secure: true,
       }
     }
   }
