@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import useDpadNavigation from '../hooks/useDpadNavigation';
+import { SkeletonGrid } from './SkeletonLoader';
+import { saveWatchProgress } from '../utils/storage';
 import catalogData from '../data/catalog.json';
 import dramasData from '../data/dramas.json';
 
@@ -129,6 +132,30 @@ export default function Peliculas() {
   const [latinoMovieTotalPages, setLatinoMovieTotalPages] = useState(1);
   const [latinoMovieLinks, setLatinoMovieLinks] = useState([]);
   const [activeLatinoServer, setActiveLatinoServer] = useState(null);
+
+  // Handle Smart TV D-Pad Remote Back button
+  useDpadNavigation({
+    onBack: () => {
+      if (selectedItem) {
+        setSelectedItem(null);
+        setIsPlaying(false);
+      }
+    }
+  });
+
+  // Persist watch progress
+  useEffect(() => {
+    if (selectedItem && isPlaying) {
+      saveWatchProgress({
+        id: selectedItem.id,
+        titulo: selectedItem.title,
+        portada: selectedItem.poster,
+        type: selectedItem.type,
+        season: selectedSeason,
+        episode: selectedEpisode
+      });
+    }
+  }, [selectedItem, isPlaying, selectedSeason, selectedEpisode]);
 
   // Combine categories: Home + catalog genres + Dramas Chinos
   const categories = useMemo(() => {
@@ -754,10 +781,7 @@ export default function Peliculas() {
         // CATEGORY VIEW GRID
         <div className="category-results">
           {isLoading && currentItems.length === 0 ? (
-            <div className="empty-state">
-              <div className="player-loading-spinner" style={{ position: 'relative', margin: '0 auto 1.5rem' }}></div>
-              <h3 className="empty-title">Cargando categoría...</h3>
-            </div>
+            <SkeletonGrid count={12} />
           ) : (
             <>
               <div className="media-grid">

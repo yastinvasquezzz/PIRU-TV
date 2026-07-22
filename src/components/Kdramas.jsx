@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import useDpadNavigation from '../hooks/useDpadNavigation';
+import { SkeletonGrid } from './SkeletonLoader';
+import { saveWatchProgress } from '../utils/storage';
 
 const SEARCH_FLIX_QUERY = `
   query searchDorama($input: String!) {
@@ -238,6 +241,31 @@ export default function Kdramas() {
   const [isTheater, setIsTheater] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
+
+  // Handle Smart TV D-Pad Remote Back button
+  useDpadNavigation({
+    onBack: () => {
+      if (isTheater) {
+        setIsTheater(false);
+      } else if (selectedDrama) {
+        setSelectedDrama(null);
+      }
+    }
+  });
+
+  // Track & persist watch history
+  useEffect(() => {
+    if (selectedDrama && activePlayerUrl) {
+      saveWatchProgress({
+        id: selectedDrama.id,
+        titulo: selectedDrama.titulo,
+        portada: selectedDrama.portada,
+        type: 'kdrama',
+        season: activeSeason,
+        episode: activeEpisode
+      });
+    }
+  }, [selectedDrama, activePlayerUrl, activeSeason, activeEpisode]);
 
   // Load catalog doramas or movies (Latino only or Subtitled)
   useEffect(() => {
@@ -878,10 +906,7 @@ export default function Kdramas() {
       </div>
 
       {isLoading && itemsToRender.length === 0 ? (
-        <div className="empty-state" style={{ minHeight: '40vh' }}>
-          <div className="player-loading-spinner" style={{ position: 'relative', margin: '0 auto 1.5rem' }}></div>
-          <h3 className="empty-title">Cargando catálogo...</h3>
-        </div>
+        <SkeletonGrid count={12} />
       ) : (
         <div className="media-grid">
           {itemsToRender.length > 0 ? (

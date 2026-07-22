@@ -1,4 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import useDpadNavigation from '../hooks/useDpadNavigation';
+import { saveWatchProgress } from '../utils/storage';
 
 /* --- Curated Data --- */
 
@@ -225,6 +227,27 @@ export default function TvLibre() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('Todos');
   const [selectedChannel, setSelectedChannel] = useState(null);
+
+  // Handle Smart TV D-Pad Remote Back button
+  useDpadNavigation({
+    onBack: () => {
+      if (selectedChannel) {
+        setSelectedChannel(null);
+      }
+    }
+  });
+
+  // Track & persist TV channel watch history
+  useEffect(() => {
+    if (selectedChannel) {
+      saveWatchProgress({
+        id: selectedChannel.url,
+        titulo: selectedChannel.name,
+        portada: selectedChannel.logo || 'https://via.placeholder.com/160x240?text=TV',
+        type: 'tv'
+      });
+    }
+  }, [selectedChannel]);
 
   const { channels, loading, error } = useM3uParser('https://iptv-org.github.io/iptv/languages/spa.m3u');
 
