@@ -3,6 +3,7 @@ import useDpadNavigation from './hooks/useDpadNavigation';
 import { SkeletonGrid } from './components/SkeletonLoader';
 import WelcomeConfirmedModal from './components/WelcomeConfirmedModal';
 import { supabase } from './lib/supabase';
+import { getSelectedAvatar } from './utils/avatars';
 
 const Peliculas = lazy(() => import('./components/Peliculas'));
 const TvLibre = lazy(() => import('./components/TvLibre'));
@@ -14,6 +15,15 @@ function App() {
   const [activeTab, setActiveTab] = useState('peliculas');
   const [isWelcomeOpen, setIsWelcomeOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [avatar, setAvatar] = useState(getSelectedAvatar());
+
+  useEffect(() => {
+    // Keep avatar synced
+    const interval = setInterval(() => {
+      setAvatar(getSelectedAvatar());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     // Check if coming from email confirmation link
@@ -90,7 +100,7 @@ function App() {
             onClick={() => setActiveTab('mi-cuenta')}
             tabIndex={0}
           >
-            👤 {user ? (user.email.split('@')[0]) : 'Mi Cuenta'}
+            {user ? avatar.emoji : '👤'} {user ? (user.email.split('@')[0]) : 'Mi Cuenta'}
           </button>
         </nav>
 
@@ -113,7 +123,7 @@ function App() {
               transition: 'var(--transition-fast)'
             }}
           >
-            <span>{user ? '👤' : '🔐'}</span>
+            <span>{user ? avatar.emoji : '🔐'}</span>
             <span>{user ? (user.email.split('@')[0]) : 'Mi Cuenta'}</span>
           </button>
         </div>

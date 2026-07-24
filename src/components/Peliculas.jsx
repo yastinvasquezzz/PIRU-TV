@@ -110,10 +110,41 @@ export default function Peliculas() {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   
-  const [tmdbCache, setTmdbCache] = useState({});
-  const [discoverCache, setDiscoverCache] = useState({}); // Cache for TMDB discover results
+  const [tmdbCache, setTmdbCache] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('piru_tmdb_cache');
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) {
+      return {};
+    }
+  });
+  const [discoverCache, setDiscoverCache] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('piru_discover_cache');
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) {
+      return {};
+    }
+  });
   const [categoryPages, setCategoryPages] = useState({}); // Current loaded page for each category
   const [selectedItem, setSelectedItem] = useState(null);
+
+  // Persist caches to sessionStorage for 0ms instant category switches
+  useEffect(() => {
+    try {
+      if (Object.keys(tmdbCache).length > 0) {
+        sessionStorage.setItem('piru_tmdb_cache', JSON.stringify(tmdbCache));
+      }
+    } catch (e) {}
+  }, [tmdbCache]);
+
+  useEffect(() => {
+    try {
+      if (Object.keys(discoverCache).length > 0) {
+        sessionStorage.setItem('piru_discover_cache', JSON.stringify(discoverCache));
+      }
+    } catch (e) {}
+  }, [discoverCache]);
   
   // Dashboard special items
   const [heroItem, setHeroItem] = useState(null);
