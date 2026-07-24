@@ -1,7 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import useDpadNavigation from './hooks/useDpadNavigation';
 import { SkeletonGrid } from './components/SkeletonLoader';
-import AuthModal from './components/AuthModal';
 import WelcomeConfirmedModal from './components/WelcomeConfirmedModal';
 import { supabase } from './lib/supabase';
 
@@ -9,10 +8,10 @@ const Peliculas = lazy(() => import('./components/Peliculas'));
 const TvLibre = lazy(() => import('./components/TvLibre'));
 const Kdramas = lazy(() => import('./components/Kdramas'));
 const MiLista = lazy(() => import('./components/MiLista'));
+const MiCuenta = lazy(() => import('./components/MiCuenta'));
 
 function App() {
   const [activeTab, setActiveTab] = useState('peliculas');
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isWelcomeOpen, setIsWelcomeOpen] = useState(false);
   const [user, setUser] = useState(null);
 
@@ -41,9 +40,7 @@ function App() {
   // Handle Smart TV Remote Control (Back button / ESC key)
   useDpadNavigation({
     onBack: () => {
-      if (isAuthOpen) {
-        setIsAuthOpen(false);
-      } else if (activeTab !== 'peliculas') {
+      if (activeTab !== 'peliculas') {
         setActiveTab('peliculas');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
@@ -88,11 +85,18 @@ function App() {
           >
             ❤️ Mi Lista
           </button>
+          <button 
+            className={`nav-tab ${activeTab === 'mi-cuenta' ? 'active' : ''}`}
+            onClick={() => setActiveTab('mi-cuenta')}
+            tabIndex={0}
+          >
+            👤 {user ? (user.email.split('@')[0]) : 'Mi Cuenta'}
+          </button>
         </nav>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <button
-            onClick={() => setIsAuthOpen(true)}
+            onClick={() => setActiveTab('mi-cuenta')}
             style={{
               background: user ? 'rgba(34, 197, 94, 0.15)' : 'rgba(255, 255, 255, 0.08)',
               border: `1px solid ${user ? '#22c55e' : 'var(--glass-border)'}`,
@@ -125,6 +129,7 @@ function App() {
           {activeTab === 'tv-libre' && <TvLibre />}
           {activeTab === 'kdramas' && <Kdramas />}
           {activeTab === 'mi-lista' && <MiLista />}
+          {activeTab === 'mi-cuenta' && <MiCuenta />}
         </Suspense>
       </main>
 
@@ -173,13 +178,18 @@ function App() {
           <span className="mobile-nav-icon">❤️</span>
           <span className="mobile-nav-label">Mi Lista</span>
         </button>
+        <button 
+          className={`mobile-nav-item ${activeTab === 'mi-cuenta' ? 'active' : ''}`}
+          onClick={() => {
+            setActiveTab('mi-cuenta');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          tabIndex={0}
+        >
+          <span className="mobile-nav-icon">👤</span>
+          <span className="mobile-nav-label">Cuenta</span>
+        </button>
       </nav>
-
-      <AuthModal
-        isOpen={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)}
-        onAuthChange={(user) => setUser(user)}
-      />
 
       <WelcomeConfirmedModal
         isOpen={isWelcomeOpen}
