@@ -52,53 +52,109 @@ const parseTdtChannels = (rawJson, mediaType) => {
   return processed;
 };
 
-function VideoPlayer({ streamUrl, poster, isAudio }) {
+function VideoPlayer({ streamUrl, poster, isAudio, format, webUrl }) {
   const videoRef = useRef(null);
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Upgrade http:// to https:// to prevent browser Mixed Content blocking on Vercel
+  const cleanUrl = useMemo(() => {
+    if (!streamUrl) return '';
+    let url = streamUrl.trim();
+    if (url.startsWith('http://')) {
+      url = url.replace('http://', 'https://');
+    }
+    return url;
+  }, [streamUrl]);
+
+  const isEmbed = useMemo(() => {
+    if (!cleanUrl) return false;
+    if (format === 'embed') return true;
+    return cleanUrl.includes('youtube.com') || cleanUrl.includes('youtu.be') || cleanUrl.includes('dailymotion') || cleanUrl.includes('embed');
+  }, [cleanUrl, format]);
 
   useEffect(() => {
     let hlsInstance = null;
     setError(false);
     setIsLoading(true);
 
+    if (isEmbed) {
+      setIsLoading(false);
+      return;
+    }
+
     const videoElement = videoRef.current;
-    if (!videoElement || !streamUrl) return;
+    if (!videoElement || !cleanUrl) return;
+
+    // 6-second timeout fallback if stream hangs or CORS fails silently
+    const timeoutTimer = setTimeout(() => {
+      if (isLoading) {
+        console.warn('TDT Stream playback timeout for URL:', cleanUrl);
+        setIsLoading(false);
+        setError(true);
+      }
+    }, 6000);
+
+    const handleSuccess = () => {
+      clearTimeout(timeoutTimer);
+      setIsLoading(false);
+      setError(false);
+    };
+
+    const handleError = () => {
+      clearTimeout(timeoutTimer);
+      setIsLoading(false);
+      setError(true);
+    };
 
     if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-      videoElement.src = streamUrl;
-      videoElement.play().catch(() => {});
-      setIsLoading(false);
+      videoElement.src = cleanUrl;
+      videoElement.play().then(handleSuccess).catch(handleError);
     } else if (window.Hls && window.Hls.isSupported()) {
       hlsInstance = new window.Hls({
         enableWorker: true,
         lowLatencyMode: true,
-        backBufferLength: 90
+        backBufferLength: 60,
+        manifestLoadingTimeOut: 8000,
+        manifestLoadingMaxRetry: 2
       });
-      hlsInstance.loadSource(streamUrl);
+      hlsInstance.loadSource(cleanUrl);
       hlsInstance.attachMedia(videoElement);
       hlsInstance.on(window.Hls.Events.MANIFEST_PARSED, () => {
-        setIsLoading(false);
-        videoElement.play().catch(() => {});
+        handleSuccess();
+        videoElement.play().catch(handleError);
       });
       hlsInstance.on(window.Hls.Events.ERROR, (_event, data) => {
         if (data.fatal) {
           console.warn('HLS Fatal Error:', data);
-          setError(true);
-          setIsLoading(false);
+          handleError();
         }
       });
     } else {
-      videoElement.src = streamUrl;
-      setIsLoading(false);
+      videoElement.src = cleanUrl;
+      videoElement.play().then(handleSuccess).catch(handleError);
     }
 
     return () => {
+      clearTimeout(timeoutTimer);
       if (hlsInstance) {
         hlsInstance.destroy();
       }
     };
-  }, [streamUrl]);
+  }, [cleanUrl, isEmbed]);
+
+  if (isEmbed) {
+    return (
+      <iframe
+        src={cleanUrl}
+        className="player-iframe"
+        allowFullScreen
+        allow="autoplay; encrypted-media"
+        title="Canal TDT"
+        style={{ width: '100%', height: '100%', border: 'none' }}
+      />
+    );
+  }
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', borderRadius: '12px', overflow: 'hidden' }}>
@@ -110,12 +166,35 @@ function VideoPlayer({ streamUrl, poster, isAudio }) {
       )}
 
       {error ? (
-        <div style={{ padding: '2rem', textAlign: 'center', color: '#fca5a5' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>⚠️</div>
-          <h4 style={{ margin: 0, color: '#fff' }}>No se pudo cargar la reproducción directa</h4>
-          <p style={{ fontSize: '0.85rem', marginTop: '0.4rem', color: '#aaa' }}>
-            Prueba seleccionando otra opción de emisión o transmite con Web Video Caster.
+        <div style={{ padding: '2rem 1.5rem', textAlign: 'center', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', background: 'linear-gradient(135deg, rgba(20,20,32,0.98), rgba(10,10,18,0.99))' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>📺</div>
+          <h4 style={{ margin: '0 0 0.5rem 0', color: '#fff', fontFamily: 'var(--font-title)', fontSize: '1.2rem' }}>
+            Señal con Restricción de Origen (CORS / Geobloqueo)
+          </h4>
+          <p style={{ fontSize: '0.88rem', color: '#cbd5e1', maxWidth: '480px', lineHeight: '1.5', margin: '0 0 1.25rem 0' }}>
+            Este canal bloquea la reproducción directa en navegador web. Transmítelo a tu Smart TV con <strong>Web Video Caster</strong> o abre su sitio oficial.
           </p>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button
+              type="button"
+              className="btn-primary"
+              style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', border: 'none', padding: '0.75rem 1.25rem', borderRadius: '10px', fontSize: '0.88rem', fontWeight: 800 }}
+              onClick={() => castWithWebVideoCaster(streamUrl, 'Canal TDT')}
+            >
+              📱 Transmitir a TV (Web Video Caster)
+            </button>
+            {webUrl && (
+              <a
+                href={webUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-hero-info"
+                style={{ padding: '0.75rem 1.25rem', borderRadius: '10px', fontSize: '0.88rem', textDecoration: 'none' }}
+              >
+                🌐 Abrir Sitio Oficial
+              </a>
+            )}
+          </div>
         </div>
       ) : isAudio ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', padding: '2rem' }}>
@@ -440,6 +519,8 @@ export default function TvLibre() {
                 streamUrl={activeStreamUrl} 
                 poster={selectedChannel.logo} 
                 isAudio={mediaType === 'radio'} 
+                format={activeOption?.format}
+                webUrl={selectedChannel.web}
               />
             </div>
 
