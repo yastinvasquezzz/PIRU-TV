@@ -7,6 +7,21 @@ import { SkeletonGrid } from './SkeletonLoader';
 const TDT_TV_API = 'https://www.tdtchannels.com/lists/tv.json';
 const TDT_RADIO_API = 'https://www.tdtchannels.com/lists/radio.json';
 
+const TDT_LISTS = {
+  tv: [
+    { format: 'JSON', url: 'https://www.tdtchannels.com/lists/tv.json', desc: 'Para usar con la app TDTChannels en iOS y Android.' },
+    { format: 'M3U8', url: 'https://www.tdtchannels.com/lists/tv.m3u8', desc: 'Formato recomendado para IPTV (VLC, Kodi, Tivimate).' },
+    { format: 'M3U', url: 'https://www.tdtchannels.com/lists/tv.m3u', desc: 'Alternativa si tu reproductor no admite M3U8.' },
+    { format: 'Enigma2', url: 'https://www.tdtchannels.com/lists/userbouquet.tdtchannels.tv', desc: 'Lista específica para decodificadores (Dreambox, Vu+, Octagon).' }
+  ],
+  radio: [
+    { format: 'JSON', url: 'https://www.tdtchannels.com/lists/radio.json', desc: 'Para usar con la app TDTChannels en iOS y Android.' },
+    { format: 'M3U8', url: 'https://www.tdtchannels.com/lists/radio.m3u8', desc: 'Ideal para reproductores de streaming o apps compatibles.' },
+    { format: 'M3U', url: 'https://www.tdtchannels.com/lists/radio.m3u', desc: 'Alternativa para reproductores antiguos.' },
+    { format: 'Enigma2', url: 'https://www.tdtchannels.com/lists/userbouquet.tdtchannels_radio.tv', desc: 'Lista compatible con receptores Enigma2 para radio.' }
+  ]
+};
+
 function VideoPlayer({ streamUrl, poster, isAudio }) {
   const videoRef = useRef(null);
   const [error, setError] = useState(false);
@@ -20,13 +35,11 @@ function VideoPlayer({ streamUrl, poster, isAudio }) {
     const videoElement = videoRef.current;
     if (!videoElement || !streamUrl) return;
 
-    // Direct browser HLS support (Safari, iOS, Mac)
     if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
       videoElement.src = streamUrl;
       videoElement.play().catch(() => {});
       setIsLoading(false);
     } else if (window.Hls && window.Hls.isSupported()) {
-      // Hls.js fallback for Chrome, Firefox, Edge, Opera
       hlsInstance = new window.Hls({
         enableWorker: true,
         lowLatencyMode: true,
@@ -46,7 +59,6 @@ function VideoPlayer({ streamUrl, poster, isAudio }) {
         }
       });
     } else {
-      // Fallback native video tag
       videoElement.src = streamUrl;
       setIsLoading(false);
     }
@@ -99,6 +111,7 @@ export default function TvLibre() {
   const [tvChannels, setTvChannels] = useState([]);
   const [radioChannels, setRadioChannels] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showListsInfo, setShowListsInfo] = useState(false);
 
   const [activeAmbit, setActiveAmbit] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
@@ -214,14 +227,33 @@ export default function TvLibre() {
       <div className="category-header">
         <div>
           <h1 className="section-title" style={{ margin: 0 }}>
-            {mediaType === 'tv' ? '📺 Televisión Abierta TDT' : '📻 Emisoras de Radio TDT'}
+            {mediaType === 'tv' ? '📺 Televisión TDTChannels' : '📻 Emisoras de Radio TDTChannels'}
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.3rem' }}>
-            Señales oficiales en vivo de TDTChannels en abierto para España e Internacional
+            Disfruta de los canales de televisión y radio en abierto de forma gratuita con la API de TDTChannels
           </p>
         </div>
 
         <div className="controls-group" style={{ flexWrap: 'wrap', gap: '1rem' }}>
+          {/* Toggle Lists Box */}
+          <button
+            type="button"
+            onClick={() => setShowListsInfo(!showListsInfo)}
+            style={{
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid var(--border-color)',
+              color: '#fff',
+              padding: '0.65rem 1.1rem',
+              borderRadius: '12px',
+              fontFamily: 'var(--font-title)',
+              fontWeight: 700,
+              fontSize: '0.88rem',
+              cursor: 'pointer'
+            }}
+          >
+            📋 {showListsInfo ? 'Ocultar Listas M3U8/JSON' : 'Ver Listas M3U8 / JSON / IPTV'}
+          </button>
+
           {/* Mode Switcher: TV vs Radio */}
           <div style={{ display: 'flex', background: 'rgba(255, 255, 255, 0.06)', padding: '0.3rem', borderRadius: '14px', border: '1px solid var(--border-color)' }}>
             <button
@@ -277,6 +309,66 @@ export default function TvLibre() {
           </div>
         </div>
       </div>
+
+      {/* TDTChannels Official Playlists Info Box */}
+      {showListsInfo && (
+        <div 
+          style={{
+            background: 'linear-gradient(145deg, rgba(20, 20, 32, 0.95) 0%, rgba(10, 10, 18, 0.98) 100%)',
+            border: '1px solid rgba(255, 255, 255, 0.12)',
+            borderRadius: '20px',
+            padding: '1.75rem',
+            marginBottom: '2rem',
+            boxShadow: '0 15px 35px rgba(0, 0, 0, 0.8)'
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h3 style={{ fontFamily: 'var(--font-title)', fontSize: '1.2rem', color: '#fff', margin: 0 }}>
+              📡 Listas Oficiales de TDTChannels ({mediaType === 'tv' ? 'Televisión' : 'Radio'})
+            </h3>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Fuente abierta GitHub / TDTChannels</span>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+            {TDT_LISTS[mediaType].map((item, idx) => (
+              <div 
+                key={idx}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '14px',
+                  padding: '1rem'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                  <span style={{ fontWeight: 800, color: '#e50914', fontSize: '0.9rem' }}>{item.format}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(item.url);
+                      alert(`¡Enlace ${item.format} copiado al portapapeles!`);
+                    }}
+                    style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', borderRadius: '6px', padding: '0.2rem 0.5rem', fontSize: '0.75rem', cursor: 'pointer' }}
+                  >
+                    📋 Copiar
+                  </button>
+                </div>
+                <p style={{ fontSize: '0.8rem', color: '#cbd5e1', margin: '0 0 0.6rem 0', lineHeight: '1.4' }}>
+                  {item.desc}
+                </p>
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ fontSize: '0.78rem', color: '#60a5fa', wordBreak: 'break-all', textDecoration: 'none' }}
+                >
+                  {item.url}
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Ambits / Category Filter Badges */}
       <div className="filters-wrapper" style={{ margin: '0 0 2rem 0', display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
