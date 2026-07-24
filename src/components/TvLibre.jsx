@@ -52,10 +52,11 @@ const parseTdtChannels = (rawJson, mediaType) => {
   return processed;
 };
 
-function VideoPlayer({ streamUrl, poster, isAudio, format, webUrl }) {
+function VideoPlayer({ streamUrl, poster, isAudio, format, webUrl, onErrorAutoNext }) {
   const videoRef = useRef(null);
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [useProxy, setUseProxy] = useState(false);
 
   // Upgrade http:// to https:// to prevent browser Mixed Content blocking on Vercel
   const cleanUrl = useMemo(() => {
@@ -64,8 +65,11 @@ function VideoPlayer({ streamUrl, poster, isAudio, format, webUrl }) {
     if (url.startsWith('http://')) {
       url = url.replace('http://', 'https://');
     }
+    if (useProxy) {
+      return `https://corsproxy.io/?url=${encodeURIComponent(url)}`;
+    }
     return url;
-  }, [streamUrl]);
+  }, [streamUrl, useProxy]);
 
   const isEmbed = useMemo(() => {
     if (!cleanUrl) return false;
@@ -86,14 +90,19 @@ function VideoPlayer({ streamUrl, poster, isAudio, format, webUrl }) {
     const videoElement = videoRef.current;
     if (!videoElement || !cleanUrl) return;
 
-    // 6-second timeout fallback if stream hangs or CORS fails silently
+    // 3.5-second timeout fallback: if Option 1 fails or CORS blocks, auto-switch to next option
     const timeoutTimer = setTimeout(() => {
       if (isLoading) {
         console.warn('TDT Stream playback timeout for URL:', cleanUrl);
-        setIsLoading(false);
-        setError(true);
+        if (!useProxy && !cleanUrl.includes('corsproxy')) {
+          setUseProxy(true); // Retry with CORS proxy
+        } else {
+          setIsLoading(false);
+          setError(true);
+          if (onErrorAutoNext) onErrorAutoNext();
+        }
       }
-    }, 6000);
+    }, 3500);
 
     const handleSuccess = () => {
       clearTimeout(timeoutTimer);
@@ -103,8 +112,13 @@ function VideoPlayer({ streamUrl, poster, isAudio, format, webUrl }) {
 
     const handleError = () => {
       clearTimeout(timeoutTimer);
-      setIsLoading(false);
-      setError(true);
+      if (!useProxy && !cleanUrl.includes('corsproxy')) {
+        setUseProxy(true); // Retry with CORS proxy
+      } else {
+        setIsLoading(false);
+        setError(true);
+        if (onErrorAutoNext) onErrorAutoNext();
+      }
     };
 
     if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
@@ -115,8 +129,11 @@ function VideoPlayer({ streamUrl, poster, isAudio, format, webUrl }) {
         enableWorker: true,
         lowLatencyMode: true,
         backBufferLength: 60,
-        manifestLoadingTimeOut: 8000,
-        manifestLoadingMaxRetry: 2
+        manifestLoadingTimeOut: 5000,
+        manifestLoadingMaxRetry: 1,
+        xhrSetup: function (xhr) {
+          xhr.withCredentials = false;
+        }
       });
       hlsInstance.loadSource(cleanUrl);
       hlsInstance.attachMedia(videoElement);
@@ -141,7 +158,7 @@ function VideoPlayer({ streamUrl, poster, isAudio, format, webUrl }) {
         hlsInstance.destroy();
       }
     };
-  }, [cleanUrl, isEmbed]);
+  }, [cleanUrl, isEmbed, useProxy]);
 
   if (isEmbed) {
     return (
@@ -521,6 +538,12 @@ export default function TvLibre() {
                 isAudio={mediaType === 'radio'} 
                 format={activeOption?.format}
                 webUrl={selectedChannel.web}
+                onErrorAutoNext={() => {
+                  if (selectedChannel.options && selectedOptionIndex + 1 < selectedChannel.options.length) {
+                    console.log('Auto-switching to next TDT option:', selectedOptionIndex + 1);
+                    setSelectedOptionIndex(prev => prev + 1);
+                  }
+                }}
               />
             </div>
 
