@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import useDpadNavigation from '../hooks/useDpadNavigation';
 import { saveWatchProgress } from '../utils/storage';
+import { castWithWebVideoCaster } from '../utils/wvcCast';
 
 /* --- Curated Data --- */
 
@@ -394,6 +395,24 @@ export default function TvLibre() {
                 URL del stream: {selectedChannel.url}
               </p>
               
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', margin: '1rem 0' }}>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{
+                    padding: '0.75rem 1.5rem',
+                    fontSize: '0.95rem',
+                    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                    border: 'none',
+                    color: '#ffffff',
+                    boxShadow: '0 4px 15px rgba(245, 158, 11, 0.45)'
+                  }}
+                  onClick={() => castWithWebVideoCaster(selectedChannel.url, selectedChannel.name)}
+                >
+                  📱 Transmitir Canal a TV (Web Video Caster)
+                </button>
+              </div>
+
               <div className="fallback-box">
                 <div>
                   <strong style={{ color: '#fff', display: 'block', marginBottom: '0.2rem' }}>

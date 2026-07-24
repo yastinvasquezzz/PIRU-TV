@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import useDpadNavigation from '../hooks/useDpadNavigation';
 import { SkeletonGrid } from './SkeletonLoader';
 import { saveWatchProgress, toggleFavorite, isFavorite } from '../utils/storage';
+import { castWithWebVideoCaster } from '../utils/wvcCast';
 import catalogData from '../data/catalog.json';
 import dramasData from '../data/dramas.json';
 
@@ -1136,7 +1137,7 @@ export default function Peliculas() {
               <h2 className="modal-title">{selectedItem.title}</h2>
               <p className="modal-summary">{selectedItem.overview}</p>
 
-              <div style={{ display: 'flex', gap: '1rem', margin: '1.25rem 0' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', margin: '1.25rem 0' }}>
                 <button
                   type="button"
                   className="btn-primary"
@@ -1155,6 +1156,26 @@ export default function Peliculas() {
                   }}
                 >
                   {isFavorite(selectedItem.id) ? '❤️ En Mi Lista' : '🤍 Agregar a Mi Lista'}
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{
+                    flex: 'none',
+                    padding: '0.75rem 1.5rem',
+                    fontSize: '0.95rem',
+                    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                    border: 'none',
+                    color: '#ffffff',
+                    boxShadow: '0 4px 15px rgba(245, 158, 11, 0.45)'
+                  }}
+                  onClick={() => {
+                    const urlToCast = embedUrl || window.location.href;
+                    castWithWebVideoCaster(urlToCast, selectedItem.title);
+                  }}
+                >
+                  📱 Transmitir a TV (Web Video Caster)
                 </button>
               </div>
               

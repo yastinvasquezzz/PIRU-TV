@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import useDpadNavigation from '../hooks/useDpadNavigation';
 import { SkeletonGrid } from './SkeletonLoader';
 import { saveWatchProgress, toggleFavorite, isFavorite } from '../utils/storage';
+import { castWithWebVideoCaster } from '../utils/wvcCast';
 
 const SEARCH_FLIX_QUERY = `
   query searchDorama($input: String!) {
@@ -1138,6 +1139,16 @@ export default function Kdramas() {
                         }}
                       >
                         {isFavorite(selectedDrama.id) ? '❤️ En Mi Lista' : '🤍 Mi Lista'}
+                      </button>
+                      <button 
+                        className="control-btn" 
+                        style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', borderColor: '#f59e0b', color: '#fff' }}
+                        onClick={() => {
+                          const urlToCast = activePlayerUrl || window.location.href;
+                          castWithWebVideoCaster(urlToCast, selectedDrama.titulo);
+                        }}
+                      >
+                        📱 Transmitir (WVC)
                       </button>
                       <button className="control-btn" onClick={() => setIsTheater(true)}>
                         📺 Cine
