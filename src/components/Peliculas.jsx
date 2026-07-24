@@ -459,19 +459,19 @@ export default function Peliculas() {
       }));
     }
 
-    // Curated items first
+    const activePage = categoryPages[activeCategory] || 1;
     const curatedRefs = catalogData[activeCategory] || [];
     const curated = curatedRefs.map(item => tmdbCache[`${item.type}-${item.id}`]).filter(Boolean);
 
-    // Discover results second
     const discovered = discoverCache[activeCategory] || [];
-
-    // Filter out duplicates (curated items shouldn't appear in discover)
     const curatedIds = new Set(curated.map(c => c.id));
     const filteredDiscovered = discovered.filter(d => !curatedIds.has(d.id));
 
-    return [...curated, ...filteredDiscovered];
-  }, [activeCategory, tmdbCache, discoverCache, latinoMovies]);
+    const allCombined = [...curated, ...filteredDiscovered];
+    const itemsPerPage = 16;
+    const startIndex = (activePage - 1) * itemsPerPage;
+    return allCombined.slice(startIndex, startIndex + itemsPerPage);
+  }, [activeCategory, tmdbCache, discoverCache, latinoMovies, categoryPages]);
 
   // Open modal handler
   const handleOpenItem = async (item) => {
@@ -807,7 +807,7 @@ export default function Peliculas() {
                         onClick={() => handleOpenItem(item)}
                         style={{ textAlign: 'left', font: 'inherit', color: 'inherit', padding: 0 }}
                       >
-                        <div className="card-thumbnail-wrapper" style={{ aspectRatio: '2/3', width: '150px' }}>
+                        <div className="card-thumbnail-wrapper" style={{ aspectRatio: '2/3', width: '100%' }}>
                           <img 
                             src={item.poster} 
                             alt={item.title} 
@@ -825,8 +825,8 @@ export default function Peliculas() {
                             <div className="play-icon">▶</div>
                           </button>
                         </div>
-                        <div className="card-info" style={{ width: '150px', padding: '0.5rem 0 0' }}>
-                          <h4 className="card-title" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.title}</h4>
+                        <div className="card-info" style={{ width: '100%', padding: '0.75rem 0.6rem 0.6rem' }}>
+                          <h4 className="card-title" style={{ fontSize: '0.88rem', margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{item.title}</h4>
                         </div>
                       </button>
                     ))}
@@ -896,63 +896,71 @@ export default function Peliculas() {
                   </div>
                 )}
               </div>
-              {activeCategory !== 'Dramas Chinos' && currentItems.length > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '0.4rem', margin: '2.5rem 0 1rem' }}>
-                  {Array.from({ length: (categoryPages[activeCategory] || 1) + 1 }, (_, i) => i + 1).map(pageNum => (
+              {activeCategory !== 'Dramas Chinos' && (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', margin: '3rem 0 1rem' }}>
+                  {[1, 2, 3, 4, 5].map(pageNum => (
                     <button
                       key={pageNum}
                       onClick={() => {
                         setSelectedItem(null);
                         setIsPlaying(false);
-                        setCategoryPages(prev => ({
-                          ...prev,
-                          [activeCategory]: pageNum
-                        }));
+                        if (activeCategory === LATINO_MOVIES_CAT) {
+                          setLatinoMoviePage(pageNum);
+                        } else {
+                          setCategoryPages(prev => ({
+                            ...prev,
+                            [activeCategory]: pageNum
+                          }));
+                        }
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
                       disabled={isLoading}
                       style={{
-                        background: (categoryPages[activeCategory] || 1) === pageNum
-                          ? 'linear-gradient(135deg, #6c63ff, #9b59b6)'
+                        background: (activeCategory === LATINO_MOVIES_CAT ? latinoMoviePage : (categoryPages[activeCategory] || 1)) === pageNum
+                          ? 'linear-gradient(135deg, #e50914, #9333ea)'
                           : 'rgba(255, 255, 255, 0.05)',
                         border: '1px solid var(--border-color)',
                         color: '#fff',
-                        padding: '0.5rem 1rem',
-                        borderRadius: '8px',
+                        padding: '0.6rem 1.1rem',
+                        borderRadius: '10px',
                         cursor: isLoading ? 'not-allowed' : 'pointer',
-                        fontSize: '0.9rem',
-                        fontWeight: (categoryPages[activeCategory] || 1) === pageNum ? '700' : '400',
+                        fontSize: '0.95rem',
+                        fontWeight: '700',
+                        boxShadow: (activeCategory === LATINO_MOVIES_CAT ? latinoMoviePage : (categoryPages[activeCategory] || 1)) === pageNum ? '0 4px 15px rgba(229, 9, 20, 0.4)' : 'none',
                         transition: 'all 0.2s ease'
                       }}
                     >
                       {pageNum}
                     </button>
                   ))}
-                  {!isLoading && (
-                    <button
-                      onClick={() => {
-                        setSelectedItem(null);
-                        setIsPlaying(false);
+                  <button
+                    onClick={() => {
+                      setSelectedItem(null);
+                      setIsPlaying(false);
+                      if (activeCategory === LATINO_MOVIES_CAT) {
+                        setLatinoMoviePage(prev => prev + 1);
+                      } else {
                         setCategoryPages(prev => ({
                           ...prev,
                           [activeCategory]: (prev[activeCategory] || 1) + 1
                         }));
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
-                      style={{
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid var(--border-color)',
-                        color: '#aaa',
-                        padding: '0.5rem 1rem',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        fontSize: '0.9rem',
-                        transition: 'all 0.2s ease'
-                      }}
-                    >
-                      Siguiente →
-                    </button>
-                  )}
+                      }
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    disabled={isLoading}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.08)',
+                      border: '1px solid var(--border-color)',
+                      color: '#fff',
+                      padding: '0.6rem 1.25rem',
+                      borderRadius: '10px',
+                      cursor: 'pointer',
+                      fontSize: '0.95rem',
+                      fontWeight: '700'
+                    }}
+                  >
+                    Siguiente →
+                  </button>
                 </div>
               )}
             </>
