@@ -2,234 +2,214 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import useDpadNavigation from '../hooks/useDpadNavigation';
 import { saveWatchProgress } from '../utils/storage';
 import { castWithWebVideoCaster } from '../utils/wvcCast';
+import { SkeletonGrid } from './SkeletonLoader';
 
-/* --- Curated Data --- */
+const TDT_TV_API = 'https://www.tdtchannels.com/lists/tv.json';
+const TDT_RADIO_API = 'https://www.tdtchannels.com/lists/radio.json';
 
-const CURATED_STREAMS = [
-  {
-    name: "DW Español (Alemania)",
-    genre: "Noticias",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/d/d1/Deutsche_Welle_logo.svg",
-    url: "https://dwamdstream104.akamaized.net/hls/live/2015530/dwstream104/index.m3u8"
-  },
-  {
-    name: "TeleSUR (Latinoamérica)",
-    genre: "Noticias",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Telesur_logo.svg",
-    url: "https://telesur-live.akamaized.net/hls/live/2015099/telesur/Telesur_HLS_500.m3u8"
-  },
-  {
-    name: "Canal 26 (Argentina)",
-    genre: "Noticias",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Canal26_logo.svg",
-    url: "https://live-01-02-canal26.secure.footprint.net/canal26/canal26.m3u8"
-  },
-  {
-    name: "BBC Drama (Rakuten)",
-    genre: "Series",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/a/ad/BBC_logo_%282021%29.svg",
-    url: "https://amg00793-amg00793c40-rakuten-es-5444.playouts.now.amagi.tv/playlist.m3u8"
-  },
-  {
-    name: "Pluto TV Cine Estelar",
-    genre: "Cine",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/b/ba/Pluto_TV_logo.svg",
-    url: "https://service-channelfilter.clusters.pluto.tv/v1/channel/5f0f3531b79fbb00072bc5d1/stream?userAgent=Mozilla&deviceType=web&deviceVersion=1.0&deviceSid=123"
-  },
-  {
-    name: "Pluto TV Películas",
-    genre: "Cine",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/b/ba/Pluto_TV_logo.svg",
-    url: "https://service-channelfilter.clusters.pluto.tv/v1/channel/5e834bd31e87870007d4b293/stream?userAgent=Mozilla&deviceType=web&deviceVersion=1.0&deviceSid=123"
-  },
-  {
-    name: "Pluto TV Anime",
-    genre: "Anime",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/b/ba/Pluto_TV_logo.svg",
-    url: "https://service-channelfilter.clusters.pluto.tv/v1/channel/5f1b5bc938b81300078bb091/stream?userAgent=Mozilla&deviceType=web&deviceVersion=1.0&deviceSid=123"
-  },
-  {
-    name: "Pluto TV Ciencia",
-    genre: "Documentales",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/b/ba/Pluto_TV_logo.svg",
-    url: "https://service-channelfilter.clusters.pluto.tv/v1/channel/5f1b5bd55db6db00076a084c/stream?userAgent=Mozilla&deviceType=web&deviceVersion=1.0&deviceSid=123"
-  },
-  {
-    name: "Anime Vision",
-    genre: "Animation",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/f/f6/Anime_Icon.svg",
-    url: "https://d1ujfw1zyymzyd.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-a6fukwkbxmex8/live/fast-channel-animevision-64527ec0/fast-channel-animevision-64527ec0.m3u8"
-  },
-  {
-    name: "Activa TV (Música)",
-    genre: "Music",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/d/df/Music_icon.svg",
-    url: "https://streamtv.mediasector.es/hls/activatv/index.m3u8"
-  }
-];
-
-/* --- M3U Parser Hook --- */
-
-const parseM3U = (text) => {
-  const lines = text.split('\n');
-  const parsedChannels = [];
-  let currentChannel = null;
-  let hasOption = false;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (line.startsWith('#EXTINF:')) {
-      currentChannel = {};
-      hasOption = false;
-      
-      const logoMatch = line.match(/tvg-logo="([^"]+)"/);
-      currentChannel.logo = logoMatch ? logoMatch[1] : '';
-
-      const groupMatch = line.match(/group-title="([^"]+)"/);
-      currentChannel.genre = groupMatch ? groupMatch[1] : 'General';
-
-      const lastCommaIndex = line.lastIndexOf(',');
-      currentChannel.name = lastCommaIndex !== -1 ? line.substring(lastCommaIndex + 1).trim() : 'Canal sin nombre';
-    } else if (line.startsWith('#')) {
-      hasOption = true;
-    } else if (line && currentChannel) {
-      currentChannel.url = line;
-      
-      const hasNonStandardPort = /:\d{4,5}/.test(line.replace('https://', '').replace('http://', ''));
-      const isHttps = line.startsWith('https://');
-
-      if (isHttps && !hasOption && !hasNonStandardPort) {
-        parsedChannels.push(currentChannel);
-      }
-      currentChannel = null;
-    }
-  }
-  return parsedChannels;
-};
-
-const useM3uParser = (url) => {
-  const [channels, setChannels] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    let active = true;
-    const fetchPlaylist = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Error al descargar la lista IPTV M3U');
-        const text = await res.text();
-        if (active) {
-          const parsed = parseM3U(text);
-          const filteredParsed = parsed.filter(p => !CURATED_STREAMS.some(c => c.url === p.url));
-          setChannels([...CURATED_STREAMS, ...filteredParsed]);
-        }
-      } catch (err) {
-        if (active) {
-          setError(err.message || 'Error de conexión');
-        }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
-      }
-    };
-    fetchPlaylist();
-    return () => {
-      active = false;
-    };
-  }, [url]);
-
-  return { channels, loading, error };
-};
-
-/* --- Video Player Component --- */
-
-const VideoPlayer = ({ streamUrl }) => {
+function VideoPlayer({ streamUrl, poster, isAudio }) {
   const videoRef = useRef(null);
-  const hlsRef = useRef(null);
-  const triedProxy = useRef(false);
+  const [error, setError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+    let hlsInstance = null;
+    setError(false);
+    setIsLoading(true);
 
-    triedProxy.current = false;
+    const videoElement = videoRef.current;
+    if (!videoElement || !streamUrl) return;
 
-    if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = streamUrl;
+    // Direct browser HLS support (Safari, iOS, Mac)
+    if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+      videoElement.src = streamUrl;
+      videoElement.play().catch(() => {});
+      setIsLoading(false);
+    } else if (window.Hls && window.Hls.isSupported()) {
+      // Hls.js fallback for Chrome, Firefox, Edge, Opera
+      hlsInstance = new window.Hls({
+        enableWorker: true,
+        lowLatencyMode: true,
+        backBufferLength: 90
+      });
+      hlsInstance.loadSource(streamUrl);
+      hlsInstance.attachMedia(videoElement);
+      hlsInstance.on(window.Hls.Events.MANIFEST_PARSED, () => {
+        setIsLoading(false);
+        videoElement.play().catch(() => {});
+      });
+      hlsInstance.on(window.Hls.Events.ERROR, (_event, data) => {
+        if (data.fatal) {
+          console.warn('HLS Fatal Error:', data);
+          setError(true);
+          setIsLoading(false);
+        }
+      });
     } else {
-      const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.4.12/dist/hls.min.js';
-      script.async = true;
-      
-      script.onload = () => {
-        if (window.Hls && window.Hls.isSupported()) {
-          if (hlsRef.current) {
-            hlsRef.current.destroy();
-          }
-          const hls = new window.Hls({
-            manifestLoadingMaxRetry: 2,
-            levelLoadingMaxRetry: 2
-          });
-          hlsRef.current = hls;
-          hls.loadSource(streamUrl);
-          hls.attachMedia(video);
-
-          hls.on(window.Hls.Events.ERROR, (event, data) => {
-            if (data.fatal) {
-              if (data.type === window.Hls.ErrorTypes.NETWORK_ERROR) {
-                if (!triedProxy.current) {
-                  triedProxy.current = true;
-                  const proxiedUrl = `https://corsproxy.io/?${encodeURIComponent(streamUrl)}`;
-                  hls.loadSource(proxiedUrl);
-                  hls.startLoad();
-                }
-              } else if (data.type === window.Hls.ErrorTypes.MEDIA_ERROR) {
-                hls.recoverMediaError();
-              } else {
-                hls.destroy();
-              }
-            }
-          });
-        }
-      };
-
-      document.body.appendChild(script);
-
-      return () => {
-        if (hlsRef.current) {
-          hlsRef.current.destroy();
-        }
-        if (document.body.contains(script)) {
-          document.body.removeChild(script);
-        }
-      };
+      // Fallback native video tag
+      videoElement.src = streamUrl;
+      setIsLoading(false);
     }
+
+    return () => {
+      if (hlsInstance) {
+        hlsInstance.destroy();
+      }
+    };
   }, [streamUrl]);
 
   return (
-    <video
-      ref={videoRef}
-      className="player-iframe"
-      controls
-      autoPlay
-      playsInline
-      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-    />
-  );
-};
+    <div style={{ width: '100%', height: '100%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', borderRadius: '12px', overflow: 'hidden' }}>
+      {isLoading && (
+        <div style={{ position: 'absolute', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', color: '#fff' }}>
+          <div className="player-loading-spinner" />
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Conectando a señal TDT...</span>
+        </div>
+      )}
 
-/* --- Main TV Component --- */
+      {error ? (
+        <div style={{ padding: '2rem', textAlign: 'center', color: '#fca5a5' }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>⚠️</div>
+          <h4 style={{ margin: 0, color: '#fff' }}>No se pudo cargar la reproducción directa</h4>
+          <p style={{ fontSize: '0.85rem', marginTop: '0.4rem', color: '#aaa' }}>
+            Prueba seleccionando otra opción de emisión o transmite con Web Video Caster.
+          </p>
+        </div>
+      ) : isAudio ? (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', padding: '2rem' }}>
+          {poster && <img src={poster} alt="Radio Logo" style={{ width: '120px', height: '120px', objectFit: 'contain', borderRadius: '16px' }} />}
+          <audio ref={videoRef} controls autoPlay style={{ width: '100%', maxWidth: '400px' }} />
+        </div>
+      ) : (
+        <video
+          ref={videoRef}
+          controls
+          autoPlay
+          playsInline
+          poster={poster}
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+        />
+      )}
+    </div>
+  );
+}
 
 export default function TvLibre() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedGenre, setSelectedGenre] = useState('Todos');
-  const [selectedChannel, setSelectedChannel] = useState(null);
+  const [mediaType, setMediaType] = useState('tv'); // 'tv' or 'radio'
+  const [tvChannels, setTvChannels] = useState([]);
+  const [radioChannels, setRadioChannels] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Handle Smart TV D-Pad Remote Back button
+  const [activeAmbit, setActiveAmbit] = useState('Todos');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedChannel, setSelectedChannel] = useState(null);
+  const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
+
+  // Load HLS.js library dynamically if not present
+  useEffect(() => {
+    if (!window.Hls) {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  // Fetch TDTChannels TV & Radio JSON API
+  useEffect(() => {
+    const fetchTdtData = async () => {
+      setLoading(true);
+      try {
+        // Try sessionStorage cache first
+        const cacheKey = mediaType === 'tv' ? 'tdt_tv_json_cache' : 'tdt_radio_json_cache';
+        const cached = sessionStorage.getItem(cacheKey);
+
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (mediaType === 'tv') setTvChannels(parsed);
+          else setRadioChannels(parsed);
+          setLoading(false);
+        }
+
+        const apiUrl = mediaType === 'tv' ? TDT_TV_API : TDT_RADIO_API;
+        const res = await fetch(apiUrl);
+        if (res.ok) {
+          const data = await res.json();
+          const countries = data.countries || [];
+
+          const processedList = [];
+          countries.forEach(country => {
+            const ambits = country.ambits || [];
+            ambits.forEach(ambit => {
+              const channels = ambit.channels || [];
+              channels.forEach(ch => {
+                const options = (ch.options || []).filter(opt => opt.url);
+                if (options.length > 0 || ch.web) {
+                  processedList.push({
+                    id: `${country.name}-${ambit.name}-${ch.name}`,
+                    name: ch.name,
+                    logo: ch.logo || 'https://via.placeholder.com/150?text=TDT',
+                    ambit: ambit.name || country.name,
+                    country: country.name,
+                    web: ch.web,
+                    options: options,
+                    type: mediaType
+                  });
+                }
+              });
+            });
+          });
+
+          if (mediaType === 'tv') {
+            setTvChannels(processedList);
+            sessionStorage.setItem('tdt_tv_json_cache', JSON.stringify(processedList));
+          } else {
+            setRadioChannels(processedList);
+            sessionStorage.setItem('tdt_radio_json_cache', JSON.stringify(processedList));
+          }
+        }
+      } catch (e) {
+        console.error('TDTChannels fetch error:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTdtData();
+  }, [mediaType]);
+
+  const currentList = mediaType === 'tv' ? tvChannels : radioChannels;
+
+  // Extract unique Ambits/Categories
+  const ambitsList = useMemo(() => {
+    const set = new Set();
+    currentList.forEach(ch => {
+      if (ch.ambit) set.add(ch.ambit);
+    });
+    return ['Todos', ...Array.from(set)];
+  }, [currentList]);
+
+  // Filter channels by Ambit & Search
+  const filteredChannels = useMemo(() => {
+    return currentList.filter(ch => {
+      const matchAmbit = activeAmbit === 'Todos' || ch.ambit === activeAmbit;
+      const matchSearch = !searchTerm.trim() || ch.name.toLowerCase().includes(searchTerm.toLowerCase()) || ch.ambit.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchAmbit && matchSearch;
+    });
+  }, [currentList, activeAmbit, searchTerm]);
+
+  const handleOpenChannel = (channel) => {
+    setSelectedChannel(channel);
+    setSelectedOptionIndex(0);
+    saveWatchProgress({
+      id: channel.id,
+      titulo: channel.name,
+      portada: channel.logo,
+      type: mediaType === 'tv' ? 'tv-live' : 'radio-live'
+    });
+  };
+
+  // Smart TV Remote D-Pad Navigation Hook
   useDpadNavigation({
     onBack: () => {
       if (selectedChannel) {
@@ -238,45 +218,71 @@ export default function TvLibre() {
     }
   });
 
-  // Track & persist TV channel watch history
-  useEffect(() => {
-    if (selectedChannel) {
-      saveWatchProgress({
-        id: selectedChannel.url,
-        titulo: selectedChannel.name,
-        portada: selectedChannel.logo || 'https://via.placeholder.com/160x240?text=TV',
-        type: 'tv'
-      });
-    }
-  }, [selectedChannel]);
-
-  const { channels, loading, error } = useM3uParser('https://iptv-org.github.io/iptv/languages/spa.m3u');
-
-  const genres = useMemo(() => {
-    if (!channels.length) return ['Todos'];
-    const allGenres = channels.map(ch => ch.genre || 'General');
-    const uniqueGenres = Array.from(new Set(allGenres)).sort();
-    return ['Todos', ...uniqueGenres];
-  }, [channels]);
-
-  const filteredChannels = useMemo(() => {
-    return channels.filter(ch => {
-      const matchesSearch = (ch.name || '').toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesGenre = selectedGenre === 'Todos' || ch.genre === selectedGenre;
-      return matchesSearch && matchesGenre;
-    });
-  }, [searchTerm, selectedGenre, channels]);
+  const activeOption = selectedChannel?.options?.[selectedOptionIndex] || selectedChannel?.options?.[0];
+  const activeStreamUrl = activeOption?.url || '';
 
   return (
-    <div className="tv-libre-container">
-      <div className="section-header">
-        <h1 className="section-title">TV Libre</h1>
-        <div className="controls-group">
+    <div className="tv-libre-container" style={{ padding: '0.5rem 0 2rem' }}>
+      {/* Header section with TDTChannels branding */}
+      <div className="category-header">
+        <div>
+          <h1 className="section-title" style={{ margin: 0 }}>
+            {mediaType === 'tv' ? '📺 Televisión Abierta TDT' : '📻 Emisoras de Radio TDT'}
+          </h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.3rem' }}>
+            Señales oficiales en vivo de TDTChannels en abierto para España e Internacional
+          </p>
+        </div>
+
+        <div className="controls-group" style={{ flexWrap: 'wrap', gap: '1rem' }}>
+          {/* Mode Switcher: TV vs Radio */}
+          <div style={{ display: 'flex', background: 'rgba(255, 255, 255, 0.06)', padding: '0.3rem', borderRadius: '14px', border: '1px solid var(--border-color)' }}>
+            <button
+              type="button"
+              onClick={() => { setMediaType('tv'); setActiveAmbit('Todos'); setSearchTerm(''); }}
+              style={{
+                padding: '0.55rem 1.1rem',
+                border: 'none',
+                borderRadius: '10px',
+                fontFamily: 'var(--font-title)',
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                background: mediaType === 'tv' ? 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)' : 'transparent',
+                color: '#fff',
+                boxShadow: mediaType === 'tv' ? '0 4px 15px rgba(229, 9, 20, 0.4)' : 'none',
+                transition: 'all 0.25s ease'
+              }}
+            >
+              📺 Televisión ({tvChannels.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => { setMediaType('radio'); setActiveAmbit('Todos'); setSearchTerm(''); }}
+              style={{
+                padding: '0.55rem 1.1rem',
+                border: 'none',
+                borderRadius: '10px',
+                fontFamily: 'var(--font-title)',
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                background: mediaType === 'radio' ? 'linear-gradient(135deg, #9333ea 0%, #6b21a8 100%)' : 'transparent',
+                color: '#fff',
+                boxShadow: mediaType === 'radio' ? '0 4px 15px rgba(147, 51, 234, 0.4)' : 'none',
+                transition: 'all 0.25s ease'
+              }}
+            >
+              📻 Radio ({radioChannels.length})
+            </button>
+          </div>
+
+          {/* Search container */}
           <div className="search-container">
             <span className="search-icon">🔍</span>
             <input
               type="text"
-              placeholder="Buscar canal en vivo..."
+              placeholder={mediaType === 'tv' ? "Buscar canal de televisión..." : "Buscar emisora de radio..."}
               className="search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -285,143 +291,156 @@ export default function TvLibre() {
         </div>
       </div>
 
-      {loading ? (
-        <div className="empty-state">
-          <div className="player-loading-spinner" style={{ position: 'relative', margin: '0 auto 1.5rem' }}></div>
-          <h3 className="empty-title">Descargando lista de canales...</h3>
-          <p>Se está procesando la lista IPTV en tiempo real.</p>
-        </div>
-      ) : error ? (
-        <div className="empty-state">
-          <span className="empty-icon">⚠️</span>
-          <h3 className="empty-title">Error al cargar canales</h3>
-          <p>{error}</p>
-        </div>
-      ) : (
-        <>
-          <div className="filters-wrapper">
-            {genres.map(genre => (
-              <button
-                key={genre}
-                className={`filter-badge ${selectedGenre === genre ? 'active' : ''}`}
-                onClick={() => {
-                  setSelectedGenre(genre);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-              >
-                {genre}
-              </button>
-            ))}
-          </div>
+      {/* Ambits / Category Filter Badges */}
+      <div className="filters-wrapper" style={{ margin: '0 0 2rem 0', display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
+        {ambitsList.slice(0, 15).map(ambit => (
+          <button
+            key={ambit}
+            type="button"
+            className={`filter-badge ${activeAmbit === ambit ? 'active' : ''}`}
+            onClick={() => setActiveAmbit(ambit)}
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            {ambit === 'Todos' ? (mediaType === 'tv' ? '📺 Todos los Canales' : '📻 Todas las Emisoras') : ambit}
+          </button>
+        ))}
+      </div>
 
-          <div className="media-grid">
-            {filteredChannels.length > 0 ? (
-              filteredChannels.map((channel, index) => (
-                <div 
-                  key={`${channel.name}-${index}`} 
-                  className="media-card"
-                  onClick={() => setSelectedChannel(channel)}
-                >
-                  <div className="card-thumbnail-wrapper" style={{ aspectRatio: '16/9' }}>
-                    <div className="card-thumbnail-glow"></div>
-                    {channel.logo ? (
-                      <img 
-                        src={channel.logo} 
-                        alt={channel.name} 
-                        style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '1rem', background: '#020205' }}
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          e.target.parentNode.querySelector('.card-icon-placeholder').style.display = 'flex';
-                        }}
-                      />
-                    ) : null}
-                    <div className="card-icon-placeholder" style={channel.logo ? { display: 'none' } : {}}>
-                      📺
-                    </div>
-                    <div className="play-hover-btn">
-                      <div className="play-icon">▶</div>
-                    </div>
-                    <span className="card-badge" style={{ background: 'rgba(139, 92, 246, 0.9)', color: '#fff' }}>
-                      DIRECTO
-                    </span>
-                  </div>
-                  <div className="card-info">
-                    <span className="card-genre" style={{ color: '#a78bfa' }}>
-                      {channel.genre || 'General'}
-                    </span>
-                    <h3 className="card-title">{channel.name}</h3>
-                    <p className="card-summary" style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                      {channel.url}
-                    </p>
-                    <div className="card-footer">
-                      <span>Reproductor Integrado</span>
-                      <span className="card-lang">ES</span>
-                    </div>
-                  </div>
+      {/* Main Grid */}
+      {loading ? (
+        <SkeletonGrid count={12} />
+      ) : (
+        <div className="media-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))' }}>
+          {filteredChannels.length > 0 ? (
+            filteredChannels.map((ch) => (
+              <button
+                type="button"
+                key={ch.id}
+                className="media-card"
+                onClick={() => handleOpenChannel(ch)}
+                style={{ textAlign: 'center', padding: '1.25rem 0.75rem', background: 'rgba(20, 20, 32, 0.6)', border: '1px solid var(--border-color)', borderRadius: '18px', cursor: 'pointer', transition: 'var(--transition-smooth)' }}
+              >
+                <div style={{ width: '80px', height: '80px', margin: '0 auto 0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '0.5rem' }}>
+                  <img
+                    src={ch.logo}
+                    alt={ch.name}
+                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                    onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/80?text=TDT'; }}
+                  />
                 </div>
-              ))
-            ) : (
-              <div className="empty-state">
-                <span className="empty-icon">📺</span>
-                <h3 className="empty-title">No se encontraron canales</h3>
-                <p>Prueba buscando con palabras clave diferentes o cambiando de género.</p>
-              </div>
-            )}
-          </div>
-        </>
+                <div className="card-info" style={{ textAlign: 'center', padding: 0 }}>
+                  <span className="card-genre" style={{ fontSize: '0.72rem', color: mediaType === 'tv' ? '#ef4444' : '#c084fc', textTransform: 'uppercase', fontWeight: 800 }}>
+                    {ch.ambit}
+                  </span>
+                  <h3 className="card-title" style={{ fontSize: '0.9rem', fontWeight: 700, margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {ch.name}
+                  </h3>
+                  <span style={{ fontSize: '0.75rem', color: '#86efac', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                    🔴 EN VIVO
+                  </span>
+                </div>
+              </button>
+            ))
+          ) : (
+            <div className="empty-state" style={{ gridColumn: '1 / -1', padding: '4rem 2rem' }}>
+              <span className="empty-icon">📺</span>
+              <h3 className="empty-title">No se encontraron canales</h3>
+              <p>Intenta buscando con otro término o seleccionando la categoría "Todos".</p>
+            </div>
+          )}
+        </div>
       )}
 
+      {/* Streaming Player Modal */}
       {selectedChannel && (
         <div className="modal-overlay" onClick={() => setSelectedChannel(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-btn" onClick={() => setSelectedChannel(null)}>
-              ✕
-            </button>
-            
-            <div className="movie-player-container">
-              <VideoPlayer streamUrl={selectedChannel.url} />
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '820px' }}>
+            <button className="modal-close-btn" onClick={() => setSelectedChannel(null)}>✕</button>
+
+            <div className="movie-player-container" style={{ height: mediaType === 'radio' ? '240px' : '420px' }}>
+              <VideoPlayer 
+                streamUrl={activeStreamUrl} 
+                poster={selectedChannel.logo} 
+                isAudio={mediaType === 'radio'} 
+              />
             </div>
 
             <div className="modal-body">
               <div className="modal-meta">
-                <span className="modal-genre">{selectedChannel.genre || 'General'}</span>
-                <span className="modal-lang" style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5', border: '1px solid #ef4444', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <span className="pulse-dot"></span> EN VIVO 🔴
+                <span className="modal-genre">{selectedChannel.ambit}</span>
+                <span className="modal-lang" style={{ background: 'rgba(239, 68, 68, 0.18)', color: '#fca5a5', border: '1px solid #ef4444' }}>
+                  🔴 SEÑAL EN VIVO TDT
                 </span>
-                <span className="modal-lang">Español</span>
-              </div>
-              <h2 className="modal-title">{selectedChannel.name}</h2>
-              <p className="modal-summary" style={{ wordBreak: 'break-all' }}>
-                URL del stream: {selectedChannel.url}
-              </p>
-              
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', margin: '1rem 0' }}>
-                <button
-                  type="button"
-                  className="btn-primary"
-                  style={{
-                    padding: '0.75rem 1.5rem',
-                    fontSize: '0.95rem',
-                    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                    border: 'none',
-                    color: '#ffffff',
-                    boxShadow: '0 4px 15px rgba(245, 158, 11, 0.45)'
-                  }}
-                  onClick={() => castWithWebVideoCaster(selectedChannel.url, selectedChannel.name)}
-                >
-                  📱 Transmitir Canal a TV (Web Video Caster)
-                </button>
+                <span className="modal-lang">{selectedChannel.country}</span>
               </div>
 
-              <div className="fallback-box">
-                <div>
-                  <strong style={{ color: '#fff', display: 'block', marginBottom: '0.2rem' }}>
-                    Reproducción Directa HLS
-                  </strong>
-                  <span>
-                    Este canal se está transmitiendo en vivo directamente dentro de tu página web de PIRU TV.
+              <h2 className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <img src={selectedChannel.logo} alt="" style={{ width: '36px', height: '36px', objectFit: 'contain' }} />
+                {selectedChannel.name}
+              </h2>
+
+              {/* Stream Option Badges if channel has multiple stream servers */}
+              {selectedChannel.options && selectedChannel.options.length > 1 && (
+                <div style={{ margin: '1rem 0' }}>
+                  <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem', fontWeight: 700 }}>
+                    🎛️ Seleccionar Opción de Señal:
                   </span>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    {selectedChannel.options.map((opt, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setSelectedOptionIndex(idx)}
+                        style={{
+                          background: selectedOptionIndex === idx ? 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)' : 'rgba(255,255,255,0.08)',
+                          border: '1px solid var(--border-color)',
+                          color: '#fff',
+                          padding: '0.45rem 0.9rem',
+                          borderRadius: '8px',
+                          fontSize: '0.82rem',
+                          cursor: 'pointer',
+                          fontWeight: selectedOptionIndex === idx ? '700' : '400'
+                        }}
+                      >
+                        Opción {idx + 1} ({opt.format || 'HLS'})
+                      </button>
+                    ))}
+                  </div>
                 </div>
+              )}
+
+              {/* Action Buttons: Web Video Caster & Web Direct */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', margin: '1.25rem 0' }}>
+                {activeStreamUrl && (
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{
+                      padding: '0.75rem 1.5rem',
+                      fontSize: '0.92rem',
+                      background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                      border: 'none',
+                      color: '#ffffff',
+                      boxShadow: '0 4px 15px rgba(245, 158, 11, 0.45)',
+                      borderRadius: '12px'
+                    }}
+                    onClick={() => castWithWebVideoCaster(activeStreamUrl, selectedChannel.name)}
+                  >
+                    📱 Transmitir a TV (Web Video Caster)
+                  </button>
+                )}
+
+                {selectedChannel.web && (
+                  <a
+                    href={selectedChannel.web}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-hero-info"
+                    style={{ padding: '0.75rem 1.25rem', borderRadius: '12px', fontSize: '0.9rem', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                  >
+                    🌐 Sitio Oficial del Canal
+                  </a>
+                )}
               </div>
             </div>
           </div>
