@@ -120,17 +120,6 @@ export default function TvLibre() {
     const fetchTdtData = async () => {
       setLoading(true);
       try {
-        // Try sessionStorage cache first
-        const cacheKey = mediaType === 'tv' ? 'tdt_tv_json_cache' : 'tdt_radio_json_cache';
-        const cached = sessionStorage.getItem(cacheKey);
-
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (mediaType === 'tv') setTvChannels(parsed);
-          else setRadioChannels(parsed);
-          setLoading(false);
-        }
-
         const apiUrl = mediaType === 'tv' ? TDT_TV_API : TDT_RADIO_API;
         const res = await fetch(apiUrl);
         if (res.ok) {
@@ -143,8 +132,8 @@ export default function TvLibre() {
             ambits.forEach(ambit => {
               const channels = ambit.channels || [];
               channels.forEach(ch => {
-                const options = (ch.options || []).filter(opt => opt.url);
-                if (options.length > 0 || ch.web) {
+                const validOptions = (ch.options || []).filter(opt => opt.url && opt.url.trim().length > 0);
+                if (validOptions.length > 0) {
                   processedList.push({
                     id: `${country.name}-${ambit.name}-${ch.name}`,
                     name: ch.name,
@@ -152,7 +141,7 @@ export default function TvLibre() {
                     ambit: ambit.name || country.name,
                     country: country.name,
                     web: ch.web,
-                    options: options,
+                    options: validOptions,
                     type: mediaType
                   });
                 }
@@ -162,10 +151,8 @@ export default function TvLibre() {
 
           if (mediaType === 'tv') {
             setTvChannels(processedList);
-            sessionStorage.setItem('tdt_tv_json_cache', JSON.stringify(processedList));
           } else {
             setRadioChannels(processedList);
-            sessionStorage.setItem('tdt_radio_json_cache', JSON.stringify(processedList));
           }
         }
       } catch (e) {
