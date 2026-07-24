@@ -2,7 +2,9 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import useDpadNavigation from '../hooks/useDpadNavigation';
 import { saveWatchProgress } from '../utils/storage';
 import { castWithWebVideoCaster } from '../utils/wvcCast';
-import { SkeletonGrid } from './SkeletonLoader';
+
+import tdtTvJson from '../data/tdt_tv.json';
+import tdtRadioJson from '../data/tdt_radio.json';
 
 const TDT_TV_API = 'https://www.tdtchannels.com/lists/tv.json';
 const TDT_RADIO_API = 'https://www.tdtchannels.com/lists/radio.json';
@@ -20,6 +22,34 @@ const TDT_LISTS = {
     { format: 'M3U', url: 'https://www.tdtchannels.com/lists/radio.m3u', desc: 'Alternativa para reproductores antiguos.' },
     { format: 'Enigma2', url: 'https://www.tdtchannels.com/lists/userbouquet.tdtchannels_radio.tv', desc: 'Lista compatible con receptores Enigma2 para radio.' }
   ]
+};
+
+// Helper parser to convert TDTChannels JSON schema into channel cards
+const parseTdtChannels = (rawJson, mediaType) => {
+  if (!rawJson || !rawJson.countries) return [];
+  const processed = [];
+  rawJson.countries.forEach(country => {
+    const ambits = country.ambits || [];
+    ambits.forEach(ambit => {
+      const channels = ambit.channels || [];
+      channels.forEach(ch => {
+        const validOptions = (ch.options || []).filter(opt => opt.url && opt.url.trim().length > 0);
+        if (validOptions.length > 0) {
+          processed.push({
+            id: `${country.name}-${ambit.name}-${ch.name}`,
+            name: ch.name,
+            logo: ch.logo || 'https://via.placeholder.com/150?text=TDT',
+            ambit: ambit.name || country.name,
+            country: country.name,
+            web: ch.web,
+            options: validOptions,
+            type: mediaType
+          });
+        }
+      });
+    });
+  });
+  return processed;
 };
 
 function VideoPlayer({ streamUrl, poster, isAudio }) {
@@ -108,9 +138,10 @@ function VideoPlayer({ streamUrl, poster, isAudio }) {
 
 export default function TvLibre() {
   const [mediaType, setMediaType] = useState('tv'); // 'tv' or 'radio'
-  const [tvChannels, setTvChannels] = useState([]);
-  const [radioChannels, setRadioChannels] = useState([]);
-  const [loading, setLoading] = useState(true);
+  
+  // Pre-populate with official TDTChannels dataset for 0ms load & 0 CORS errors
+  const [tvChannels, setTvChannels] = useState(() => parseTdtChannels(tdtTvJson, 'tv'));
+  const [radioChannels, setRadioChannels] = useState(() => parseTdtChannels(tdtRadioJson, 'radio'));
   const [showListsInfo, setShowListsInfo] = useState(false);
 
   const [activeAmbit, setActiveAmbit] = useState('Todos');
@@ -128,54 +159,26 @@ export default function TvLibre() {
     }
   }, []);
 
-  // Fetch TDTChannels TV & Radio JSON API
+  // Background fetch to update TDTChannels dataset if CORS permits or via proxy
   useEffect(() => {
-    const fetchTdtData = async () => {
-      setLoading(true);
+    const fetchLiveTdtData = async () => {
       try {
         const apiUrl = mediaType === 'tv' ? TDT_TV_API : TDT_RADIO_API;
         const res = await fetch(apiUrl);
         if (res.ok) {
           const data = await res.json();
-          const countries = data.countries || [];
-
-          const processedList = [];
-          countries.forEach(country => {
-            const ambits = country.ambits || [];
-            ambits.forEach(ambit => {
-              const channels = ambit.channels || [];
-              channels.forEach(ch => {
-                const validOptions = (ch.options || []).filter(opt => opt.url && opt.url.trim().length > 0);
-                if (validOptions.length > 0) {
-                  processedList.push({
-                    id: `${country.name}-${ambit.name}-${ch.name}`,
-                    name: ch.name,
-                    logo: ch.logo || 'https://via.placeholder.com/150?text=TDT',
-                    ambit: ambit.name || country.name,
-                    country: country.name,
-                    web: ch.web,
-                    options: validOptions,
-                    type: mediaType
-                  });
-                }
-              });
-            });
-          });
-
-          if (mediaType === 'tv') {
-            setTvChannels(processedList);
-          } else {
-            setRadioChannels(processedList);
+          const parsed = parseTdtChannels(data, mediaType);
+          if (parsed.length > 0) {
+            if (mediaType === 'tv') setTvChannels(parsed);
+            else setRadioChannels(parsed);
           }
         }
       } catch (e) {
-        console.error('TDTChannels fetch error:', e);
-      } finally {
-        setLoading(false);
+        // Silent catch: pre-loaded dataset ensures 100% availability
       }
     };
 
-    fetchTdtData();
+    fetchLiveTdtData();
   }, [mediaType]);
 
   const currentList = mediaType === 'tv' ? tvChannels : radioChannels;
@@ -230,7 +233,7 @@ export default function TvLibre() {
             {mediaType === 'tv' ? '📺 Televisión TDTChannels' : '📻 Emisoras de Radio TDTChannels'}
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.3rem' }}>
-            Disfruta de los canales de televisión y radio en abierto de forma gratuita con la API de TDTChannels
+            Disfruta de {currentList.length} canales en abierto de forma gratuita con la API oficial de TDTChannels
           </p>
         </div>
 
@@ -372,7 +375,7 @@ export default function TvLibre() {
 
       {/* Ambits / Category Filter Badges */}
       <div className="filters-wrapper" style={{ margin: '0 0 2rem 0', display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
-        {ambitsList.slice(0, 15).map(ambit => (
+        {ambitsList.map(ambit => (
           <button
             key={ambit}
             type="button"
@@ -380,55 +383,51 @@ export default function TvLibre() {
             onClick={() => setActiveAmbit(ambit)}
             style={{ whiteSpace: 'nowrap' }}
           >
-            {ambit === 'Todos' ? (mediaType === 'tv' ? '📺 Todos los Canales' : '📻 Todas las Emisoras') : ambit}
+            {ambit === 'Todos' ? (mediaType === 'tv' ? `📺 Todos los Canales (${tvChannels.length})` : `📻 Todas las Emisoras (${radioChannels.length})`) : ambit}
           </button>
         ))}
       </div>
 
       {/* Main Grid */}
-      {loading ? (
-        <SkeletonGrid count={12} />
-      ) : (
-        <div className="media-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))' }}>
-          {filteredChannels.length > 0 ? (
-            filteredChannels.map((ch) => (
-              <button
-                type="button"
-                key={ch.id}
-                className="media-card"
-                onClick={() => handleOpenChannel(ch)}
-                style={{ textAlign: 'center', padding: '1.25rem 0.75rem', background: 'rgba(20, 20, 32, 0.6)', border: '1px solid var(--border-color)', borderRadius: '18px', cursor: 'pointer', transition: 'var(--transition-smooth)' }}
-              >
-                <div style={{ width: '80px', height: '80px', margin: '0 auto 0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '0.5rem' }}>
-                  <img
-                    src={ch.logo}
-                    alt={ch.name}
-                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-                    onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/80?text=TDT'; }}
-                  />
-                </div>
-                <div className="card-info" style={{ textAlign: 'center', padding: 0 }}>
-                  <span className="card-genre" style={{ fontSize: '0.72rem', color: mediaType === 'tv' ? '#ef4444' : '#c084fc', textTransform: 'uppercase', fontWeight: 800 }}>
-                    {ch.ambit}
-                  </span>
-                  <h3 className="card-title" style={{ fontSize: '0.9rem', fontWeight: 700, margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {ch.name}
-                  </h3>
-                  <span style={{ fontSize: '0.75rem', color: '#86efac', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-                    🔴 EN VIVO
-                  </span>
-                </div>
-              </button>
-            ))
-          ) : (
-            <div className="empty-state" style={{ gridColumn: '1 / -1', padding: '4rem 2rem' }}>
-              <span className="empty-icon">📺</span>
-              <h3 className="empty-title">No se encontraron canales</h3>
-              <p>Intenta buscando con otro término o seleccionando la categoría "Todos".</p>
-            </div>
-          )}
-        </div>
-      )}
+      <div className="media-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))' }}>
+        {filteredChannels.length > 0 ? (
+          filteredChannels.map((ch) => (
+            <button
+              type="button"
+              key={ch.id}
+              className="media-card"
+              onClick={() => handleOpenChannel(ch)}
+              style={{ textAlign: 'center', padding: '1.25rem 0.75rem', background: 'rgba(20, 20, 32, 0.6)', border: '1px solid var(--border-color)', borderRadius: '18px', cursor: 'pointer', transition: 'var(--transition-smooth)' }}
+            >
+              <div style={{ width: '80px', height: '80px', margin: '0 auto 0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '0.5rem' }}>
+                <img
+                  src={ch.logo}
+                  alt={ch.name}
+                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                  onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/80?text=TDT'; }}
+                />
+              </div>
+              <div className="card-info" style={{ textAlign: 'center', padding: 0 }}>
+                <span className="card-genre" style={{ fontSize: '0.72rem', color: mediaType === 'tv' ? '#ef4444' : '#c084fc', textTransform: 'uppercase', fontWeight: 800 }}>
+                  {ch.ambit}
+                </span>
+                <h3 className="card-title" style={{ fontSize: '0.9rem', fontWeight: 700, margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {ch.name}
+                </h3>
+                <span style={{ fontSize: '0.75rem', color: '#86efac', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                  🔴 EN VIVO
+                </span>
+              </div>
+            </button>
+          ))
+        ) : (
+          <div className="empty-state" style={{ gridColumn: '1 / -1', padding: '4rem 2rem' }}>
+            <span className="empty-icon">📺</span>
+            <h3 className="empty-title">No se encontraron canales</h3>
+            <p>Intenta buscando con otro término o seleccionando la categoría "Todos".</p>
+          </div>
+        )}
+      </div>
 
       {/* Streaming Player Modal */}
       {selectedChannel && (
