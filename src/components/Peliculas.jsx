@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import useDpadNavigation from '../hooks/useDpadNavigation';
 import { SkeletonGrid } from './SkeletonLoader';
-import { saveWatchProgress } from '../utils/storage';
+import { saveWatchProgress, toggleFavorite, isFavorite } from '../utils/storage';
 import catalogData from '../data/catalog.json';
 import dramasData from '../data/dramas.json';
 
@@ -1068,6 +1068,28 @@ export default function Peliculas() {
               </div>
               <h2 className="modal-title">{selectedItem.title}</h2>
               <p className="modal-summary">{selectedItem.overview}</p>
+
+              <div style={{ display: 'flex', gap: '1rem', margin: '1.25rem 0' }}>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{
+                    flex: 'none',
+                    padding: '0.75rem 1.5rem',
+                    fontSize: '0.95rem',
+                    background: isFavorite(selectedItem.id) ? 'rgba(239, 68, 68, 0.25)' : 'rgba(255, 255, 255, 0.08)',
+                    border: `1px solid ${isFavorite(selectedItem.id) ? '#ef4444' : 'rgba(255, 255, 255, 0.2)'}`,
+                    color: isFavorite(selectedItem.id) ? '#fca5a5' : '#fff',
+                    boxShadow: isFavorite(selectedItem.id) ? '0 0 15px rgba(239, 68, 68, 0.4)' : 'none'
+                  }}
+                  onClick={async () => {
+                    await toggleFavorite(selectedItem);
+                    setSelectedItem({ ...selectedItem });
+                  }}
+                >
+                  {isFavorite(selectedItem.id) ? '❤️ En Mi Lista' : '🤍 Agregar a Mi Lista'}
+                </button>
+              </div>
               
               {/* Actions box with Terabox downloads or info */}
               <div className="fallback-box">

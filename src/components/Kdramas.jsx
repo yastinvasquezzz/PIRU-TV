@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import useDpadNavigation from '../hooks/useDpadNavigation';
 import { SkeletonGrid } from './SkeletonLoader';
-import { saveWatchProgress } from '../utils/storage';
+import { saveWatchProgress, toggleFavorite, isFavorite } from '../utils/storage';
 
 const SEARCH_FLIX_QUERY = `
   query searchDorama($input: String!) {
@@ -1093,6 +1093,20 @@ export default function Kdramas() {
                     </div>
 
                     <div className="control-right">
+                      <button
+                        className="control-btn"
+                        style={{
+                          background: isFavorite(selectedDrama.id) ? 'rgba(239, 68, 68, 0.25)' : 'rgba(255, 255, 255, 0.05)',
+                          borderColor: isFavorite(selectedDrama.id) ? '#ef4444' : 'var(--border-color)',
+                          color: isFavorite(selectedDrama.id) ? '#fca5a5' : '#fff'
+                        }}
+                        onClick={async () => {
+                          await toggleFavorite(selectedDrama);
+                          setSelectedDrama({ ...selectedDrama });
+                        }}
+                      >
+                        {isFavorite(selectedDrama.id) ? '❤️ En Mi Lista' : '🤍 Mi Lista'}
+                      </button>
                       <button className="control-btn" onClick={() => setIsTheater(true)}>
                         📺 Cine
                       </button>
