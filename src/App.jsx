@@ -2,6 +2,7 @@ import React, { useState, useEffect, lazy, Suspense } from 'react';
 import useDpadNavigation from './hooks/useDpadNavigation';
 import { SkeletonGrid } from './components/SkeletonLoader';
 import AuthModal from './components/AuthModal';
+import WelcomeConfirmedModal from './components/WelcomeConfirmedModal';
 import { supabase } from './lib/supabase';
 
 const Peliculas = lazy(() => import('./components/Peliculas'));
@@ -12,15 +13,26 @@ const MiLista = lazy(() => import('./components/MiLista'));
 function App() {
   const [activeTab, setActiveTab] = useState('peliculas');
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isWelcomeOpen, setIsWelcomeOpen] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
+    // Check if coming from email confirmation link
+    const hash = window.location.hash || '';
+    if (hash.includes('access_token') || hash.includes('type=signup') || hash.includes('type=email_confirmation')) {
+      setIsWelcomeOpen(true);
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user || null);
+      if (event === 'USER_UPDATED' || (event === 'SIGNED_IN' && window.location.hash.includes('access_token'))) {
+        setIsWelcomeOpen(true);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -167,6 +179,11 @@ function App() {
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
         onAuthChange={(user) => setUser(user)}
+      />
+
+      <WelcomeConfirmedModal
+        isOpen={isWelcomeOpen}
+        onClose={() => setIsWelcomeOpen(false)}
       />
     </div>
   );
