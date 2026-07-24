@@ -36,9 +36,19 @@ export default function AuthModal({ isOpen, onClose, onAuthChange }) {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: window.location.origin
+          }
+        });
         if (error) throw error;
-        setMessage({ text: '¡Cuenta creada con éxito! Ya puedes iniciar sesión.', type: 'success' });
+        if (data?.user && data?.user?.identities && data.user.identities.length === 0) {
+          setMessage({ text: '⚠️ Este correo ya está registrado. Por favor inicia sesión.', type: 'error' });
+        } else {
+          setMessage({ text: '¡Te hemos enviado un correo de confirmación! Revisa tu bandeja de entrada.', type: 'success' });
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
