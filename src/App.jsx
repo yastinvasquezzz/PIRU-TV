@@ -37,11 +37,8 @@ function App() {
       setUser(user);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user || null);
-      if (event === 'USER_UPDATED' || (event === 'SIGNED_IN' && window.location.hash.includes('access_token'))) {
-        setIsWelcomeOpen(true);
-      }
     });
 
     return () => subscription.unsubscribe();
