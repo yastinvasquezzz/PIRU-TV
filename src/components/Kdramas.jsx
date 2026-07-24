@@ -905,6 +905,38 @@ export default function Kdramas() {
         </div>
       </div>
 
+      {/* Spotlight Kdrama Hero Banner */}
+      {!searchTerm && page === 1 && itemsToRender.length > 0 && (
+        <div 
+          className="hero-banner"
+          style={{ 
+            backgroundImage: `url(${itemsToRender[0].portada})`,
+            height: '42vh',
+            minHeight: '320px',
+            marginBottom: '2rem'
+          }}
+        >
+          <div className="hero-content">
+            <span className="hero-tag" style={{ background: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)' }}>
+              🌸 Kdrama Destacado del Día
+            </span>
+            <h2 className="hero-title">{itemsToRender[0].titulo}</h2>
+            <p className="hero-overview">
+              {itemsToRender[0].description || 'Drama asiático de alta calidad disponible en audio latino y subtitulado al español.'}
+            </p>
+            <div className="hero-buttons">
+              <button 
+                className="btn-hero-play" 
+                onClick={() => handleOpenDrama(itemsToRender[0])}
+                style={{ background: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)', boxShadow: '0 4px 15px rgba(168, 85, 247, 0.4)' }}
+              >
+                <span>▶ Ver Kdrama</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {isLoading && itemsToRender.length === 0 ? (
         <SkeletonGrid count={12} />
       ) : (

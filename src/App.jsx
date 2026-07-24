@@ -98,7 +98,7 @@ function App() {
             }}
           >
             <span>{user ? '👤' : '🔐'}</span>
-            <span>{user ? (user.email.split('@')[0]) : 'Cuenta / Supabase'}</span>
+            <span>{user ? (user.email.split('@')[0]) : 'Mi Cuenta'}</span>
           </button>
         </div>
       </header>

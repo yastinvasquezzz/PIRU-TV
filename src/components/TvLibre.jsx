@@ -384,6 +384,9 @@ export default function TvLibre() {
             <div className="modal-body">
               <div className="modal-meta">
                 <span className="modal-genre">{selectedChannel.genre || 'General'}</span>
+                <span className="modal-lang" style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5', border: '1px solid #ef4444', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span className="pulse-dot"></span> EN VIVO 🔴
+                </span>
                 <span className="modal-lang">Español</span>
               </div>
               <h2 className="modal-title">{selectedChannel.name}</h2>

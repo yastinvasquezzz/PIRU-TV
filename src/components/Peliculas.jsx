@@ -116,6 +116,8 @@ export default function Peliculas() {
   
   // Dashboard special items
   const [heroItem, setHeroItem] = useState(null);
+  const [heroList, setHeroList] = useState([]);
+  const [heroIndex, setHeroIndex] = useState(0);
   const [top5Items, setTop5Items] = useState([]);
   const [homeCategoriesData, setHomeCategoriesData] = useState({});
 
@@ -199,7 +201,12 @@ export default function Peliculas() {
       const top5 = await Promise.all(
         TOP5_REFS.map(ref => fetchItemDetails(ref.id, ref.type))
       );
-      setTop5Items(top5.filter(Boolean));
+      const cleanTop5 = top5.filter(Boolean);
+      setTop5Items(cleanTop5);
+
+      const heroes = [hero, ...cleanTop5].filter(Boolean);
+      setHeroList(heroes);
+      if (heroes.length > 0) setHeroItem(heroes[0]);
 
       // 3. Fetch all category rows via TMDB Discover (12 items per category) to prevent rate limits
       const dataMap = {};
@@ -245,16 +252,23 @@ export default function Peliculas() {
       );
       
       setHomeCategoriesData(dataMap);
-
-      // Hero fallback if the main fetch fails
-      if (!hero && dataMap['Acción'] && dataMap['Acción'].length > 0) {
-        hero = dataMap['Acción'][0];
-      }
-      if (hero) setHeroItem(hero);
     };
 
     loadDashboard();
   }, []);
+
+  // Auto-rotate Hero Spotlight every 6.5s
+  useEffect(() => {
+    if (heroList.length <= 1) return;
+    const timer = setInterval(() => {
+      setHeroIndex((prev) => {
+        const next = (prev + 1) % heroList.length;
+        setHeroItem(heroList[next]);
+        return next;
+      });
+    }, 6500);
+    return () => clearInterval(timer);
+  }, [heroList]);
 
   // Load Doramasflix Latino Movies when that category is selected
   useEffect(() => {
@@ -666,14 +680,26 @@ export default function Peliculas() {
       ) : activeCategory === 'Home' ? (
         // DASHBOARD HOME STATE (PREMIUM DIRECTORY)
         <div className="dashboard-home">
-          {/* Hero Banner */}
+          {/* Hero Banner with Dynamic Auto-Rotation */}
           {heroItem && (
             <div 
               className="hero-banner"
               style={{ backgroundImage: `url(${heroItem.backdrop || heroItem.poster})` }}
             >
               <div className="hero-content">
-                <span className="hero-tag">Destacado de Hoy</span>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.6rem' }}>
+                  <span className="hero-tag">🔥 Trending #{heroIndex + 1}</span>
+                  {heroItem.rating && (
+                    <span className="hero-tag" style={{ background: 'rgba(255, 255, 255, 0.15)', border: '1px solid rgba(255, 255, 255, 0.2)' }}>
+                      ⭐ {heroItem.rating}
+                    </span>
+                  )}
+                  {heroItem.year && (
+                    <span className="hero-tag" style={{ background: 'rgba(255, 255, 255, 0.15)', border: '1px solid rgba(255, 255, 255, 0.2)' }}>
+                      {heroItem.year}
+                    </span>
+                  )}
+                </div>
                 <h2 className="hero-title">{heroItem.title}</h2>
                 <p className="hero-overview">{heroItem.overview}</p>
                 <div className="hero-buttons">
@@ -685,6 +711,39 @@ export default function Peliculas() {
                   </button>
                 </div>
               </div>
+
+              {/* Slide Dots Controls */}
+              {heroList.length > 1 && (
+                <div style={{
+                  position: 'absolute',
+                  bottom: '1.5rem',
+                  right: '2rem',
+                  zIndex: 10,
+                  display: 'flex',
+                  gap: '0.5rem',
+                  alignItems: 'center'
+                }}>
+                  {heroList.map((h, i) => (
+                    <button
+                      key={h.id || i}
+                      onClick={() => {
+                        setHeroIndex(i);
+                        setHeroItem(heroList[i]);
+                      }}
+                      style={{
+                        width: heroIndex === i ? '24px' : '10px',
+                        height: '10px',
+                        borderRadius: '5px',
+                        border: 'none',
+                        background: heroIndex === i ? '#e50914' : 'rgba(255, 255, 255, 0.4)',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                      title={h.title}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
