@@ -97,7 +97,7 @@ function App() {
             onClick={() => setActiveTab('mi-cuenta')}
             tabIndex={0}
           >
-            {user ? avatar.emoji : '👤'} {user ? (user.email.split('@')[0]) : 'Mi Cuenta'}
+            👤 Mi Cuenta
           </button>
         </nav>
 

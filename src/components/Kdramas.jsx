@@ -911,25 +911,31 @@ export default function Kdramas() {
         <div 
           className="hero-banner"
           style={{ 
-            backgroundImage: `url(${itemsToRender[0].portada})`,
-            height: '42vh',
-            minHeight: '320px',
-            marginBottom: '2rem'
+            backgroundImage: `url(${itemsToRender[0].backdrop || itemsToRender[0].portada})`,
+            height: '46vh',
+            minHeight: '360px',
+            marginBottom: '2.5rem',
+            borderRadius: '24px',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 20%',
+            position: 'relative'
           }}
         >
-          <div className="hero-content">
-            <span className="hero-tag" style={{ background: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)' }}>
+          <div className="hero-content" style={{ maxWidth: '650px' }}>
+            <span className="hero-tag" style={{ background: 'linear-gradient(135deg, #ec4899 0%, #a855f7 100%)', boxShadow: '0 0 15px rgba(236, 72, 153, 0.4)' }}>
               🌸 Kdrama Destacado del Día
             </span>
-            <h2 className="hero-title">{itemsToRender[0].titulo}</h2>
-            <p className="hero-overview">
+            <h2 className="hero-title" style={{ fontSize: '2.8rem', textShadow: '0 4px 20px rgba(0,0,0,0.95)' }}>
+              {itemsToRender[0].titulo}
+            </h2>
+            <p className="hero-overview" style={{ fontSize: '0.95rem', color: '#f1f5f9' }}>
               {itemsToRender[0].description || 'Drama asiático de alta calidad disponible en audio latino y subtitulado al español.'}
             </p>
             <div className="hero-buttons">
               <button 
                 className="btn-hero-play" 
                 onClick={() => handleOpenDrama(itemsToRender[0])}
-                style={{ background: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)', boxShadow: '0 4px 15px rgba(168, 85, 247, 0.4)' }}
+                style={{ background: 'linear-gradient(135deg, #ec4899 0%, #a855f7 100%)', boxShadow: '0 6px 20px rgba(236, 72, 153, 0.5)', borderRadius: '12px' }}
               >
                 <span>▶ Ver Kdrama</span>
               </button>
