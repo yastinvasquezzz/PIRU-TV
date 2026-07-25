@@ -1,0 +1,1316 @@
+[
+  {
+    "id": "latam-1",
+    "name": "3ABN Latino",
+    "logo": "https://i.imgur.com/Ugb4AFo.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://3abn.bozztv.com/3abn2/Lat_live/smil:Lat_live.smil/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-2",
+    "name": "A24 Paraguay",
+    "logo": "https://i.imgur.com/XWBmjBk.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "http://45.184.109.10/live/69393EAE6ADBC65A68F942022362A202/6.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-3",
+    "name": "A&E Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/A%26E_Network_logo.svg/960px-A%26E_Network_logo.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://138.121.15.230:9002/A&E/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-4",
+    "name": "A&E Latin America Brazil (720p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/A%26E_Network_logo.svg/960px-A%26E_Network_logo.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://45.190.28.50/AE_HD/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-5",
+    "name": "A&E Latin America South (720p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/A%26E_Network_logo.svg/960px-A%26E_Network_logo.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://200.91.32.158:8080/ae/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-6",
+    "name": "Adult Swim Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Adult_Swim_2003_logo.svg/960px-Adult_Swim_2003_logo.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://cablered.iptvperu.tv:1936/cablered/adultswing_new/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-7",
+    "name": "Adult Swim Latin America Brazil (720p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Adult_Swim_2003_logo.svg/960px-Adult_Swim_2003_logo.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://45.190.28.50/TRUTV_HD/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-8",
+    "name": "AMC Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/AMC_logo_2019.svg/960px-AMC_logo_2019.svg.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://45.162.193.35/AMC/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-9",
+    "name": "AMC Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/AMC_logo_2019.svg/960px-AMC_logo_2019.svg.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://45.171.108.253:8888/AMC/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-10",
+    "name": "AMC Latin America Brazil (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/AMC_logo_2019.svg/960px-AMC_logo_2019.svg.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://45.190.156.152/AMC/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-11",
+    "name": "AMC Series Latin America (1080p)",
+    "logo": "https://amc-series.s3.amazonaws.com/menu/hbfen1Gom0_k1cyqi7rw4-amc-series-train-w.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://177.245.131.133:8080/AMCSERIES/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-12",
+    "name": "America Paraguay",
+    "logo": "https://i.imgur.com/rCEu3fM.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://45.184.109.10/live/69393EAE6ADBC65A68F942022362A202/83.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-13",
+    "name": "ATV Argentina",
+    "logo": "https://i.ibb.co/rMBVDmZ/atvargentina-x1.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "https://tv.streaming.com.bo/atvargentina/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-14",
+    "name": "AXN Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/AXN_logo_%282015%29.svg/960px-AXN_logo_%282015%29.svg.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://138.121.15.230:9002/AXN/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-15",
+    "name": "AXN Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/AXN_logo_%282015%29.svg/960px-AXN_logo_%282015%29.svg.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://15.204.246.24:8080/AXNHD/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-16",
+    "name": "AXN Latin America Andes (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/AXN_logo_%282015%29.svg/960px-AXN_logo_%282015%29.svg.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://138.186.23.7:8082/AXN/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-17",
+    "name": "AXN Latin America Mexico (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/AXN_logo_%282015%29.svg/960px-AXN_logo_%282015%29.svg.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://177.245.131.133:8080/AXN/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-18",
+    "name": "AXN Latin America South",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/AXN_logo_%282015%29.svg/960px-AXN_logo_%282015%29.svg.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://45.228.235.116:8000/play/a0iy/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-19",
+    "name": "Azteca Honduras (720p)",
+    "logo": "https://i.imgur.com/sxFh1dw.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://mdstrm.com/live-stream-playlist/65a1d2fd7e7f14355550d570.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-20",
+    "name": "BabyTV Latin America (720p)",
+    "logo": "https://i.imgur.com/4BDJ5FT.png",
+    "ambit": "Infantil",
+    "country": "Latin America",
+    "url": "http://138.121.15.230:9002/BABY-TV/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-21",
+    "name": "BBC News Latin America (720p)",
+    "logo": "https://xstreamcp-assets-msp.streamready.in/assets/LIVETV/LIVECHANNEL/LIVETV_LIVETVCHANNEL_BBC_NEWS/images/LOGO_HD/image.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "http://138.121.15.230:9002/BBC-NEWS/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-22",
+    "name": "Beach TV Panama City (720p)",
+    "logo": "https://i.imgur.com/HCQDvEe.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://media4.tripsmarter.com:1935/LiveTV/BTVHD/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-23",
+    "name": "bitMe Latin America (1080p)",
+    "logo": "https://i.imgur.com/JgXQz6c.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://cablered.iptvperu.tv:1936/cablered/bitme_new/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-24",
+    "name": "Bolivia Punto TV",
+    "logo": "https://i.imgur.com/8sQw9Aj.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "https://streaming.hostpannel.lat/hls/fc517baca1d452f22f56a2563f93f500/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-25",
+    "name": "Bolivia TV (1080p)",
+    "logo": "https://i.imgur.com/tKLYYys.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://15.204.246.24:8080/BoliviaTvHD/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-26",
+    "name": "Bonches Latinos TV (720p)",
+    "logo": "https://i.imgur.com/Kp8x0NS.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "https://5790d294af2dc.streamlock.net/latinostv/latinostv/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-27",
+    "name": "Canal Latino 54 (360p)",
+    "logo": "https://i.imgur.com/mKUQoX7.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://videostream.chileservidores.com:8081/latina/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-28",
+    "name": "Chile Channel (720p)",
+    "logo": "https://i.imgur.com/F1it6fh.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "https://v2.tustreaming.cl/chilechannel/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-29",
+    "name": "Chilecito TV (480p)",
+    "logo": "https://i.imgur.com/zGubmgZ.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "https://vivo.solumedia.com:19360/grupoemail/grupoemail.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-30",
+    "name": "ChileVision (1080p)",
+    "logo": "https://i.imgur.com/PRijvR0.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://45.162.193.35/CHILEVISION/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-31",
+    "name": "Chill Latino",
+    "logo": "https://via.placeholder.com/150?text=LATAM",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://stream.ads.ottera.tv/playlist.m3u8?network_id=1085",
+    "isAudio": false
+  },
+  {
+    "id": "latam-32",
+    "name": "Cine Hispano (1080p)",
+    "logo": "https://i.imgur.com/tfgyfrw.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://bantel-cdn1.iptvperu.tv:1935/btnscrtn/cinehispano.stream/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-33",
+    "name": "Cinecanal Mexico (720p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/CinecanalLA.png/960px-CinecanalLA.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://177.245.131.133:8080/CINECANAL/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-34",
+    "name": "CineLatino (720p)",
+    "logo": "https://i.imgur.com/2V0R0xT.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://45.162.193.35/CINELATINO_HD/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-35",
+    "name": "Claro Televisión Dominicana (360p)",
+    "logo": "https://i.imgur.com/fJD7OxB.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://streamunoapp.com:3960/live/claroteledomlive.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-36",
+    "name": "Comedy Central Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Comedy_Central_2018.svg/960px-Comedy_Central_2018.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://181.119.93.83:8000/play/a1di/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-37",
+    "name": "CooTel Nicaragua (1080p)",
+    "logo": "https://via.placeholder.com/150?text=LATAM",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://138.117.4.70:8075/channel9/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-38",
+    "name": "Costa Rica Channel (576p) [Not 24/7]",
+    "logo": "https://i.imgur.com/N4pFVVF.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "https://video0.rogohosting.com:19360/8006/8006.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-39",
+    "name": "De Pelicula Latin America (1080p)",
+    "logo": "https://i.imgur.com/aksM8pa.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://38.19.41.46:8081/DEPELICULA/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-40",
+    "name": "Disney Channel Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/f/ff/2024_Disney_Channel_text_logo.svg",
+    "ambit": "Infantil",
+    "country": "Latin America",
+    "url": "http://45.171.108.253:8888/DISNEY_CHANNEL/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-41",
+    "name": "Disney Channel Latin America Center (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/f/ff/2024_Disney_Channel_text_logo.svg",
+    "ambit": "Infantil",
+    "country": "Latin America",
+    "url": "http://181.78.8.199:8000/play/a0dn/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-42",
+    "name": "Disney Channel Latin America Mexico (720p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/f/ff/2024_Disney_Channel_text_logo.svg",
+    "ambit": "Infantil",
+    "country": "Latin America",
+    "url": "http://45.166.93.156:9999/play/a0f3/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-43",
+    "name": "Disney Channel Latin America North (576p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/f/ff/2024_Disney_Channel_text_logo.svg",
+    "ambit": "Infantil",
+    "country": "Latin America",
+    "url": "http://138.121.15.230:9002/DISNEY-CHANNEL/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-44",
+    "name": "Disney Channel Latin America Panregional HD (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/f/ff/2024_Disney_Channel_text_logo.svg",
+    "ambit": "Infantil",
+    "country": "Latin America",
+    "url": "http://45.134.141.161:2200/ARG/Disney_Channel/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-45",
+    "name": "Disney Jr. Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/e3/2024_Disney_Jr._Logo.svg",
+    "ambit": "Infantil",
+    "country": "Latin America",
+    "url": "http://177.234.249.178:8888/DISNEY-JR/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-46",
+    "name": "Disney Jr. Latin America North HD (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/e3/2024_Disney_Jr._Logo.svg",
+    "ambit": "Infantil",
+    "country": "Latin America",
+    "url": "http://181.78.14.26:4000/play/a073/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-47",
+    "name": "Disney Jr. Latin America South (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/e3/2024_Disney_Jr._Logo.svg",
+    "ambit": "Infantil",
+    "country": "Latin America",
+    "url": "http://45.185.163.75:8000/play/a016/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-48",
+    "name": "Disney Jr. Latin America South HD (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/e3/2024_Disney_Jr._Logo.svg",
+    "ambit": "Infantil",
+    "country": "Latin America",
+    "url": "http://45.134.141.161:2200/ARG/Disney_Junior/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-49",
+    "name": "DreamWorks Channel Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/fr/thumb/5/55/960px-DreamWorks_Animation_SKG_logo_with_fishing_boy.png/330px-1024px-DreamWorks_Animation_SKG_logo_with_fishing_boy.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://138.121.15.230:9002/DREAMWORKS/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-50",
+    "name": "DSports Uruguay",
+    "logo": "https://i.imgur.com/2PoEm1x.png",
+    "ambit": "Deportes",
+    "country": "Latin America",
+    "url": "https://cors-proxy.cooks.fyi/http://147.135.114.221:8001/play/a00m/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-51",
+    "name": "E! Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/E%21_Logo_2012.svg/500px-E%21_Logo_2012.svg.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "http://bantel-cdn1.iptvperu.tv:1935/btnscrtn/entertainment.stream/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-52",
+    "name": "E! Latin America Brazil (720p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/E%21_Logo_2012.svg/500px-E%21_Logo_2012.svg.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "http://45.190.156.152/E/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-53",
+    "name": "E! Latin America Mexico (720p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/E%21_Logo_2012.svg/500px-E%21_Logo_2012.svg.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "http://72.1.184.5:8089/play/a05d/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-54",
+    "name": "Ecuador TV (1080p)",
+    "logo": "https://i.imgur.com/hj6EYwe.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://45.224.97.181:9999/EcuadorTV/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-55",
+    "name": "EWTN Spain & Latin America (720p)",
+    "logo": "https://i.imgur.com/sua70RO.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://138.186.23.7:8082/EWTN/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-56",
+    "name": "FX Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/FX_International_logo.svg/960px-FX_International_logo.svg.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://45.162.193.35/FX/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-57",
+    "name": "FX Latin America Brazil (720p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/FX_International_logo.svg/960px-FX_International_logo.svg.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://167.250.126.140:7777/FX-HD/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-58",
+    "name": "FX Latin America South (720p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/FX_International_logo.svg/960px-FX_International_logo.svg.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://72.1.184.5:8089/play/a05i/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-59",
+    "name": "Garage TV Latin America",
+    "logo": "https://i.imgur.com/FqFxog1.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "https://stream1.sersat.com/hls/garagetv.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-60",
+    "name": "Golf Channel Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Golf_Channel_Logo_2018.png/960px-Golf_Channel_Logo_2018.png",
+    "ambit": "Deportes",
+    "country": "Latin America",
+    "url": "http://72.1.184.5:8089/play/a0cw/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-61",
+    "name": "GolTV Latin America (720p)",
+    "logo": "https://i.imgur.com/pypul3s.png",
+    "ambit": "Deportes",
+    "country": "Latin America",
+    "url": "http://177.234.249.178:8888/GOLTV/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-62",
+    "name": "Hechos Ecuador (1080p) [Not 24/7]",
+    "logo": "https://i.imgur.com/koMQZNX.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "https://online.hechosecuador.com:5443/WebRTCApp/streams/hechosecuador.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-63",
+    "name": "History 2 Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/History2_logo_%282022%29.svg/500px-History2_logo_%282022%29.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://138.121.15.230:9002/HISTORY-2/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-64",
+    "name": "History 2 Latin America Brazil (720p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/History2_logo_%282022%29.svg/500px-History2_logo_%282022%29.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://45.190.28.50/H2_HD/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-65",
+    "name": "History Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/History_%282021%29.svg/500px-History_%282021%29.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://138.121.15.230:9002/HISTORY-CHANNEL/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-66",
+    "name": "Hola! TV Latin America (1080p)",
+    "logo": "https://i.imgur.com/i0Qexxd.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://8.243.126.131:8000/play/a0fg/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-67",
+    "name": "Huacho Peru TV",
+    "logo": "https://i.imgur.com/PevmfqK.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "https://tv.huachotv.com/stream.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-68",
+    "name": "IeanJesus Ecuador (720p)",
+    "logo": "https://i.imgur.com/TyckDSV.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://cloud37.ecuatel.com/iglesia2020/Stream1/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-69",
+    "name": "La Chilena TV",
+    "logo": "https://i.imgur.com/GHJkxaB.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "https://vdochile.com:3134/stream/play.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-70",
+    "name": "Las Estrellas Latin America (1080p)",
+    "logo": "https://i.imgur.com/g5ShxZ7.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://177.234.249.135:8888/LasEstrellas/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-71",
+    "name": "Latino Channel TV (1080p)",
+    "logo": "https://i.imgur.com/FcLIOGp.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "https://cdn.vegasplus.us/vegas/latch/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-72",
+    "name": "Latino Classic TV (1080p)",
+    "logo": "https://via.placeholder.com/150?text=LATAM",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "https://streams2.sofast.tv/v1/master/611d79b11b77e2f571934fd80ca1413453772ac7/4d419a88-a62c-496f-b8a1-984e746f8259/manifest.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-73",
+    "name": "Latino Vibes (1080p) [Geo-blocked]",
+    "logo": "https://via.placeholder.com/150?text=LATAM",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://amg00375-fusemedia-latinovibes-xumo-qyjhw.amagi.tv/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-74",
+    "name": "Legislative Assembly of El Salvador (1080p) [Not 24/7]",
+    "logo": "https://i.imgur.com/OBuiCyb.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "https://streaming.asamblea.gob.sv/hls/plenariahd.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-75",
+    "name": "Lifetime Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Logo_Lifetime_2020.svg/960px-Logo_Lifetime_2020.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://138.121.15.230:9002/LIFETIME/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-76",
+    "name": "Lifetime Latin America Brazil (720p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Logo_Lifetime_2020.svg/960px-Logo_Lifetime_2020.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://138.255.2.6:8084/LIFETIME/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-77",
+    "name": "Lifetime Latin America Mexico (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Logo_Lifetime_2020.svg/960px-Logo_Lifetime_2020.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://177.245.131.133:8080/LIFETIME/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-78",
+    "name": "Lighting Lives Blessing Nations TV Latino (LLBN) (480p)",
+    "logo": "https://i.imgur.com/WsOfy19.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "https://brightstar-latino-pull-secure.akamaized.net/brightstarlatino/stream.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-79",
+    "name": "María Visión Mexico (360p) [Not 24/7]",
+    "logo": "https://i.imgur.com/GylOPxE.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "https://1601580044.rsc.cdn77.org/live/_jcn_/amlst:Mariavision/master.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-80",
+    "name": "MasterChef Argentina",
+    "logo": "https://via.placeholder.com/150?text=LATAM",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://jmp2.uk/plu-69fcaa88e022927e1c94c533.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-81",
+    "name": "MasterChef Colombia",
+    "logo": "https://via.placeholder.com/150?text=LATAM",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://jmp2.uk/plu-69fcaa71ea95ffff0987f555.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-82",
+    "name": "MTV Flow Latino (720p)",
+    "logo": "https://images.pluto.tv/channels/62b218fc511d4b00070ddc0c/colorLogoPNG.png",
+    "ambit": "Música",
+    "country": "Latin America",
+    "url": "https://jmp2.uk/plu-62b218fc511d4b00070ddc0c.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-83",
+    "name": "MTV Flow Latino (720p)",
+    "logo": "https://images.pluto.tv/channels/62b218fc511d4b00070ddc0c/colorLogoPNG.png",
+    "ambit": "Música",
+    "country": "Latin America",
+    "url": "https://jmp2.uk/plu-5d3609cd6a6c78d7672f2a81.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-84",
+    "name": "MTV Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/MTV_2021_%28brand_version%29.svg/960px-MTV_2021_%28brand_version%29.svg.png",
+    "ambit": "Música",
+    "country": "Latin America",
+    "url": "http://179.60.51.134:8888/MTV/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-85",
+    "name": "MTV Pluto TV LatAm (720p)",
+    "logo": "https://images.pluto.tv/channels/5fab088b3279760007d4e4fd/colorLogoPNG_1764875981566.png",
+    "ambit": "Música",
+    "country": "Latin America",
+    "url": "https://jmp2.uk/plu-5fab088b3279760007d4e4fd.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-86",
+    "name": "MyTime Movie Network Mexico (720p)",
+    "logo": "https://i.imgur.com/pw4NZK1.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "https://appletree-mytime-samsungmexico.amagi.tv/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-87",
+    "name": "Nacional Tv Peru (720p)",
+    "logo": "https://i.imgur.com/ad0GNqa.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://bantel-cdn1.iptvperu.tv:1935/btnscrtn/nacionaltv_peru.stream/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-88",
+    "name": "National Geographic Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Natgeologo.svg/960px-Natgeologo.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://45.162.193.35/NATGEO/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-89",
+    "name": "National Geographic Latin America South (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Natgeologo.svg/960px-Natgeologo.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://bantel-cdn1.iptvperu.tv:1935/btnscrtn/NatGeo.stream/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-90",
+    "name": "Nick Jr. Latin America (1080p)",
+    "logo": "https://i.imgur.com/KT4tdQs.png",
+    "ambit": "Infantil",
+    "country": "Latin America",
+    "url": "http://138.186.23.7:8082/NICKJR/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-91",
+    "name": "Nickelodeon Latin America (1080p)",
+    "logo": "https://i.imgur.com/E84jnP8.png",
+    "ambit": "Infantil",
+    "country": "Latin America",
+    "url": "http://138.186.23.7:8082/NICK/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-92",
+    "name": "Orbita Chile TV (1080p)",
+    "logo": "https://i.imgur.com/gbNh79Z.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "https://orbitachiletv.org/hls/0/stream.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-93",
+    "name": "Paraguay TV (1080p)",
+    "logo": "https://i.imgur.com/fkK7i8g.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "https://stream.paraguaytv.gov.py/memfs/bbe36fed-9b49-4d1d-adaa-4bd6d1b2e386.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-94",
+    "name": "Paramount Network Latin America (720p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Paramount_Network.svg/960px-Paramount_Network.svg.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://138.186.23.7:8082/PARAMOUNT/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-95",
+    "name": "Pasiones Latin America (1080p)",
+    "logo": "https://i.imgur.com/VGnbWjO.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://45.162.193.35/PASIONESHD/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-96",
+    "name": "Persiana Latino",
+    "logo": "https://via.placeholder.com/150?text=LATAM",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "https://latinohls.persiana.live/hls/stream.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-97",
+    "name": "Pichilemu TV (1080p)",
+    "logo": "https://i.imgur.com/eaJVCwM.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "https://5ff3d9babae13.streamlock.net/8028/8028/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-98",
+    "name": "Pluto TV Novelas de Venezuela",
+    "logo": "https://images.pluto.tv/channels/6474a86917f5e100089a0c1c/colorLogoPNG_1765471713312.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "https://jmp2.uk/plu-6474a86917f5e100089a0c1c.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-99",
+    "name": "PRIDEtv LATAM (1080p)",
+    "logo": "https://neotv.cl/img/pridetv-512.png",
+    "ambit": "Música",
+    "country": "Latin America",
+    "url": "https://backend.energeek.cl/webtv/pridetvweb/index.m3u8?token=ZZDemoIPTVGH",
+    "isAudio": false
+  },
+  {
+    "id": "latam-100",
+    "name": "Radio Nacional del Paraguay",
+    "logo": "https://i.imgur.com/ksh20I5.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://stream.paraguaytv.gov.py/memfs/ea8a90e9-10f7-4b00-8e88-42f4a838d74b.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-101",
+    "name": "RQP Paraguay (1080i)",
+    "logo": "https://i.imgur.com/0cUc4Nt.png",
+    "ambit": "Música",
+    "country": "Latin America",
+    "url": "https://alba-py-rqp-rqp.stream.mediatiquestream.com/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-102",
+    "name": "RSV Honduras (720p)",
+    "logo": "https://i.imgur.com/yr7Ellh.jpg",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://stmv2.srvif.com/rsvhonduras/rsvhonduras/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-103",
+    "name": "Senal Colombia (1080p)",
+    "logo": "https://i.imgur.com/Y9x16vl.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://209.14.115.253:8081/SENALCOLOMBIA/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-104",
+    "name": "Soap Latino (720p)",
+    "logo": "https://via.placeholder.com/150?text=LATAM",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://fast-channels-network-soaplatino-1-it.rakuten.wurl.tv/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-105",
+    "name": "Sony Movies Latin America (720p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Sony_Movies_Logo.svg/500px-Sony_Movies_Logo.svg.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://40.160.24.55/SONY_MOVIES/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-106",
+    "name": "Star Channel Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Star_Channel_2020.svg/960px-Star_Channel_2020.svg.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://45.162.193.35/STAR_CHANNEL/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-107",
+    "name": "Star Channel Latin America Central America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Star_Channel_2020.svg/960px-Star_Channel_2020.svg.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "https://streamer.metronethn.com/StarChannel/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-108",
+    "name": "Stingray Romance Latino (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Stingray_Music_logo.svg/960px-Stingray_Music_logo.svg.png",
+    "ambit": "Música",
+    "country": "Latin America",
+    "url": "https://lotus.stingray.com/manifest/ose-202ads-montreal/samsungtvplus/master.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-109",
+    "name": "Studio Universal Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/StudioUniversal2016.png/960px-StudioUniversal2016.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://45.162.193.35/STUDIO-UNIVERSAL/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-110",
+    "name": "Studio Universal Latin America Brazil (720p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/StudioUniversal2016.png/960px-StudioUniversal2016.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://45.190.156.152/STUDIO_UNIVERSAL/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-111",
+    "name": "SUMtv Latino (1080p)",
+    "logo": "https://i.imgur.com/ZObFN8Z.png",
+    "ambit": "Música",
+    "country": "Latin America",
+    "url": "https://bozztv.com/uni10rtmp/ssstv2-cdn/smil:ssstv2web.smil/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-112",
+    "name": "TDI Colombia (720p)",
+    "logo": "https://i.imgur.com/svNeBNv.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://live.amelbatv.co:81/tdicolombiatv/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-113",
+    "name": "Tele Dominicana TV (720p)",
+    "logo": "https://dominicanchannels.com/wp-content/uploads/teledominicana.png",
+    "ambit": "Música",
+    "country": "Latin America",
+    "url": "https://vdopanel.jlahozconsulting.com/p/3417/hybrid/play.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-114",
+    "name": "Tele Fe Bolivia (720p)",
+    "logo": "https://via.placeholder.com/150?text=LATAM",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://59d39900ebfb8.streamlock.net/telefehd/telefehd/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-115",
+    "name": "TeleSUR Costa Rica (720p) [Not 24/7]",
+    "logo": "https://i.imgur.com/KUpgeOf.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "https://s1.tvdatta.com:3582/live/telesurlive.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-116",
+    "name": "TeveColombia (720p) [Not 24/7]",
+    "logo": "https://i.imgur.com/vPwiJTw.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "https://cloud6.livescast.com:3900/live/tevecolombialive.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-117",
+    "name": "Tigo Sports TV El Salvador (720p) [Geo-blocked]",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Tigo_Sports_2025.png/960px-Tigo_Sports_2025.png",
+    "ambit": "Deportes",
+    "country": "Latin America",
+    "url": "https://channel03.tigosports.com.sv/out/v1/31f36d52d558475ca18799d8ca5e4b40/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-118",
+    "name": "Tlnovelas Latin America (1080p)",
+    "logo": "https://i.imgur.com/Rvm38Mu.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://177.234.249.135:8888/Telenovelas/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-119",
+    "name": "TV5Monde Latin America (720p)",
+    "logo": "https://i.imgur.com/x8rjGhp.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://45.162.231.38:7779/TV5_Monde/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-120",
+    "name": "TV45-3ABN Nicaragua (720p) [Not 24/7]",
+    "logo": "https://i.imgur.com/sI0msrn.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "https://hdbox.chunklistv.com/live?stream=3abn-nicaragua",
+    "isAudio": false
+  },
+  {
+    "id": "latam-121",
+    "name": "TV Chile (1080p)",
+    "logo": "https://i.imgur.com/oYFto0V.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "https://edgectc.com/TV_CHILE_HD/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-122",
+    "name": "TV Maná Argentina (576p) [Not 24/7]",
+    "logo": "https://i.imgur.com/jars0mP.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "https://w2.manasat.com/tvmana-ar/smil:tvmana-ar.smil/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-123",
+    "name": "TV Peru (1080p)",
+    "logo": "https://i.imgur.com/6io0IrX.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://181.119.93.83:8000/play/a25t/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-124",
+    "name": "TV Peru Noticias (576p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/TV_Per%C3%BA_Noticias_-_2019_logo.png/960px-TV_Per%C3%BA_Noticias_-_2019_logo.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "http://bantel-cdn1.iptvperu.tv:1935/btnscrtn/tvperunoticias.stream/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-125",
+    "name": "TV Peruanisima (720p)",
+    "logo": "https://i.imgur.com/m50qAVY.png",
+    "ambit": "Música",
+    "country": "Latin America",
+    "url": "https://k20.usastreams.com:8081/tvperuanisima/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-126",
+    "name": "TV Universal Ecuador (720p)",
+    "logo": "https://i.imgur.com/TIsk5zN.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "https://cdn.mycloudstream.io/hls/live/broadcast/uwcedjt2/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-127",
+    "name": "TVCARiB Latino (720p) [Not 24/7]",
+    "logo": "https://i.imgur.com/fvGlwKo.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "https://cdn.mycloudstream.io/hls/live/broadcast/xn44vdc5/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-128",
+    "name": "TVM El Salvador (720p)",
+    "logo": "https://i.imgur.com/fyCC8R6.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "https://twitch-m3u8.bastypro112.workers.dev/tvm_esa/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-129",
+    "name": "TVONE Nicaragua (720p) [Not 24/7]",
+    "logo": "https://i.imgur.com/FNk6rdz.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "https://hdbox.chunklistv.com/live?stream=tvone",
+    "isAudio": false
+  },
+  {
+    "id": "latam-130",
+    "name": "Universal TV Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Universal_TV_logo.svg/960px-Universal_TV_logo.svg.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://138.121.15.230:9002/UNIVERSAL-CHANNEL/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-131",
+    "name": "Universal TV Latin America Brazil (720p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Universal_TV_logo.svg/960px-Universal_TV_logo.svg.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://45.190.156.152/UNIVERSAL_TV/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-132",
+    "name": "Universal TV Latin America Mexico (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Universal_TV_logo.svg/960px-Universal_TV_logo.svg.png",
+    "ambit": "Cine",
+    "country": "Latin America",
+    "url": "http://177.245.131.133:8080/UNIVERSAL/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-133",
+    "name": "Univision Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Logo_Univision_2019.svg/960px-Logo_Univision_2019.svg.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://138.121.15.230:9002/UNIVISION/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-134",
+    "name": "Univision Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Logo_Univision_2019.svg/960px-Logo_Univision_2019.svg.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://177.234.249.178:8888/UNIVISION/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-135",
+    "name": "USA Network Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/USA_Network_logo_%282016%29.svg/960px-USA_Network_logo_%282016%29.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://138.121.15.230:9002/USA/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-136",
+    "name": "USA Network Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/USA_Network_logo_%282016%29.svg/960px-USA_Network_logo_%282016%29.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://138.186.23.7:8082/SYFY/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-137",
+    "name": "USA Network Latin America Brazil (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/USA_Network_logo_%282016%29.svg/960px-USA_Network_logo_%282016%29.svg.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://45.190.156.152/USA/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-138",
+    "name": "Vevo Íconos Latinos",
+    "logo": "https://via.placeholder.com/150?text=LATAM",
+    "ambit": "Música",
+    "country": "Latin America",
+    "url": "https://jmp2.uk/plu-64d161c93c785e0008df575e.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-139",
+    "name": "Vevo Latino (1080p)",
+    "logo": "https://i.imgur.com/D7SwmuB.png",
+    "ambit": "Música",
+    "country": "Latin America",
+    "url": "https://amg00056-amg00056c13-rakuten-es-3246.playouts.now.amagi.tv/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-140",
+    "name": "Viva Nicaragua Canal 13 (720p)",
+    "logo": "https://i.imgur.com/9q7Ajz4.png",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "http://45.171.108.253:8888/VIVA/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-141",
+    "name": "Vive TV Colombia (1080p)",
+    "logo": "https://i.imgur.com/25CFHpB.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://192.144.113.132:1935/live/ViveTV/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-142",
+    "name": "VM Latino (720p) [Not 24/7]",
+    "logo": "https://i.imgur.com/Dvo1b82.png",
+    "ambit": "Noticias",
+    "country": "Latin America",
+    "url": "https://59ef525c24caa.streamlock.net/vmtv/vmlatino/playlist.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-143",
+    "name": "XITE Nuevo Latino (1080p)",
+    "logo": "https://via.placeholder.com/150?text=LATAM",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://d3bsgqzbpkrvbb.cloudfront.net/XITE_Nuevo_Latino.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-144",
+    "name": "XITE Nuevo Latino (1080p)",
+    "logo": "https://i.imgur.com/2qyl2y3.png",
+    "ambit": "Música",
+    "country": "Latin America",
+    "url": "https://d3bsgqzbpkrvbb.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-w288eaw03izg1/XITE_Nuevo_Latino.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-145",
+    "name": "XITE Siempre Latino (1080p)",
+    "logo": "https://via.placeholder.com/150?text=LATAM",
+    "ambit": "General",
+    "country": "Latin America",
+    "url": "https://d1xc25jm9e0l4b.cloudfront.net/XITE_Siempre_Latino.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-146",
+    "name": "XITE Siempre Latino (1080p)",
+    "logo": "https://i.imgur.com/bwmIEgG.png",
+    "ambit": "Música",
+    "country": "Latin America",
+    "url": "https://d1xc25jm9e0l4b.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-xplkt8i7m24dc/XITE_Siempre_Latino.m3u8",
+    "isAudio": false
+  }
+]

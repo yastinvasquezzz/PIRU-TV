@@ -3,16 +3,16 @@ import Hls from 'hls.js';
 import useDpadNavigation from '../hooks/useDpadNavigation';
 import { saveWatchProgress } from '../utils/storage';
 import { castWithWebVideoCaster } from '../utils/wvcCast';
-import customIptvChannels from '../data/custom_iptv.json';
+import latinAmericaChannels from '../data/latin_america_iptv.json';
 
 const AMBIT_CATEGORIES = [
   'Todos',
-  'Noticias',
-  'Deportes',
   'Cine',
-  'Música',
   'Infantil',
+  'Deportes',
+  'Noticias',
   'Entretenimiento',
+  'Música',
   'General'
 ];
 
@@ -120,7 +120,7 @@ function VideoPlayer({ streamUrl, poster, isAudio, channelName }) {
       {isLoading && (
         <div style={{ position: 'absolute', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', color: '#fff' }}>
           <div className="player-loading-spinner" />
-          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Conectando a señal IPTV...</span>
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Conectando a señal IPTV M3U...</span>
         </div>
       )}
 
@@ -128,17 +128,17 @@ function VideoPlayer({ streamUrl, poster, isAudio, channelName }) {
         <div style={{ padding: '2rem 1.5rem', textAlign: 'center', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', background: 'linear-gradient(135deg, rgba(20,20,32,0.98), rgba(10,10,18,0.99))' }}>
           <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>📺</div>
           <h4 style={{ margin: '0 0 0.5rem 0', color: '#fff', fontFamily: 'var(--font-title)', fontSize: '1.2rem' }}>
-            Señal con Restricción de Origen (CORS / Geobloqueo)
+            Señal M3U con Restricción de Origen (CORS / Geobloqueo)
           </h4>
           <p style={{ fontSize: '0.88rem', color: '#cbd5e1', maxWidth: '480px', lineHeight: '1.5', margin: '0 0 1.25rem 0' }}>
-            Este canal requiere reproductor directo o transmisión a Smart TV con <strong>Web Video Caster</strong>.
+            Transmite la señal en vivo directamente a tu Smart TV con <strong>Web Video Caster</strong>.
           </p>
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
             <button
               type="button"
               className="btn-primary"
               style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', border: 'none', padding: '0.75rem 1.25rem', borderRadius: '10px', fontSize: '0.88rem', fontWeight: 800 }}
-              onClick={() => castWithWebVideoCaster(streamUrl, channelName || 'Canal IPTV')}
+              onClick={() => castWithWebVideoCaster(streamUrl, channelName || 'Canal LATAM')}
             >
               📱 Transmitir a TV (Web Video Caster)
             </button>
@@ -175,18 +175,82 @@ export default function TvLibre() {
   const [activeAmbit, setActiveAmbit] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedChannel, setSelectedChannel] = useState(null);
+  const [channels, setChannels] = useState(latinAmericaChannels);
+
+  // Live M3U fetch from iptv-org index.m3u
+  useEffect(() => {
+    const fetchLiveM3u = async () => {
+      try {
+        const res = await fetch('https://iptv-org.github.io/iptv/index.m3u');
+        if (res.ok) {
+          const text = await res.text();
+          const lines = text.split('\n');
+          const parsedChannels = [];
+          let currentExt = null;
+
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (line.startsWith('#EXTINF:')) {
+              currentExt = line;
+            } else if (line.startsWith('http://') || line.startsWith('https://')) {
+              if (currentExt) {
+                const logoMatch = currentExt.match(/tvg-logo="([^"]+)"/);
+                const groupMatch = currentExt.match(/group-title="([^"]+)"/);
+                const titleParts = currentExt.split(',');
+                const name = titleParts[titleParts.length - 1].trim();
+
+                const isLatin = name.toLowerCase().includes('latin america') || 
+                                name.toLowerCase().includes('latam') || 
+                                name.toLowerCase().includes('(latino)') ||
+                                (groupMatch && groupMatch[1].toLowerCase().includes('latin america'));
+
+                if (isLatin) {
+                  let ambit = 'General';
+                  const lower = name.toLowerCase();
+                  if (lower.includes('news') || lower.includes('noticia') || lower.includes('24')) ambit = 'Noticias';
+                  else if (lower.includes('sport') || lower.includes('deporte') || lower.includes('espn')) ambit = 'Deportes';
+                  else if (lower.includes('cine') || lower.includes('movie') || lower.includes('film') || lower.includes('hbo') || lower.includes('universal') || lower.includes('star') || lower.includes('studio')) ambit = 'Cine';
+                  else if (lower.includes('music') || lower.includes('mtv') || lower.includes('vevo')) ambit = 'Música';
+                  else if (lower.includes('disney') || lower.includes('nick') || lower.includes('cartoon') || lower.includes('kids') || lower.includes('infantil')) ambit = 'Infantil';
+                  else if (lower.includes('tv') || lower.includes('channel') || lower.includes('tnt') || lower.includes('fx')) ambit = 'Entretenimiento';
+
+                  parsedChannels.push({
+                    id: 'latam-live-' + (parsedChannels.length + 1),
+                    name: name,
+                    logo: logoMatch ? logoMatch[1] : 'https://via.placeholder.com/150?text=LATAM',
+                    ambit: ambit,
+                    country: 'Latin America',
+                    url: line,
+                    isAudio: false
+                  });
+                }
+              }
+              currentExt = null;
+            }
+          }
+
+          if (parsedChannels.length > 0) {
+            setChannels(parsedChannels);
+          }
+        }
+      } catch (e) {
+        // Fallback to pre-parsed latinAmericaChannels dataset
+      }
+    };
+
+    fetchLiveM3u();
+  }, []);
 
   // Filter channels by Ambit & Search
   const filteredChannels = useMemo(() => {
-    return customIptvChannels.filter(ch => {
+    return channels.filter(ch => {
       const matchAmbit = activeAmbit === 'Todos' || ch.ambit === activeAmbit;
       const matchSearch = !searchTerm.trim() || 
         ch.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        ch.ambit.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        ch.country.toLowerCase().includes(searchTerm.toLowerCase());
+        ch.ambit.toLowerCase().includes(searchTerm.toLowerCase());
       return matchAmbit && matchSearch;
     });
-  }, [activeAmbit, searchTerm]);
+  }, [channels, activeAmbit, searchTerm]);
 
   const handleOpenChannel = (channel) => {
     setSelectedChannel(channel);
@@ -194,7 +258,7 @@ export default function TvLibre() {
       id: channel.id,
       titulo: channel.name,
       portada: channel.logo,
-      type: 'tv-iptv'
+      type: 'tv-iptv-m3u'
     });
   };
 
@@ -213,10 +277,10 @@ export default function TvLibre() {
       <div className="category-header">
         <div>
           <h1 className="section-title" style={{ margin: 0 }}>
-            📺 IPTV Libre Pro ({customIptvChannels.length} Canales)
+            🌎 IPTV Latin America M3U ({filteredChannels.length} Canales)
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.3rem' }}>
-            Lista de canales de televisión en abierto libres, funcionales y en alta definición
+            Lista oficial M3U IPTV de canales en vivo para Latinoamérica (Disney, Universal, Univision, USA Network, TNT, Star, etc.)
           </p>
         </div>
 
@@ -224,7 +288,7 @@ export default function TvLibre() {
           <span className="search-icon">🔍</span>
           <input
             type="text"
-            placeholder="Buscar canal de TV (ej. Noticias, Deportes)..."
+            placeholder="Buscar canal Latin America (ej. Disney, Universal, Univision)..."
             className="search-input"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -242,15 +306,15 @@ export default function TvLibre() {
             onClick={() => setActiveAmbit(ambit)}
             style={{ whiteSpace: 'nowrap' }}
           >
-            {ambit === 'Todos' ? `📺 Todos los Canales (${customIptvChannels.length})` : ambit}
+            {ambit === 'Todos' ? `📺 Todos (${channels.length})` : ambit}
           </button>
         ))}
       </div>
 
       {/* Main Grid */}
-      <div className="media-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))' }}>
+      <div className="media-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}>
         {filteredChannels.length > 0 ? (
-          filteredChannels.slice(0, 300).map((ch) => (
+          filteredChannels.map((ch) => (
             <button
               type="button"
               key={ch.id}
@@ -263,18 +327,18 @@ export default function TvLibre() {
                   src={ch.logo}
                   alt={ch.name}
                   style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-                  onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/80?text=TV'; }}
+                  onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/80?text=LATAM'; }}
                 />
               </div>
               <div className="card-info" style={{ textAlign: 'center', padding: 0 }}>
                 <span className="card-genre" style={{ fontSize: '0.72rem', color: '#ef4444', textTransform: 'uppercase', fontWeight: 800 }}>
-                  {ch.ambit} • {ch.country}
+                  {ch.ambit} • LATAM
                 </span>
-                <h3 className="card-title" style={{ fontSize: '0.9rem', fontWeight: 700, margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <h3 className="card-title" style={{ fontSize: '0.88rem', fontWeight: 700, margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {ch.name}
                 </h3>
                 <span style={{ fontSize: '0.75rem', color: '#86efac', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-                  🔴 EN VIVO
+                  🔴 EN VIVO M3U
                 </span>
               </div>
             </button>
@@ -307,9 +371,9 @@ export default function TvLibre() {
               <div className="modal-meta">
                 <span className="modal-genre">{selectedChannel.ambit}</span>
                 <span className="modal-lang" style={{ background: 'rgba(239, 68, 68, 0.18)', color: '#fca5a5', border: '1px solid #ef4444' }}>
-                  🔴 EN VIVO IPTV
+                  🔴 EN VIVO M3U
                 </span>
-                <span className="modal-lang">{selectedChannel.country}</span>
+                <span className="modal-lang">Latin America</span>
               </div>
 
               <h2 className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
