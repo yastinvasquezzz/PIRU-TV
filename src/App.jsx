@@ -8,7 +8,6 @@ import { getSelectedAvatar } from './utils/avatars';
 const Peliculas = lazy(() => import('./components/Peliculas'));
 const TvLibre = lazy(() => import('./components/TvLibre'));
 const Kdramas = lazy(() => import('./components/Kdramas'));
-const Animes = lazy(() => import('./components/Animes'));
 const MiLista = lazy(() => import('./components/MiLista'));
 const MiCuenta = lazy(() => import('./components/MiCuenta'));
 
@@ -46,7 +45,14 @@ function App() {
   }, []);
 
   // Handle Smart TV Remote Control (Back button / ESC key)
-  useDpadNavigation();
+  useDpadNavigation({
+    onBack: () => {
+      if (activeTab !== 'peliculas') {
+        setActiveTab('peliculas');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  });
 
   return (
     <div className="app-container">
@@ -78,13 +84,6 @@ function App() {
             tabIndex={0}
           >
             🌸 Kdramas
-          </button>
-          <button 
-            className={`nav-tab ${activeTab === 'animes' ? 'active' : ''}`}
-            onClick={() => setActiveTab('animes')}
-            tabIndex={0}
-          >
-            ⛩️ Animes
           </button>
           <button 
             className={`nav-tab ${activeTab === 'mi-lista' ? 'active' : ''}`}
@@ -136,7 +135,6 @@ function App() {
           {activeTab === 'peliculas' && <Peliculas />}
           {activeTab === 'tv-libre' && <TvLibre />}
           {activeTab === 'kdramas' && <Kdramas />}
-          {activeTab === 'animes' && <Animes />}
           {activeTab === 'mi-lista' && <MiLista />}
           {activeTab === 'mi-cuenta' && <MiCuenta />}
         </Suspense>
@@ -163,7 +161,7 @@ function App() {
           tabIndex={0}
         >
           <span className="mobile-nav-icon">📺</span>
-          <span className="mobile-nav-label">TV</span>
+          <span className="mobile-nav-label">TV Libre</span>
         </button>
         <button 
           className={`mobile-nav-item ${activeTab === 'kdramas' ? 'active' : ''}`}
@@ -175,17 +173,6 @@ function App() {
         >
           <span className="mobile-nav-icon">🌸</span>
           <span className="mobile-nav-label">Kdramas</span>
-        </button>
-        <button 
-          className={`mobile-nav-item ${activeTab === 'animes' ? 'active' : ''}`}
-          onClick={() => {
-            setActiveTab('animes');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          tabIndex={0}
-        >
-          <span className="mobile-nav-icon">⛩️</span>
-          <span className="mobile-nav-label">Animes</span>
         </button>
         <button 
           className={`mobile-nav-item ${activeTab === 'mi-lista' ? 'active' : ''}`}
