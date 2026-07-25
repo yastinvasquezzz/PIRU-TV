@@ -138,7 +138,11 @@ function VideoPlayer({ streamUrl, poster, isAudio, format, webUrl, onErrorAutoNe
       });
       hlsInstance.loadSource(cleanUrl);
       hlsInstance.attachMedia(videoElement);
-      hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+      hlsInstance.on(Hls.Events.MANIFEST_PARSED, (_event, data) => {
+        if (data && data.levels && data.levels.length > 0) {
+          // Force select highest video track so video frames decode immediately
+          hlsInstance.currentLevel = data.levels.length - 1;
+        }
         handleSuccess();
         videoElement.play().catch(handleError);
       });
@@ -225,8 +229,16 @@ function VideoPlayer({ streamUrl, poster, isAudio, format, webUrl, onErrorAutoNe
           controls
           autoPlay
           playsInline
-          poster={poster}
-          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            backgroundColor: '#000',
+            zIndex: 2
+          }}
         />
       )}
     </div>
