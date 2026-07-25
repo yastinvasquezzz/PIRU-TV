@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import Hls from 'hls.js';
 import useDpadNavigation from '../hooks/useDpadNavigation';
 import { saveWatchProgress } from '../utils/storage';
 import { castWithWebVideoCaster } from '../utils/wvcCast';
@@ -90,7 +91,7 @@ function VideoPlayer({ streamUrl, poster, isAudio, format, webUrl, onErrorAutoNe
     const videoElement = videoRef.current;
     if (!videoElement || !cleanUrl) return;
 
-    // 3.5-second timeout fallback: if Option 1 fails or CORS blocks, auto-switch to next option
+    // 4-second timeout fallback: if Option 1 fails or CORS blocks, auto-switch to next option
     const timeoutTimer = setTimeout(() => {
       if (isLoading) {
         console.warn('TDT Stream playback timeout for URL:', cleanUrl);
@@ -102,7 +103,7 @@ function VideoPlayer({ streamUrl, poster, isAudio, format, webUrl, onErrorAutoNe
           if (onErrorAutoNext) onErrorAutoNext();
         }
       }
-    }, 3500);
+    }, 4000);
 
     const handleSuccess = () => {
       clearTimeout(timeoutTimer);
@@ -124,24 +125,24 @@ function VideoPlayer({ streamUrl, poster, isAudio, format, webUrl, onErrorAutoNe
     if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
       videoElement.src = cleanUrl;
       videoElement.play().then(handleSuccess).catch(handleError);
-    } else if (window.Hls && window.Hls.isSupported()) {
-      hlsInstance = new window.Hls({
+    } else if (Hls.isSupported()) {
+      hlsInstance = new Hls({
         enableWorker: true,
         lowLatencyMode: true,
         backBufferLength: 60,
-        manifestLoadingTimeOut: 5000,
-        manifestLoadingMaxRetry: 1,
+        manifestLoadingTimeOut: 6000,
+        manifestLoadingMaxRetry: 2,
         xhrSetup: function (xhr) {
           xhr.withCredentials = false;
         }
       });
       hlsInstance.loadSource(cleanUrl);
       hlsInstance.attachMedia(videoElement);
-      hlsInstance.on(window.Hls.Events.MANIFEST_PARSED, () => {
+      hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
         handleSuccess();
         videoElement.play().catch(handleError);
       });
-      hlsInstance.on(window.Hls.Events.ERROR, (_event, data) => {
+      hlsInstance.on(Hls.Events.ERROR, (_event, data) => {
         if (data.fatal) {
           console.warn('HLS Fatal Error:', data);
           handleError();
@@ -245,15 +246,7 @@ export default function TvLibre() {
   const [selectedChannel, setSelectedChannel] = useState(null);
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
 
-  // Load HLS.js library dynamically if not present
-  useEffect(() => {
-    if (!window.Hls) {
-      const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
-      script.async = true;
-      document.body.appendChild(script);
-    }
-  }, []);
+
 
   // Background fetch to update TDTChannels dataset if CORS permits or via proxy
   useEffect(() => {
