@@ -66,10 +66,15 @@ async function parseM3u() {
     }
   }
 
-  // Sort channels so Disney Jr. and top premium channels appear at index 0!
+  // Sort channels so Disney Jr. Latin America is strictly index 0!
   latinChannels.sort((a, b) => {
-    const aTop = a.name.toLowerCase().includes('disney jr') || a.name.toLowerCase().includes('universal tv') || a.name.toLowerCase().includes('univision');
-    const bTop = b.name.toLowerCase().includes('disney jr') || b.name.toLowerCase().includes('universal tv') || b.name.toLowerCase().includes('univision');
+    const aExact = a.name === 'Disney Jr. Latin America (1080p)';
+    const bExact = b.name === 'Disney Jr. Latin America (1080p)';
+    if (aExact && !bExact) return -1;
+    if (!aExact && bExact) return 1;
+
+    const aTop = a.name.toLowerCase().includes('disney jr');
+    const bTop = b.name.toLowerCase().includes('disney jr');
     if (aTop && !bTop) return -1;
     if (!aTop && bTop) return 1;
     return a.name.localeCompare(b.name);

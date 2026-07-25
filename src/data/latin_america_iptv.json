@@ -1,5 +1,14 @@
 [
   {
+    "id": "latam-63",
+    "name": "Disney Jr. Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/e3/2024_Disney_Jr._Logo.svg",
+    "ambit": "Infantil & Animación",
+    "country": "Latin America",
+    "url": "http://177.234.249.178:8888/DISNEY-JR/index.m3u8",
+    "isAudio": false
+  },
+  {
     "id": "latam-61",
     "name": "Disney Jr. (1080p)",
     "logo": "https://upload.wikimedia.org/wikipedia/commons/e/e3/2024_Disney_Jr._Logo.svg",
@@ -15,15 +24,6 @@
     "ambit": "Infantil & Animación",
     "country": "Latin America",
     "url": "https://saran-live.ercdn.net/disneyjunior/index.m3u8",
-    "isAudio": false
-  },
-  {
-    "id": "latam-63",
-    "name": "Disney Jr. Latin America (1080p)",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/e3/2024_Disney_Jr._Logo.svg",
-    "ambit": "Infantil & Animación",
-    "country": "Latin America",
-    "url": "http://177.234.249.178:8888/DISNEY-JR/index.m3u8",
     "isAudio": false
   },
   {
@@ -51,87 +51,6 @@
     "ambit": "Infantil & Animación",
     "country": "Latin America",
     "url": "http://45.134.141.161:2200/ARG/Disney_Junior/index.m3u8",
-    "isAudio": false
-  },
-  {
-    "id": "latam-96",
-    "name": "Imagen Universal TV",
-    "logo": "https://i.imgur.com/DP6HmDV.png",
-    "ambit": "Cine & Películas",
-    "country": "Latin America",
-    "url": "https://imagenuniversaltv.net:3771/live/iutvlive.m3u8",
-    "isAudio": false
-  },
-  {
-    "id": "latam-170",
-    "name": "Universal TV Latin America (1080p)",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Universal_TV_logo.svg/960px-Universal_TV_logo.svg.png",
-    "ambit": "Cine & Películas",
-    "country": "Latin America",
-    "url": "http://138.121.15.230:9002/UNIVERSAL-CHANNEL/index.m3u8",
-    "isAudio": false
-  },
-  {
-    "id": "latam-171",
-    "name": "Universal TV Latin America Brazil (720p)",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Universal_TV_logo.svg/960px-Universal_TV_logo.svg.png",
-    "ambit": "Cine & Películas",
-    "country": "Latin America",
-    "url": "http://45.190.156.152/UNIVERSAL_TV/index.m3u8",
-    "isAudio": false
-  },
-  {
-    "id": "latam-172",
-    "name": "Universal TV Latin America Mexico (1080p)",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Universal_TV_logo.svg/960px-Universal_TV_logo.svg.png",
-    "ambit": "Cine & Películas",
-    "country": "Latin America",
-    "url": "http://177.245.131.133:8080/UNIVERSAL/index.m3u8",
-    "isAudio": false
-  },
-  {
-    "id": "latam-174",
-    "name": "Univision (1080p)",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Logo_Univision_2019.svg/960px-Logo_Univision_2019.svg.png",
-    "ambit": "Entretenimiento",
-    "country": "Latin America",
-    "url": "http://200.115.120.1:8000/play/ca106/index.m3u8",
-    "isAudio": false
-  },
-  {
-    "id": "latam-175",
-    "name": "Univision Latin America (1080p)",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Logo_Univision_2019.svg/960px-Logo_Univision_2019.svg.png",
-    "ambit": "Entretenimiento",
-    "country": "Latin America",
-    "url": "http://138.121.15.230:9002/UNIVISION/index.m3u8",
-    "isAudio": false
-  },
-  {
-    "id": "latam-176",
-    "name": "Univision Latin America (1080p)",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Logo_Univision_2019.svg/960px-Logo_Univision_2019.svg.png",
-    "ambit": "Entretenimiento",
-    "country": "Latin America",
-    "url": "http://177.234.249.178:8888/UNIVISION/index.m3u8",
-    "isAudio": false
-  },
-  {
-    "id": "latam-177",
-    "name": "Univision Tlnovelas (1080p)",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Univision_tlnovelas_%282019%29.svg/960px-Univision_tlnovelas_%282019%29.svg.png",
-    "ambit": "Entretenimiento",
-    "country": "Latin America",
-    "url": "http://45.6.4.35/TELENOVELAS/index.m3u8",
-    "isAudio": false
-  },
-  {
-    "id": "latam-178",
-    "name": "Univision West (1080p)",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Logo_Univision_2019.svg/960px-Logo_Univision_2019.svg.png",
-    "ambit": "Entretenimiento",
-    "country": "Latin America",
-    "url": "http://8an4dgnb.megatv.fun/iptv/8XFKA8883W9M5K/1099/index.m3u8",
     "isAudio": false
   },
   {
@@ -945,6 +864,15 @@
     "isAudio": false
   },
   {
+    "id": "latam-96",
+    "name": "Imagen Universal TV",
+    "logo": "https://i.imgur.com/DP6HmDV.png",
+    "ambit": "Cine & Películas",
+    "country": "Latin America",
+    "url": "https://imagenuniversaltv.net:3771/live/iutvlive.m3u8",
+    "isAudio": false
+  },
+  {
     "id": "latam-97",
     "name": "Intervention by A&E (1080p) [Geo-blocked]",
     "logo": "https://via.placeholder.com/150?text=LATAM",
@@ -1602,12 +1530,84 @@
     "isAudio": false
   },
   {
+    "id": "latam-170",
+    "name": "Universal TV Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Universal_TV_logo.svg/960px-Universal_TV_logo.svg.png",
+    "ambit": "Cine & Películas",
+    "country": "Latin America",
+    "url": "http://138.121.15.230:9002/UNIVERSAL-CHANNEL/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-171",
+    "name": "Universal TV Latin America Brazil (720p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Universal_TV_logo.svg/960px-Universal_TV_logo.svg.png",
+    "ambit": "Cine & Películas",
+    "country": "Latin America",
+    "url": "http://45.190.156.152/UNIVERSAL_TV/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-172",
+    "name": "Universal TV Latin America Mexico (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Universal_TV_logo.svg/960px-Universal_TV_logo.svg.png",
+    "ambit": "Cine & Películas",
+    "country": "Latin America",
+    "url": "http://177.245.131.133:8080/UNIVERSAL/index.m3u8",
+    "isAudio": false
+  },
+  {
     "id": "latam-173",
     "name": "Universal Westerns (1080p)",
     "logo": "https://via.placeholder.com/150?text=LATAM",
     "ambit": "Cine & Películas",
     "country": "Latin America",
     "url": "https://xumo-xumoent-ch834-iwtka.fast.nbcuni.com/live/master.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-174",
+    "name": "Univision (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Logo_Univision_2019.svg/960px-Logo_Univision_2019.svg.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://200.115.120.1:8000/play/ca106/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-175",
+    "name": "Univision Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Logo_Univision_2019.svg/960px-Logo_Univision_2019.svg.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://138.121.15.230:9002/UNIVISION/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-176",
+    "name": "Univision Latin America (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Logo_Univision_2019.svg/960px-Logo_Univision_2019.svg.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://177.234.249.178:8888/UNIVISION/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-177",
+    "name": "Univision Tlnovelas (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Univision_tlnovelas_%282019%29.svg/960px-Univision_tlnovelas_%282019%29.svg.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://45.6.4.35/TELENOVELAS/index.m3u8",
+    "isAudio": false
+  },
+  {
+    "id": "latam-178",
+    "name": "Univision West (1080p)",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Logo_Univision_2019.svg/960px-Logo_Univision_2019.svg.png",
+    "ambit": "Entretenimiento",
+    "country": "Latin America",
+    "url": "http://8an4dgnb.megatv.fun/iptv/8XFKA8883W9M5K/1099/index.m3u8",
     "isAudio": false
   },
   {
