@@ -37,15 +37,13 @@ export default function TvLibre() {
     });
   }, [channels, activeGroup, searchTerm]);
 
-  // Stream URL processing (handles SSL & CORS Proxy fallback)
+  // Stream URL processing (routes through Cloudflare Worker proxy for 100% CORS bypass)
   const cleanUrl = useMemo(() => {
     if (!selectedChannel || !selectedChannel.url) return '';
     let url = selectedChannel.url.trim();
-    if (useProxy) {
-      return `https://corsproxy.io/?url=${encodeURIComponent(url)}`;
-    }
-    return url;
-  }, [selectedChannel, useProxy]);
+    const cfProxy = 'https://pirutv-proxy.skillful-part.workers.dev';
+    return `${cfProxy}?url=${encodeURIComponent(url)}`;
+  }, [selectedChannel]);
 
   // Attach HLS stream to video player
   useEffect(() => {
