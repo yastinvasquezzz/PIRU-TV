@@ -41,45 +41,33 @@ export default function Animes() {
   const [selectedEpisodeNumber, setSelectedEpisodeNumber] = useState(1);
   const [activeEpisodeData, setActiveEpisodeData] = useState(null);
 
-  // Hero anime index for PIRU-TV Spotlight
-  const [heroIndex, setHeroIndex] = useState(0);
-  const heroList = useMemo(() => vimeusAnimesData.slice(0, 5), []);
-  const activeHero = heroList[heroIndex] || heroList[0];
+  // Categorized Datasets for Dashboard Rows (Like Peliculas.jsx Home State)
+  const categorySections = useMemo(() => {
+    return {
+      '⭐ Top Populares': vimeusAnimesData.slice(0, 16),
+      '💥 Shonen': vimeusAnimesData.filter((_, i) => i % 2 === 0).slice(0, 16),
+      '⚔️ Acción': vimeusAnimesData.filter((_, i) => i % 3 === 0).slice(0, 16),
+      '🔮 Fantasía / Isekai': vimeusAnimesData.filter((_, i) => i % 4 === 0).slice(0, 16),
+      '🏫 Romance / Escolar': vimeusAnimesData.filter((_, i) => i % 5 === 0).slice(0, 16),
+      '🤖 Sci-Fi': vimeusAnimesData.filter((_, i) => i % 6 === 0).slice(0, 16),
+      '⚽ Deportes': vimeusAnimesData.filter((_, i) => i % 7 === 0).slice(0, 16)
+    };
+  }, []);
 
-  // Auto rotate hero banner
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setHeroIndex(prev => (prev + 1) % heroList.length);
-    }, 7000);
-    return () => clearInterval(timer);
-  }, [heroList]);
+  // Filter animes for category grid view
+  const currentCategoryItems = useMemo(() => {
+    if (activeCategory === '🔥 Todos') return vimeusAnimesData;
+    if (categorySections[activeCategory]) return categorySections[activeCategory];
+    return vimeusAnimesData;
+  }, [activeCategory, categorySections]);
 
-  // Filter animes by category and search term
   const filteredAnimes = useMemo(() => {
-    return vimeusAnimesData.filter(item => {
-      let matchCat = true;
-      if (activeCategory === '⭐ Top Populares') {
-        matchCat = vimeusAnimesData.indexOf(item) < 30;
-      } else if (activeCategory === '💥 Shonen') {
-        matchCat = vimeusAnimesData.indexOf(item) < 100;
-      } else if (activeCategory === '⚔️ Acción') {
-        matchCat = vimeusAnimesData.indexOf(item) % 2 === 0;
-      } else if (activeCategory === '🔮 Fantasía / Isekai') {
-        matchCat = vimeusAnimesData.indexOf(item) % 3 === 0;
-      } else if (activeCategory === '🏫 Romance / Escolar') {
-        matchCat = vimeusAnimesData.indexOf(item) % 4 === 0;
-      } else if (activeCategory === '🤖 Sci-Fi') {
-        matchCat = vimeusAnimesData.indexOf(item) % 5 === 0;
-      } else if (activeCategory === '⚽ Deportes') {
-        matchCat = vimeusAnimesData.indexOf(item) % 7 === 0;
-      }
-
+    return currentCategoryItems.filter(item => {
       const matchSearch = !searchTerm.trim() ||
         item.title.toLowerCase().includes(searchTerm.toLowerCase());
-
-      return matchCat && matchSearch;
+      return matchSearch;
     });
-  }, [activeCategory, searchTerm]);
+  }, [currentCategoryItems, searchTerm]);
 
   // Paging (24 items per page)
   const itemsPerPage = 24;
@@ -244,7 +232,7 @@ export default function Animes() {
       </div>
 
       {/* Category Pills Bar - PLACED ABOVE THE HERO BANNER */}
-      <div className="filters-wrapper" style={{ margin: '0 0 1.5rem 0', display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
+      <div className="filters-wrapper" style={{ margin: '0 0 1.75rem 0', display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
         {ANIME_CATEGORIES.map(cat => (
           <button
             key={cat}
@@ -266,188 +254,240 @@ export default function Animes() {
         ))}
       </div>
 
-      {/* Clean Hero Banner without heavy dark overlay */}
-      {!searchTerm.trim() && activeHero && (
-        <div 
-          className="hero-banner"
-          style={{
-            position: 'relative',
-            height: '380px',
-            borderRadius: '22px',
-            overflow: 'hidden',
-            marginBottom: '2.5rem',
-            backgroundImage: `url(${activeHero.backdrop || activeHero.poster})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center 20%',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.8)',
-            border: '1px solid var(--border-color)'
-          }}
-        >
-          {/* Subtle gradient vignette at bottom for crisp title text */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'linear-gradient(to top, rgba(10,10,18,0.95) 0%, rgba(10,10,18,0.4) 40%, transparent 100%)',
-            display: 'flex',
-            alignItems: 'flex-end',
-            padding: '2.5rem'
-          }}>
-            <div style={{ maxWidth: '650px' }}>
-              <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '0.6rem', alignItems: 'center' }}>
-                <span style={{ background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', color: '#ffffff', fontSize: '0.72rem', fontWeight: 900, padding: '4px 10px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  🔥 DESTACADO PIRU-TV
-                </span>
-                <span style={{ background: 'rgba(255,255,255,0.2)', color: '#86efac', fontSize: '0.72rem', fontWeight: 700, padding: '4px 10px', borderRadius: '6px', backdropFilter: 'blur(4px)' }}>
-                  {activeHero.quality || 'FULL HD 1080p'}
-                </span>
+      {/* Render Dashboard Categories Rows (Like Peliculas.jsx) vs Filtered Grid */}
+      {activeCategory === '🔥 Todos' && !searchTerm.trim() ? (
+        /* DASHBOARD ROW VIEWS (LIKE PELICULAS.JSX) */
+        <div className="dashboard-home">
+          {Object.entries(categorySections).map(([catTitle, itemsList]) => (
+            <div key={catTitle} className="dashboard-section" style={{ marginBottom: '2.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                <h2 className="dashboard-section-title" style={{ margin: 0, border: 'none', color: '#ffffff', fontSize: '1.3rem', fontWeight: 800 }}>
+                  {catTitle}
+                </h2>
+                <button
+                  type="button"
+                  className="server-btn active"
+                  style={{ fontSize: '0.82rem', padding: '0.45rem 1.1rem', cursor: 'pointer', background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', border: 'none', color: '#fff', borderRadius: '8px', fontWeight: 700 }}
+                  onClick={() => {
+                    setActiveCategory(catTitle);
+                    setCurrentPage(1);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                >
+                  Ver más →
+                </button>
               </div>
-              <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.15, textShadow: '0 3px 15px rgba(0,0,0,0.95)' }}>
-                {activeHero.title}
-              </h2>
-              <p style={{ fontSize: '0.92rem', color: '#f1f5f9', lineHeight: '1.5', margin: '0 0 1.25rem 0', textShadow: '0 2px 10px rgba(0,0,0,0.9)' }}>
-                Disfruta de {activeHero.title} en alta definición Full HD directamente en PIRU-TV.
-              </p>
+
+              {/* Horizontal Scroll Row */}
+              <div className="carousel-row">
+                <div className="carousel-scroll">
+                  {itemsList.map(anime => (
+                    <div
+                      key={anime.id}
+                      className="carousel-item-card media-card"
+                      onMouseEnter={() => setHoveredAnimeId(anime.id)}
+                      onMouseLeave={() => setHoveredAnimeId(null)}
+                      onClick={() => handleOpenAnime(anime)}
+                      style={{
+                        position: 'relative',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        background: 'rgba(20, 20, 32, 0.6)',
+                        borderRadius: '16px',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        padding: '0.5rem',
+                        transition: 'transform 0.25s ease, border-color 0.25s ease',
+                        transform: hoveredAnimeId === anime.id ? 'translateY(-4px) scale(1.02)' : 'none',
+                        borderColor: hoveredAnimeId === anime.id ? '#e50914' : 'rgba(255,255,255,0.08)',
+                        minWidth: '180px'
+                      }}
+                    >
+                      <div className="card-poster" style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', height: '240px' }}>
+                        <img
+                          src={anime.poster}
+                          alt={anime.title}
+                          loading="lazy"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/200x280?text=Anime'; }}
+                        />
+                        
+                        <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', color: '#fff', fontSize: '0.65rem', fontWeight: 900, padding: '3px 7px', borderRadius: '5px' }}>
+                          {anime.quality || 'FULL HD'}
+                        </div>
+
+                        {/* Hover Synopsis Popover (Kdramas Style) */}
+                        {hoveredAnimeId === anime.id && (
+                          <div 
+                            style={{
+                              position: 'absolute',
+                              inset: 0,
+                              background: 'rgba(10, 10, 18, 0.94)',
+                              backdropFilter: 'blur(8px)',
+                              padding: '0.85rem',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              justifyContent: 'space-between',
+                              animation: 'fadeIn 0.2s ease-in-out'
+                            }}
+                          >
+                            <div>
+                              <span style={{ fontSize: '0.68rem', color: '#86efac', fontWeight: 800, textTransform: 'uppercase', display: 'block', marginBottom: '0.3rem' }}>
+                                PIRU-TV ANIME • TMDB #{anime.tmdb_id}
+                              </span>
+                              <h4 style={{ margin: '0 0 0.4rem 0', fontSize: '0.88rem', fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>
+                                {anime.title}
+                              </h4>
+                              <p style={{ margin: 0, fontSize: '0.75rem', color: '#cbd5e1', lineHeight: '1.35', display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                Disfruta de {anime.title} completo en alta definición Full HD con temporadas oficiales.
+                              </p>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                              <span style={{ background: 'rgba(229, 9, 20, 0.25)', color: '#f87171', border: '1px solid rgba(229, 9, 20, 0.4)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 800 }}>
+                                ▶ REPRODUCIR
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="card-info" style={{ padding: '0.6rem 0.2rem 0.2rem' }}>
+                        <h3 className="card-title" style={{ fontSize: '0.88rem', fontWeight: 800, margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff' }}>
+                          {anime.title}
+                        </h3>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        /* CATEGORY FILTERED GRID VIEW */
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <h2 className="section-title" style={{ margin: 0, fontSize: '1.4rem', color: '#ffffff' }}>
+              Catálogo: {activeCategory} ({filteredAnimes.length} Series)
+            </h2>
+          </div>
+
+          <div className="media-grid">
+            {paginatedAnimes.length > 0 ? (
+              paginatedAnimes.map(anime => (
+                <div
+                  key={anime.id}
+                  className="media-card"
+                  onMouseEnter={() => setHoveredAnimeId(anime.id)}
+                  onMouseLeave={() => setHoveredAnimeId(null)}
+                  onClick={() => handleOpenAnime(anime)}
+                  style={{
+                    position: 'relative',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    background: 'rgba(20, 20, 32, 0.6)',
+                    borderRadius: '18px',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    padding: '0.6rem',
+                    transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease',
+                    transform: hoveredAnimeId === anime.id ? 'translateY(-6px) scale(1.02)' : 'none',
+                    borderColor: hoveredAnimeId === anime.id ? '#e50914' : 'rgba(255,255,255,0.08)'
+                  }}
+                >
+                  <div className="card-poster" style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', height: '270px' }}>
+                    <img
+                      src={anime.poster}
+                      alt={anime.title}
+                      loading="lazy"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/200x280?text=Anime'; }}
+                    />
+                    
+                    <div style={{ position: 'absolute', top: '10px', left: '10px', background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', color: '#fff', fontSize: '0.68rem', fontWeight: 900, padding: '3px 8px', borderRadius: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>
+                      {anime.quality || 'FULL HD'}
+                    </div>
+
+                    {/* Hover Synopsis Popover (Kdramas Style) */}
+                    {hoveredAnimeId === anime.id && (
+                      <div 
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: 'rgba(10, 10, 18, 0.94)',
+                          backdropFilter: 'blur(8px)',
+                          padding: '1rem',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between',
+                          animation: 'fadeIn 0.2s ease-in-out'
+                        }}
+                      >
+                        <div>
+                          <span style={{ fontSize: '0.72rem', color: '#86efac', fontWeight: 800, textTransform: 'uppercase', display: 'block', marginBottom: '0.3rem' }}>
+                            PIRU-TV ANIME • TMDB #{anime.tmdb_id}
+                          </span>
+                          <h4 style={{ margin: '0 0 0.4rem 0', fontSize: '0.92rem', fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>
+                            {anime.title}
+                          </h4>
+                          <p style={{ margin: 0, fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                            Disfruta de {anime.title} completo en alta definición Full HD con reproductor sin anuncios y temporadas oficiales.
+                          </p>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                          <span style={{ background: 'rgba(229, 9, 20, 0.25)', color: '#f87171', border: '1px solid rgba(229, 9, 20, 0.4)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800 }}>
+                            ▶ REPRODUCIR
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="card-info" style={{ padding: '0.75rem 0.25rem 0.25rem' }}>
+                    <span className="card-genre" style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700 }}>
+                      PIRU-TV • TMDB #{anime.tmdb_id}
+                    </span>
+                    <h3 className="card-title" style={{ fontSize: '0.95rem', fontWeight: 800, margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff' }}>
+                      {anime.title}
+                    </h3>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="empty-state" style={{ gridColumn: '1 / -1', padding: '4rem 2rem', textAlign: 'center' }}>
+                <span className="empty-icon">🔥</span>
+                <h3 className="empty-title">No se encontraron animes</h3>
+                <p>Intenta buscando con otro término de búsqueda.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Pagination Bar */}
+          {totalPages > 1 && (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '2.5rem' }}>
               <button
                 type="button"
-                className="btn-primary"
-                style={{
-                  padding: '0.85rem 1.8rem',
-                  fontSize: '1rem',
-                  fontWeight: 900,
-                  background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)',
-                  border: 'none',
-                  color: '#ffffff',
-                  borderRadius: '12px',
-                  boxShadow: '0 6px 25px rgba(229, 9, 20, 0.55)',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.6rem'
-                }}
-                onClick={() => handleOpenAnime(activeHero)}
+                className="filter-badge"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                style={{ opacity: currentPage === 1 ? 0.5 : 1, cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
               >
-                <span>▶</span> VER {activeHero.title.toUpperCase()}
+                ◀ Anterior
+              </button>
+              <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 700 }}>
+                Página {currentPage} de {totalPages}
+              </span>
+              <button
+                type="button"
+                className="filter-badge"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                style={{ opacity: currentPage === totalPages ? 0.5 : 1, cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
+              >
+                Siguiente ▶
               </button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Main Grid Cards with Hover Synopsis Overlay (Kdramas style) */}
-      <div className="media-grid">
-        {paginatedAnimes.length > 0 ? (
-          paginatedAnimes.map(anime => (
-            <div
-              key={anime.id}
-              className="media-card"
-              onMouseEnter={() => setHoveredAnimeId(anime.id)}
-              onMouseLeave={() => setHoveredAnimeId(null)}
-              onClick={() => handleOpenAnime(anime)}
-              style={{
-                position: 'relative',
-                textAlign: 'left',
-                cursor: 'pointer',
-                background: 'rgba(20, 20, 32, 0.6)',
-                borderRadius: '18px',
-                border: '1px solid rgba(255,255,255,0.08)',
-                padding: '0.6rem',
-                transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease',
-                transform: hoveredAnimeId === anime.id ? 'translateY(-6px) scale(1.02)' : 'none',
-                borderColor: hoveredAnimeId === anime.id ? '#e50914' : 'rgba(255,255,255,0.08)'
-              }}
-            >
-              <div className="card-poster" style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', height: '270px' }}>
-                <img
-                  src={anime.poster}
-                  alt={anime.title}
-                  loading="lazy"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/200x280?text=Anime'; }}
-                />
-                
-                <div style={{ position: 'absolute', top: '10px', left: '10px', background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', color: '#fff', fontSize: '0.68rem', fontWeight: 900, padding: '3px 8px', borderRadius: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>
-                  {anime.quality || 'FULL HD'}
-                </div>
-
-                {/* Hover Synopsis Popover (Kdramas Style) */}
-                {hoveredAnimeId === anime.id && (
-                  <div 
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      background: 'rgba(10, 10, 18, 0.94)',
-                      backdropFilter: 'blur(8px)',
-                      padding: '1rem',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between',
-                      animation: 'fadeIn 0.2s ease-in-out'
-                    }}
-                  >
-                    <div>
-                      <span style={{ fontSize: '0.72rem', color: '#86efac', fontWeight: 800, textTransform: 'uppercase', display: 'block', marginBottom: '0.3rem' }}>
-                        PIRU-TV ANIME • TMDB #{anime.tmdb_id}
-                      </span>
-                      <h4 style={{ margin: '0 0 0.4rem 0', fontSize: '0.92rem', fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>
-                        {anime.title}
-                      </h4>
-                      <p style={{ margin: 0, fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                        Disfruta de {anime.title} completo en alta definición Full HD con reproductor sin anuncios y temporadas oficiales.
-                      </p>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
-                      <span style={{ background: 'rgba(229, 9, 20, 0.25)', color: '#f87171', border: '1px solid rgba(229, 9, 20, 0.4)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800 }}>
-                        ▶ REPRODUCIR
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="card-info" style={{ padding: '0.75rem 0.25rem 0.25rem' }}>
-                <span className="card-genre" style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700 }}>
-                  PIRU-TV • TMDB #{anime.tmdb_id}
-                </span>
-                <h3 className="card-title" style={{ fontSize: '0.95rem', fontWeight: 800, margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff' }}>
-                  {anime.title}
-                </h3>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="empty-state" style={{ gridColumn: '1 / -1', padding: '4rem 2rem', textAlign: 'center' }}>
-            <span className="empty-icon">🔥</span>
-            <h3 className="empty-title">No se encontraron animes</h3>
-            <p>Intenta buscando con otro término de búsqueda.</p>
-          </div>
-        )}
-      </div>
-
-      {/* Pagination Bar */}
-      {totalPages > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '2.5rem' }}>
-          <button
-            type="button"
-            className="filter-badge"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            style={{ opacity: currentPage === 1 ? 0.5 : 1, cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
-          >
-            ◀ Anterior
-          </button>
-          <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 700 }}>
-            Página {currentPage} de {totalPages}
-          </span>
-          <button
-            type="button"
-            className="filter-badge"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            style={{ opacity: currentPage === totalPages ? 0.5 : 1, cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
-          >
-            Siguiente ▶
-          </button>
+          )}
         </div>
       )}
 
