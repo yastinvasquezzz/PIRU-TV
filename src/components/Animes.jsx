@@ -41,6 +41,19 @@ export default function Animes() {
   const [selectedEpisodeNumber, setSelectedEpisodeNumber] = useState(1);
   const [activeEpisodeData, setActiveEpisodeData] = useState(null);
 
+  // Hero anime index for PIRU-TV Spotlight
+  const [heroIndex, setHeroIndex] = useState(0);
+  const heroList = useMemo(() => vimeusAnimesData.slice(0, 5), []);
+  const activeHero = heroList[heroIndex] || heroList[0];
+
+  // Auto rotate hero banner
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroIndex(prev => (prev + 1) % heroList.length);
+    }, 7000);
+    return () => clearInterval(timer);
+  }, [heroList]);
+
   // Categorized Datasets for Dashboard Rows (Like Peliculas.jsx Home State)
   const categorySections = useMemo(() => {
     return {
@@ -258,6 +271,104 @@ export default function Animes() {
       {activeCategory === '🔥 Todos' && !searchTerm.trim() ? (
         /* DASHBOARD ROW VIEWS (LIKE PELICULAS.JSX) */
         <div className="dashboard-home">
+          
+          {/* Featured Hero Banner with Backdrop & Slide Dots Indicator */}
+          {activeHero && (
+            <div 
+              className="hero-banner"
+              style={{
+                position: 'relative',
+                height: '380px',
+                borderRadius: '22px',
+                overflow: 'hidden',
+                marginBottom: '2.5rem',
+                backgroundImage: `url(${activeHero.backdrop || activeHero.poster})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center 20%',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.8)',
+                border: '1px solid var(--border-color)'
+              }}
+            >
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(to right, rgba(15,15,25,0.95) 0%, rgba(15,15,25,0.65) 50%, rgba(15,15,25,0.1) 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '2.5rem'
+              }}>
+                <div style={{ maxWidth: '600px' }}>
+                  <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '0.8rem', alignItems: 'center' }}>
+                    <span style={{ background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', color: '#ffffff', fontSize: '0.72rem', fontWeight: 900, padding: '4px 10px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      🔥 DESTACADO PIRU-TV
+                    </span>
+                    <span style={{ background: 'rgba(255,255,255,0.2)', color: '#86efac', fontSize: '0.72rem', fontWeight: 700, padding: '4px 10px', borderRadius: '6px', backdropFilter: 'blur(4px)' }}>
+                      {activeHero.quality || 'FULL HD 1080p'}
+                    </span>
+                  </div>
+                  <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.15, textShadow: '0 3px 15px rgba(0,0,0,0.95)' }}>
+                    {activeHero.title}
+                  </h2>
+                  <p style={{ fontSize: '0.92rem', color: '#f1f5f9', lineHeight: '1.5', margin: '0 0 1.25rem 0', textShadow: '0 2px 10px rgba(0,0,0,0.9)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    Disfruta de {activeHero.title} completo en alta definición Full HD directamente en PIRU-TV.
+                  </p>
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{
+                      padding: '0.85rem 1.8rem',
+                      fontSize: '1rem',
+                      fontWeight: 900,
+                      background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)',
+                      border: 'none',
+                      color: '#ffffff',
+                      borderRadius: '12px',
+                      boxShadow: '0 6px 25px rgba(229, 9, 20, 0.55)',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.6rem'
+                    }}
+                    onClick={() => handleOpenAnime(activeHero)}
+                  >
+                    <span>▶</span> VER {activeHero.title.toUpperCase()}
+                  </button>
+                </div>
+              </div>
+
+              {/* Dots indicators */}
+              {heroList.length > 1 && (
+                <div style={{
+                  position: 'absolute',
+                  bottom: '1.5rem',
+                  right: '2rem',
+                  zIndex: 10,
+                  display: 'flex',
+                  gap: '0.5rem',
+                  alignItems: 'center'
+                }}>
+                  {heroList.map((h, i) => (
+                    <button
+                      key={h.id || i}
+                      type="button"
+                      onClick={() => setHeroIndex(i)}
+                      style={{
+                        width: heroIndex === i ? '24px' : '10px',
+                        height: '10px',
+                        borderRadius: '5px',
+                        border: 'none',
+                        background: heroIndex === i ? '#e50914' : 'rgba(255, 255, 255, 0.4)',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                      title={h.title}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {Object.entries(categorySections).map(([catTitle, itemsList]) => (
             <div key={catTitle} className="dashboard-section" style={{ marginBottom: '2.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
