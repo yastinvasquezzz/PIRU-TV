@@ -8,6 +8,7 @@ import { getSelectedAvatar } from './utils/avatars';
 const Peliculas = lazy(() => import('./components/Peliculas'));
 const TvLibre = lazy(() => import('./components/TvLibre'));
 const Kdramas = lazy(() => import('./components/Kdramas'));
+const Animes = lazy(() => import('./components/Animes'));
 const MiLista = lazy(() => import('./components/MiLista'));
 const MiCuenta = lazy(() => import('./components/MiCuenta'));
 
@@ -86,18 +87,18 @@ function App() {
             🌸 Kdramas
           </button>
           <button 
+            className={`nav-tab ${activeTab === 'animes' ? 'active' : ''}`}
+            onClick={() => setActiveTab('animes')}
+            tabIndex={0}
+          >
+            🔥 Animes
+          </button>
+          <button 
             className={`nav-tab ${activeTab === 'mi-lista' ? 'active' : ''}`}
             onClick={() => setActiveTab('mi-lista')}
             tabIndex={0}
           >
             ❤️ Mi Lista
-          </button>
-          <button 
-            className={`nav-tab ${activeTab === 'mi-cuenta' ? 'active' : ''}`}
-            onClick={() => setActiveTab('mi-cuenta')}
-            tabIndex={0}
-          >
-            👤 Mi Cuenta
           </button>
         </nav>
 
@@ -135,6 +136,7 @@ function App() {
           {activeTab === 'peliculas' && <Peliculas />}
           {activeTab === 'tv-libre' && <TvLibre />}
           {activeTab === 'kdramas' && <Kdramas />}
+          {activeTab === 'animes' && <Animes />}
           {activeTab === 'mi-lista' && <MiLista />}
           {activeTab === 'mi-cuenta' && <MiCuenta />}
         </Suspense>
@@ -175,6 +177,17 @@ function App() {
           <span className="mobile-nav-label">Kdramas</span>
         </button>
         <button 
+          className={`mobile-nav-item ${activeTab === 'animes' ? 'active' : ''}`}
+          onClick={() => {
+            setActiveTab('animes');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          tabIndex={0}
+        >
+          <span className="mobile-nav-icon">🔥</span>
+          <span className="mobile-nav-label">Animes</span>
+        </button>
+        <button 
           className={`mobile-nav-item ${activeTab === 'mi-lista' ? 'active' : ''}`}
           onClick={() => {
             setActiveTab('mi-lista');
@@ -184,17 +197,6 @@ function App() {
         >
           <span className="mobile-nav-icon">❤️</span>
           <span className="mobile-nav-label">Mi Lista</span>
-        </button>
-        <button 
-          className={`mobile-nav-item ${activeTab === 'mi-cuenta' ? 'active' : ''}`}
-          onClick={() => {
-            setActiveTab('mi-cuenta');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          tabIndex={0}
-        >
-          <span className="mobile-nav-icon">👤</span>
-          <span className="mobile-nav-label">Cuenta</span>
         </button>
       </nav>
 

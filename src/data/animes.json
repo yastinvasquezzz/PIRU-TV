@@ -1,0 +1,308 @@
+[
+  {
+    "id": "anime-1",
+    "slug": "one-piece",
+    "title": "ONE PIECE",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Comedia",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 1122,
+    "synopsis": "Disfruta de ONE PIECE online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/one-piece"
+  },
+  {
+    "id": "anime-2",
+    "slug": "dragon-ball-super",
+    "title": "Dragon Ball Super",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC83M2Y1MDNiYzdmNzhjYTc3ZDFkNzI5OGM0N2U5NDFhMS5wbmc/640.webp",
+    "rating": "8.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Artes Marciales"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 131,
+    "synopsis": "Disfruta de Dragon Ball Super online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/dragon-ball-super"
+  },
+  {
+    "id": "anime-3",
+    "slug": "demon-slayer-kimetsu-no-yaiba",
+    "title": "Demon Slayer: Kimetsu no Yaiba",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yZjY5YWFiMjJjNGYxZTcxMmEzNzBhNjZkYzNlMTBkNy5wbmc/640.webp",
+    "rating": "9.0",
+    "genres": [
+      "Acción",
+      "Fantasía",
+      "Sobrenatural"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 60,
+    "synopsis": "Disfruta de Demon Slayer: Kimetsu no Yaiba online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/demon-slayer-kimetsu-no-yaiba"
+  },
+  {
+    "id": "anime-4",
+    "slug": "naruto-shippuden",
+    "title": "Naruto Shippuden",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8xYjQzOWFlMzRhYTdlMWI3M2NjMTEzMTEzNWRkMmEzNy5wbmc/640.webp",
+    "rating": "9.1",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Ninja"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 500,
+    "synopsis": "Disfruta de Naruto Shippuden online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/naruto-shippuden"
+  },
+  {
+    "id": "anime-5",
+    "slug": "jujutsu-kaisen",
+    "title": "Jujutsu Kaisen",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC9lNmY3YmY4OTQ3ZmQ5N2U0YWRiM2QzNmQzOGZiYTk2Yy5wbmc/640.webp",
+    "rating": "9.2",
+    "genres": [
+      "Acción",
+      "Sobrenatural",
+      "Escolar"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 47,
+    "synopsis": "Disfruta de Jujutsu Kaisen online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/jujutsu-kaisen"
+  },
+  {
+    "id": "anime-6",
+    "slug": "shingeki-no-kyojin",
+    "title": "Shingeki no Kyojin (Attack on Titan)",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8zMGI0OGY3M2E5MDc4ZjkyNDlmMzc1Njc0NTAzYWNhNC5wbmc/640.webp",
+    "rating": "9.3",
+    "genres": [
+      "Acción",
+      "Misterio",
+      "Drama"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 89,
+    "synopsis": "Disfruta de Shingeki no Kyojin (Attack on Titan) online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/shingeki-no-kyojin"
+  },
+  {
+    "id": "anime-7",
+    "slug": "my-hero-academia",
+    "title": "Boku no Hero Academia (My Hero Academia)",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8wNDI4YmM1ODc0MmFlMGM3MGFjOGQ2NTlmM2M0NWE2OC5wbmc/640.webp",
+    "rating": "9.4",
+    "genres": [
+      "Acción",
+      "Superhéroes",
+      "Escolar"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 150,
+    "synopsis": "Disfruta de Boku no Hero Academia (My Hero Academia) online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/my-hero-academia"
+  },
+  {
+    "id": "anime-8",
+    "slug": "solo-leveling",
+    "title": "Solo Leveling",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC85ZDVkNDFjMmIxYjUyODM5NTZmNjM0NzcwNjNkYmNlOS5wbmc/640.webp",
+    "rating": "9.5",
+    "genres": [
+      "Acción",
+      "Fantasía",
+      "Magia"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "synopsis": "Disfruta de Solo Leveling online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/solo-leveling"
+  },
+  {
+    "id": "anime-9",
+    "slug": "chainsaw-man",
+    "title": "Chainsaw Man",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC80ZDZkMTM4MmNlNzBjOGVjZWE4MmM1YjQ0MmE1MTEzMC5wbmc/640.webp",
+    "rating": "9.6",
+    "genres": [
+      "Acción",
+      "Terror",
+      "Sobrenatural"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "synopsis": "Disfruta de Chainsaw Man online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/chainsaw-man"
+  },
+  {
+    "id": "anime-10",
+    "slug": "bleach-sennen-kessen-hen",
+    "title": "Bleach: Sennen Kessen-hen",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC9mZTVhMTQyMGVmZDE0MTA5MjgzZGM1MmY3ZjkyMzA1ZS5wbmc/640.webp",
+    "rating": "9.7",
+    "genres": [
+      "Acción",
+      "Sobrenatural"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 39,
+    "synopsis": "Disfruta de Bleach: Sennen Kessen-hen online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/bleach-sennen-kessen-hen"
+  },
+  {
+    "id": "anime-11",
+    "slug": "death-note",
+    "title": "Death Note",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC82OGYwNDNlOGY0ZDVhNjgzNTlmZjBmNGQxYTlhMTAwMi5wbmc/640.webp",
+    "rating": "8.8",
+    "genres": [
+      "Suspenso",
+      "Psicológico",
+      "Sobrenatural"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 37,
+    "synopsis": "Disfruta de Death Note online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/death-note"
+  },
+  {
+    "id": "anime-12",
+    "slug": "hunter-x-hunter-2011",
+    "title": "Hunter x Hunter (2011)",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8xY2M5YTdjYTlhZTc4ZTQ0ZGUyYzZkMmEzODk4MTNhYi5wbmc/640.webp",
+    "rating": "8.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 148,
+    "synopsis": "Disfruta de Hunter x Hunter (2011) online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/hunter-x-hunter-2011"
+  },
+  {
+    "id": "anime-13",
+    "slug": "spy-x-family",
+    "title": "SPY x FAMILY",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC82MmI0YzE4NDg0M2Q3MDM5Mzc0Mjc4MjJjOTlmZWVmYy5wbmc/640.webp",
+    "rating": "9.0",
+    "genres": [
+      "Comedia",
+      "Acción",
+      "Escolar"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 37,
+    "synopsis": "Disfruta de SPY x FAMILY online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/spy-x-family"
+  },
+  {
+    "id": "anime-14",
+    "slug": "dr-stone",
+    "title": "Dr. STONE",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC9kYzEzMDkyZDVlODlhNzg4MWUzYjY5Yzk3ZDQ2MGJmOC5wbmc/640.webp",
+    "rating": "9.1",
+    "genres": [
+      "Sci-Fi",
+      "Aventura",
+      "Comedia"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 57,
+    "synopsis": "Disfruta de Dr. STONE online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/dr-stone"
+  },
+  {
+    "id": "anime-15",
+    "slug": "black-clover",
+    "title": "Black Clover",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC84Y2Y0ZmFlMzdkYjYyMDNhMTkwNTQ1NmQ1NGU3MzJhYS5wbmc/640.webp",
+    "rating": "9.2",
+    "genres": [
+      "Acción",
+      "Magia",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 170,
+    "synopsis": "Disfruta de Black Clover online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/black-clover"
+  },
+  {
+    "id": "anime-16",
+    "slug": "tokyo-revengers",
+    "title": "Tokyo Revengers",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC9mZDE2YTEyMTA4OTRjOGRiZmIwYjY0ZDI1ZDIwNDJkMi5wbmc/640.webp",
+    "rating": "9.3",
+    "genres": [
+      "Acción",
+      "Drama",
+      "Viajes en el Tiempo"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 50,
+    "synopsis": "Disfruta de Tokyo Revengers online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/tokyo-revengers"
+  },
+  {
+    "id": "anime-17",
+    "slug": "blue-lock",
+    "title": "BLUELOCK",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC82MmRjODFkMDIzYWE4YTFiOGQwNGIwNWI3N2JhOWYyOS5wbmc/640.webp",
+    "rating": "9.4",
+    "genres": [
+      "Deportes",
+      "Acción",
+      "Escolar"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 38,
+    "synopsis": "Disfruta de BLUELOCK online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/blue-lock"
+  },
+  {
+    "id": "anime-18",
+    "slug": "cyberpunk-edgerunners",
+    "title": "Cyberpunk: Edgerunners",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8wMjA2N2JmODlhOWE0MDdlMGYwNDZkYzg5OWRhMTllMC5wbmc/640.webp",
+    "rating": "9.5",
+    "genres": [
+      "Sci-Fi",
+      "Acción",
+      "Cyberpunk"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 10,
+    "synopsis": "Disfruta de Cyberpunk: Edgerunners online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
+    "tokiUrl": "https://tokianime.tv/watch/cyberpunk-edgerunners"
+  }
+]
