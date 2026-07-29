@@ -4,7 +4,7 @@ import { saveWatchProgress, toggleFavorite, isFavorite } from '../utils/storage'
 import { castWithWebVideoCaster } from '../utils/wvcCast';
 import vimeusAnimesData from '../data/animes.json';
 
-const TMDB_KEY = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiMGM4MjRjMmFkMzllODUwNmE5ZGUzOGI5ZTA2ZjJmZiIsIm5iZiI6MTc0ODI3MjY1Ni43MDMsInN1YiI6IjY4MzQ4NjEwNjFmMWZlZmI4YmViMzYxZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KUIiE74vCOP05_Y0M5CKyCBtj9m5lN1WzCfZ6bQn6Xs';
+const TMDB_KEY = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiMGM4MjRjMmFkMzllODUwNmE5ZGUzOGI5ZTA2ZjJmZiIsIm5iZiI6MTc0ODI3MjY1Ni43MDMsInN1YiI6IjY4MzQ4NjEwNjFmMWZlZmI4YmViMzYxZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KUIiE74vCOP05_Y0M5CKyCBfZ6bQn6Xs';
 const TMDB_HDR = { Authorization: `Bearer ${TMDB_KEY}` };
 
 const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
@@ -30,7 +30,7 @@ export default function Animes() {
   // Selected Anime State
   const [selectedAnime, setSelectedAnime] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [selectedServer, setSelectedServer] = useState('vimeus'); // 'vimeus', 'vidsrc', '2embed'
+  const [selectedServer, setSelectedServer] = useState('vimeus'); // 'vimeus', 'nsrplay'
   
   // TMDB Seasons & Episodes State
   const [animeDetails, setAnimeDetails] = useState(null);
@@ -185,7 +185,7 @@ export default function Animes() {
     setIsPlaying(true);
   };
 
-  // Vimeus / VidSrc / 2Embed Embed URL
+  // Vimeus / NasriPlay Embed URL
   const embedUrl = useMemo(() => {
     if (!selectedAnime) return '';
     const id = selectedAnime.tmdb_id;
@@ -195,12 +195,8 @@ export default function Animes() {
       return `https://vimeus.com/e/anime?tmdb=${id}&se=${selectedSeasonNumber}&ep=${selectedEpisodeNumber}${vk}${VIMEUS_PARAMS}`;
     }
 
-    if (selectedServer === 'vidsrc') {
-      return `https://vidsrc-embed.ru/embed/tv/${id}/${selectedSeasonNumber}-${selectedEpisodeNumber}?ds_lang=es`;
-    }
-
-    if (selectedServer === '2embed') {
-      return `https://www.2embed.cc/embedtv/${id}&s=${selectedSeasonNumber}&e=${selectedEpisodeNumber}&lang=es`;
+    if (selectedServer === 'nsrplay') {
+      return `https://nsrplay.space/embed/tv/${id}/${selectedSeasonNumber}/${selectedEpisodeNumber}`;
     }
 
     return '';
@@ -755,16 +751,10 @@ export default function Animes() {
                     Vimeus HD
                   </button>
                   <button 
-                    className={`server-btn ${selectedServer === 'vidsrc' ? 'active' : ''}`}
-                    onClick={() => setSelectedServer('vidsrc')}
+                    className={`server-btn ${selectedServer === 'nsrplay' ? 'active' : ''}`}
+                    onClick={() => setSelectedServer('nsrplay')}
                   >
-                    VidSrc
-                  </button>
-                  <button 
-                    className={`server-btn ${selectedServer === '2embed' ? 'active' : ''}`}
-                    onClick={() => setSelectedServer('2embed')}
-                  >
-                    2Embed
+                    NasriPlay HD
                   </button>
                 </div>
               </div>
@@ -875,7 +865,7 @@ export default function Animes() {
               </div>
               <h2 className="modal-title">{selectedAnime.title}</h2>
               <p className="modal-summary">
-                {animeDetails?.overview || `Disfruta de ${selectedAnime.title} en alta definición Full HD directamente en PIRU TV con servidores Vimeus, VidSrc y 2Embed.`}
+                {animeDetails?.overview || `Disfruta de ${selectedAnime.title} en alta definición Full HD directamente en PIRU TV con servidores Vimeus y NasriPlay.`}
               </p>
 
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', margin: '1.25rem 0' }}>
