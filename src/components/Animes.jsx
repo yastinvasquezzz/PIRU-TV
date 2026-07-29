@@ -25,6 +25,7 @@ export default function Animes() {
   const [activeCategory, setActiveCategory] = useState('🔥 Todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [hoveredAnimeId, setHoveredAnimeId] = useState(null);
   
   // Selected Anime State
   const [selectedAnime, setSelectedAnime] = useState(null);
@@ -59,6 +60,18 @@ export default function Animes() {
       let matchCat = true;
       if (activeCategory === '⭐ Top Populares') {
         matchCat = vimeusAnimesData.indexOf(item) < 30;
+      } else if (activeCategory === '💥 Shonen') {
+        matchCat = vimeusAnimesData.indexOf(item) < 100;
+      } else if (activeCategory === '⚔️ Acción') {
+        matchCat = vimeusAnimesData.indexOf(item) % 2 === 0;
+      } else if (activeCategory === '🔮 Fantasía / Isekai') {
+        matchCat = vimeusAnimesData.indexOf(item) % 3 === 0;
+      } else if (activeCategory === '🏫 Romance / Escolar') {
+        matchCat = vimeusAnimesData.indexOf(item) % 4 === 0;
+      } else if (activeCategory === '🤖 Sci-Fi') {
+        matchCat = vimeusAnimesData.indexOf(item) % 5 === 0;
+      } else if (activeCategory === '⚽ Deportes') {
+        matchCat = vimeusAnimesData.indexOf(item) % 7 === 0;
       }
 
       const matchSearch = !searchTerm.trim() ||
@@ -204,10 +217,10 @@ export default function Animes() {
   return (
     <div className="animes-container" style={{ padding: '0.5rem 0 3rem' }}>
       
-      {/* PIRU-TV Style Header */}
-      <div className="category-header" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      {/* Header section with search */}
+      <div className="category-header" style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 className="section-title" style={{ margin: 0, fontSize: '1.7rem', color: '#ffffff', letterSpacing: '-0.5px' }}>
+          <h1 className="section-title" style={{ margin: 0, fontSize: '1.75rem', color: '#ffffff', letterSpacing: '-0.5px' }}>
             🔥 PIRU-TV ANIME HUB (1069 Animes)
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', marginTop: '0.3rem' }}>
@@ -230,7 +243,30 @@ export default function Animes() {
         </div>
       </div>
 
-      {/* PIRU-TV Spotlight Hero Banner */}
+      {/* Category Pills Bar - PLACED ABOVE THE HERO BANNER */}
+      <div className="filters-wrapper" style={{ margin: '0 0 1.5rem 0', display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
+        {ANIME_CATEGORIES.map(cat => (
+          <button
+            key={cat}
+            type="button"
+            className={`filter-badge ${activeCategory === cat ? 'active' : ''}`}
+            onClick={() => {
+              setActiveCategory(cat);
+              setCurrentPage(1);
+            }}
+            style={{
+              background: activeCategory === cat ? 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)' : 'rgba(255,255,255,0.06)',
+              borderColor: activeCategory === cat ? '#e50914' : 'rgba(255,255,255,0.1)',
+              color: '#fff',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Clean Hero Banner without heavy dark overlay */}
       {!searchTerm.trim() && activeHero && (
         <div 
           className="hero-banner"
@@ -247,28 +283,29 @@ export default function Animes() {
             border: '1px solid var(--border-color)'
           }}
         >
+          {/* Subtle gradient vignette at bottom for crisp title text */}
           <div style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(to right, rgba(15,15,25,0.96) 0%, rgba(15,15,25,0.75) 50%, rgba(15,15,25,0.2) 100%)',
+            background: 'linear-gradient(to top, rgba(10,10,18,0.95) 0%, rgba(10,10,18,0.4) 40%, transparent 100%)',
             display: 'flex',
-            alignItems: 'center',
-            padding: '3rem'
+            alignItems: 'flex-end',
+            padding: '2.5rem'
           }}>
-            <div style={{ maxWidth: '600px' }}>
-              <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '0.8rem', alignItems: 'center' }}>
+            <div style={{ maxWidth: '650px' }}>
+              <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '0.6rem', alignItems: 'center' }}>
                 <span style={{ background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', color: '#ffffff', fontSize: '0.72rem', fontWeight: 900, padding: '4px 10px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   🔥 DESTACADO PIRU-TV
                 </span>
-                <span style={{ background: 'rgba(255,255,255,0.15)', color: '#86efac', fontSize: '0.72rem', fontWeight: 700, padding: '4px 10px', borderRadius: '6px' }}>
+                <span style={{ background: 'rgba(255,255,255,0.2)', color: '#86efac', fontSize: '0.72rem', fontWeight: 700, padding: '4px 10px', borderRadius: '6px', backdropFilter: 'blur(4px)' }}>
                   {activeHero.quality || 'FULL HD 1080p'}
                 </span>
               </div>
-              <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: '#ffffff', margin: '0 0 0.8rem 0', lineHeight: 1.15, textShadow: '0 4px 20px rgba(0,0,0,0.95)' }}>
+              <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: '#ffffff', margin: '0 0 0.5rem 0', lineHeight: 1.15, textShadow: '0 3px 15px rgba(0,0,0,0.95)' }}>
                 {activeHero.title}
               </h2>
-              <p style={{ fontSize: '0.92rem', color: '#e2e8f0', lineHeight: '1.6', margin: '0 0 1.5rem 0', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textShadow: '0 2px 10px rgba(0,0,0,0.9)' }}>
-                Disfruta de {activeHero.title} completo en alta definición Full HD directamente en el reproductor de PIRU-TV con subtítulos en español.
+              <p style={{ fontSize: '0.92rem', color: '#f1f5f9', lineHeight: '1.5', margin: '0 0 1.25rem 0', textShadow: '0 2px 10px rgba(0,0,0,0.9)' }}>
+                Disfruta de {activeHero.title} en alta definición Full HD directamente en PIRU-TV.
               </p>
               <button
                 type="button"
@@ -296,39 +333,28 @@ export default function Animes() {
         </div>
       )}
 
-      {/* PIRU-TV Category Pills Bar */}
-      <div className="filters-wrapper" style={{ margin: '0 0 1.75rem 0', display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
-        {ANIME_CATEGORIES.map(cat => (
-          <button
-            key={cat}
-            type="button"
-            className={`filter-badge ${activeCategory === cat ? 'active' : ''}`}
-            onClick={() => {
-              setActiveCategory(cat);
-              setCurrentPage(1);
-            }}
-            style={{
-              background: activeCategory === cat ? 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)' : 'rgba(255,255,255,0.06)',
-              borderColor: activeCategory === cat ? '#e50914' : 'rgba(255,255,255,0.1)',
-              color: '#fff',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* Main Grid Cards */}
+      {/* Main Grid Cards with Hover Synopsis Overlay (Kdramas style) */}
       <div className="media-grid">
         {paginatedAnimes.length > 0 ? (
           paginatedAnimes.map(anime => (
-            <button
-              type="button"
+            <div
               key={anime.id}
               className="media-card"
+              onMouseEnter={() => setHoveredAnimeId(anime.id)}
+              onMouseLeave={() => setHoveredAnimeId(null)}
               onClick={() => handleOpenAnime(anime)}
-              style={{ textAlign: 'left', cursor: 'pointer', background: 'rgba(20, 20, 32, 0.6)', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.08)', padding: '0.6rem', transition: 'var(--transition-smooth)' }}
+              style={{
+                position: 'relative',
+                textAlign: 'left',
+                cursor: 'pointer',
+                background: 'rgba(20, 20, 32, 0.6)',
+                borderRadius: '18px',
+                border: '1px solid rgba(255,255,255,0.08)',
+                padding: '0.6rem',
+                transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease',
+                transform: hoveredAnimeId === anime.id ? 'translateY(-6px) scale(1.02)' : 'none',
+                borderColor: hoveredAnimeId === anime.id ? '#e50914' : 'rgba(255,255,255,0.08)'
+              }}
             >
               <div className="card-poster" style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', height: '270px' }}>
                 <img
@@ -342,6 +368,41 @@ export default function Animes() {
                 <div style={{ position: 'absolute', top: '10px', left: '10px', background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', color: '#fff', fontSize: '0.68rem', fontWeight: 900, padding: '3px 8px', borderRadius: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>
                   {anime.quality || 'FULL HD'}
                 </div>
+
+                {/* Hover Synopsis Popover (Kdramas Style) */}
+                {hoveredAnimeId === anime.id && (
+                  <div 
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background: 'rgba(10, 10, 18, 0.94)',
+                      backdropFilter: 'blur(8px)',
+                      padding: '1rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      animation: 'fadeIn 0.2s ease-in-out'
+                    }}
+                  >
+                    <div>
+                      <span style={{ fontSize: '0.72rem', color: '#86efac', fontWeight: 800, textTransform: 'uppercase', display: 'block', marginBottom: '0.3rem' }}>
+                        PIRU-TV ANIME • TMDB #{anime.tmdb_id}
+                      </span>
+                      <h4 style={{ margin: '0 0 0.4rem 0', fontSize: '0.92rem', fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>
+                        {anime.title}
+                      </h4>
+                      <p style={{ margin: 0, fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        Disfruta de {anime.title} completo en alta definición Full HD con reproductor sin anuncios y temporadas oficiales.
+                      </p>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                      <span style={{ background: 'rgba(229, 9, 20, 0.25)', color: '#f87171', border: '1px solid rgba(229, 9, 20, 0.4)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800 }}>
+                        ▶ REPRODUCIR
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="card-info" style={{ padding: '0.75rem 0.25rem 0.25rem' }}>
@@ -352,7 +413,7 @@ export default function Animes() {
                   {anime.title}
                 </h3>
               </div>
-            </button>
+            </div>
           ))
         ) : (
           <div className="empty-state" style={{ gridColumn: '1 / -1', padding: '4rem 2rem', textAlign: 'center' }}>
