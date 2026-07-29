@@ -1,21 +1,201 @@
 [
   {
-    "id": "vimeus-anime-96261",
-    "tmdb_id": 96261,
-    "imdb_id": null,
-    "title": "Night Wizard",
-    "poster": "https://image.tmdb.org/t/p/w500/5FaLaKGGUm9hA7T4ul5xPrTY046.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/YSiPRn4UHIuHnW38ESzhcmNhYw.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
     "id": "vimeus-anime-120089",
     "tmdb_id": 120089,
     "imdb_id": "tt13706018",
     "title": "SPY x FAMILY",
     "poster": "https://image.tmdb.org/t/p/w500/vaIREdPGZOnW9Jrs86mheVVlIQQ.jpg",
     "backdrop": "https://image.tmdb.org/t/p/original/zNugnnR5KEmq9EzLcl0Me1UmHYk.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-30984",
+    "tmdb_id": 30984,
+    "imdb_id": "tt0434665",
+    "title": "Bleach",
+    "poster": "https://image.tmdb.org/t/p/w500/7bSQNQuhHeInFMfzMwevfCiqcTm.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/qtfMr08KQsWXnCHY0a96N8NpQ2l.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-70881",
+    "tmdb_id": 70881,
+    "imdb_id": null,
+    "title": "Boruto: Naruto Next Generations (2017)",
+    "poster": "https://image.tmdb.org/t/p/w500/lcwtmhDZTnOJSaXby61bQDBlAxJ.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/3XlKckxPEa4lg5w4vHnyE35PUyI.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-12971",
+    "tmdb_id": 12971,
+    "imdb_id": "tt0121220",
+    "title": "Dragon Ball Z (1989)",
+    "poster": "https://image.tmdb.org/t/p/w500/yoXe7LHOggXa7XzmRNW5aUMPaC3.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/s9xZojg7pNDv26hzvi0Lgt5esWC.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-31910",
+    "tmdb_id": 31910,
+    "imdb_id": "tt0988824",
+    "title": "Naruto Shippuden",
+    "poster": "https://image.tmdb.org/t/p/w500/qOxedwaJzdms2alAmIEHEnDeDzg.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/z0YhJvomqedHF85bplUJEotkN5l.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-105009",
+    "tmdb_id": 105009,
+    "imdb_id": "tt13196080",
+    "title": "Tokyo Revengers (2021)",
+    "poster": "https://image.tmdb.org/t/p/w500/kzDHRAkFjeed0lJpjE1eKJDcowS.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/1VZ8gN6tPoAd7EdfCzVPmtDczhD.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-37854",
+    "tmdb_id": 37854,
+    "imdb_id": "tt0388629",
+    "title": "One Piece",
+    "poster": "https://image.tmdb.org/t/p/w500/oag7edI9flSMawmNySEiSEJAbrf.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/a6ptrTUH1c5OdWanjyYtAkOuYD0.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-46260",
+    "tmdb_id": 46260,
+    "imdb_id": "tt0409591",
+    "title": "Naruto (2002)",
+    "poster": "https://image.tmdb.org/t/p/w500/mErFfyQuQ9kkbsR30d8CkZf0Z6s.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/6C8ljuWj6ahcujTXyhPAewbVZES.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-65930",
+    "tmdb_id": 65930,
+    "imdb_id": "tt5626028",
+    "title": "My Hero Academia",
+    "poster": "https://image.tmdb.org/t/p/w500/dmUuNVWAJumRkDNuauFaLSvga00.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/jsXKG9uppnPrhqFNhImllyCfLhl.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-97067",
+    "tmdb_id": 97067,
+    "imdb_id": null,
+    "title": "Mugyutto! Black Clover",
+    "poster": "https://image.tmdb.org/t/p/w500/wc421LF4gcEFDgKZFCyniYB0i8X.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/tUXGa0qZAk0U3bYIgnta47C8ZlY.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-114410",
+    "tmdb_id": 114410,
+    "imdb_id": "tt13616990",
+    "title": "Chainsaw Man (2022)",
+    "poster": "https://image.tmdb.org/t/p/w500/oeNps5WE8umMVcNISI8M2NHk7jg.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/5DUMPBSnHOZsbBv81GFXZXvDpo6.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-86031",
+    "tmdb_id": 86031,
+    "imdb_id": "tt9679542",
+    "title": "Dr. Stone",
+    "poster": "https://image.tmdb.org/t/p/w500/dLlnzbDCblBXcJqFLXyvN43NIwp.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/lN13BPAEnc5iXmoxxBQHOZ1ScfZ.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-1429",
+    "tmdb_id": 1429,
+    "imdb_id": "tt2560140",
+    "title": "Attack on Titan",
+    "poster": "https://image.tmdb.org/t/p/w500/yFPQ4JhhirnCVe2UIKGMYX7TOGZ.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/rqbCbjB19amtOtFQbb3K2lgm2zv.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-62715",
+    "tmdb_id": 62715,
+    "imdb_id": "tt4644488",
+    "title": "Dragon Ball Super (2015)",
+    "poster": "https://image.tmdb.org/t/p/w500/n0yIE4NRNJJq81okHHEmMytOznU.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/yJAOi2n0VYBEXdPI1NXv5FiOcBX.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-13916",
+    "tmdb_id": 13916,
+    "imdb_id": "tt0877057",
+    "title": "Death Note (2006)",
+    "poster": "https://image.tmdb.org/t/p/w500/vapuYy7yrYcML9bHuq5ct97hpSY.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/2Yfzm5857lprGonYPl30XgEpTry.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-280110",
+    "tmdb_id": 280110,
+    "imdb_id": "tt35636246",
+    "title": "My Hero Academia: Vigilantes",
+    "poster": "https://image.tmdb.org/t/p/w500/gbK6ihOGl52mWqrzstOsLMu5s3d.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/dfmwYLPYG0KGKP9vrWgRskB35KW.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-95479",
+    "tmdb_id": 95479,
+    "imdb_id": "tt12343534",
+    "title": "Jujutsu Kaisen",
+    "poster": "https://image.tmdb.org/t/p/w500/6VJy1E7PcgjKj6pZjqTVPr8CFal.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/gmECX1DvFgdUPjtio2zaL8BPYPu.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-127532",
+    "tmdb_id": 127532,
+    "imdb_id": "tt21209876",
+    "title": "Solo Leveling",
+    "poster": "https://image.tmdb.org/t/p/w500/4geiqSSkcktwWKzTNJmFfYkaeq5.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/qEmHC7sV1lj3JHf5xQKshmGcq24.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-73223",
+    "tmdb_id": 73223,
+    "imdb_id": null,
+    "title": "Black Clover",
+    "poster": "https://image.tmdb.org/t/p/w500/xoqmJpO3jGxEldDCItXuGj2MVTV.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/4RzRtLMlTeJvpvvdXDe854VLEG8.jpg",
+    "quality": "FULL HD",
+    "type": "vimeus-anime"
+  },
+  {
+    "id": "vimeus-anime-96261",
+    "tmdb_id": 96261,
+    "imdb_id": null,
+    "title": "Night Wizard",
+    "poster": "https://image.tmdb.org/t/p/w500/5FaLaKGGUm9hA7T4ul5xPrTY046.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/YSiPRn4UHIuHnW38ESzhcmNhYw.jpg",
     "quality": "FULL HD",
     "type": "vimeus-anime"
   },
@@ -290,16 +470,6 @@
     "type": "vimeus-anime"
   },
   {
-    "id": "vimeus-anime-30984",
-    "tmdb_id": 30984,
-    "imdb_id": "tt0434665",
-    "title": "Bleach",
-    "poster": "https://image.tmdb.org/t/p/w500/7bSQNQuhHeInFMfzMwevfCiqcTm.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/qtfMr08KQsWXnCHY0a96N8NpQ2l.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
     "id": "vimeus-anime-46412",
     "tmdb_id": 46412,
     "imdb_id": null,
@@ -336,16 +506,6 @@
     "title": "Vivid strike!",
     "poster": "https://image.tmdb.org/t/p/w500/rpQEdSxYcj3zn8rci7oZcxsPBkq.jpg",
     "backdrop": "https://image.tmdb.org/t/p/original/1qtkQqvxQMOaUCV7igeedR4zWVW.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
-    "id": "vimeus-anime-70881",
-    "tmdb_id": 70881,
-    "imdb_id": null,
-    "title": "Boruto: Naruto Next Generations (2017)",
-    "poster": "https://image.tmdb.org/t/p/w500/lcwtmhDZTnOJSaXby61bQDBlAxJ.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/3XlKckxPEa4lg5w4vHnyE35PUyI.jpg",
     "quality": "FULL HD",
     "type": "vimeus-anime"
   },
@@ -420,16 +580,6 @@
     "type": "vimeus-anime"
   },
   {
-    "id": "vimeus-anime-12971",
-    "tmdb_id": 12971,
-    "imdb_id": "tt0121220",
-    "title": "Dragon Ball Z (1989)",
-    "poster": "https://image.tmdb.org/t/p/w500/yoXe7LHOggXa7XzmRNW5aUMPaC3.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/s9xZojg7pNDv26hzvi0Lgt5esWC.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
     "id": "vimeus-anime-19253",
     "tmdb_id": 19253,
     "imdb_id": null,
@@ -466,16 +616,6 @@
     "title": "Higashi No Eden",
     "poster": "https://image.tmdb.org/t/p/w500/sMUPkCG1Y1Z6dHcw7QOXuVsW6dr.jpg",
     "backdrop": "https://image.tmdb.org/t/p/original/5yOxRuPljFOM8pPK7MoppZtNmEJ.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
-    "id": "vimeus-anime-31910",
-    "tmdb_id": 31910,
-    "imdb_id": "tt0988824",
-    "title": "Naruto Shippuden",
-    "poster": "https://image.tmdb.org/t/p/w500/qOxedwaJzdms2alAmIEHEnDeDzg.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/z0YhJvomqedHF85bplUJEotkN5l.jpg",
     "quality": "FULL HD",
     "type": "vimeus-anime"
   },
@@ -740,16 +880,6 @@
     "type": "vimeus-anime"
   },
   {
-    "id": "vimeus-anime-105009",
-    "tmdb_id": 105009,
-    "imdb_id": "tt13196080",
-    "title": "Tokyo Revengers (2021)",
-    "poster": "https://image.tmdb.org/t/p/w500/kzDHRAkFjeed0lJpjE1eKJDcowS.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/1VZ8gN6tPoAd7EdfCzVPmtDczhD.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
     "id": "vimeus-anime-112160",
     "tmdb_id": 112160,
     "imdb_id": "tt13357124",
@@ -960,32 +1090,12 @@
     "type": "vimeus-anime"
   },
   {
-    "id": "vimeus-anime-37854",
-    "tmdb_id": 37854,
-    "imdb_id": "tt0388629",
-    "title": "One Piece",
-    "poster": "https://image.tmdb.org/t/p/w500/oag7edI9flSMawmNySEiSEJAbrf.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/a6ptrTUH1c5OdWanjyYtAkOuYD0.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
     "id": "vimeus-anime-45790",
     "tmdb_id": 45790,
     "imdb_id": "tt2359704",
     "title": "JoJo&#8217;s Bizarre Adventure (2012)",
     "poster": "https://image.tmdb.org/t/p/w500/3MZoif9WtXelJXA749NgDxVURWX.jpg",
     "backdrop": "https://image.tmdb.org/t/p/original/mLKN1dsimKPiXCZ48KED0X8a02t.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
-    "id": "vimeus-anime-46260",
-    "tmdb_id": 46260,
-    "imdb_id": "tt0409591",
-    "title": "Naruto (2002)",
-    "poster": "https://image.tmdb.org/t/p/w500/mErFfyQuQ9kkbsR30d8CkZf0Z6s.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/6C8ljuWj6ahcujTXyhPAewbVZES.jpg",
     "quality": "FULL HD",
     "type": "vimeus-anime"
   },
@@ -1806,16 +1916,6 @@
     "title": "Gunslinger Stratos The Animation",
     "poster": "https://image.tmdb.org/t/p/w500/fiiEdn5QId58LBuGOguI6cs3Rg6.jpg",
     "backdrop": "https://image.tmdb.org/t/p/original/jo09ciCWaivNeiH4vgh48HMJC7i.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
-    "id": "vimeus-anime-65930",
-    "tmdb_id": 65930,
-    "imdb_id": "tt5626028",
-    "title": "My Hero Academia",
-    "poster": "https://image.tmdb.org/t/p/w500/dmUuNVWAJumRkDNuauFaLSvga00.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/jsXKG9uppnPrhqFNhImllyCfLhl.jpg",
     "quality": "FULL HD",
     "type": "vimeus-anime"
   },
@@ -3256,16 +3356,6 @@
     "title": "A3!",
     "poster": "https://image.tmdb.org/t/p/w500/2QROy0rSIv3bbtPid79vagE6zBl.jpg",
     "backdrop": "https://image.tmdb.org/t/p/original/1RwbwBhEk1mj0Ov5brt2UcxJIKb.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
-    "id": "vimeus-anime-97067",
-    "tmdb_id": 97067,
-    "imdb_id": null,
-    "title": "Mugyutto! Black Clover",
-    "poster": "https://image.tmdb.org/t/p/w500/wc421LF4gcEFDgKZFCyniYB0i8X.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/tUXGa0qZAk0U3bYIgnta47C8ZlY.jpg",
     "quality": "FULL HD",
     "type": "vimeus-anime"
   },
@@ -5650,16 +5740,6 @@
     "type": "vimeus-anime"
   },
   {
-    "id": "vimeus-anime-114410",
-    "tmdb_id": 114410,
-    "imdb_id": "tt13616990",
-    "title": "Chainsaw Man (2022)",
-    "poster": "https://image.tmdb.org/t/p/w500/oeNps5WE8umMVcNISI8M2NHk7jg.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/5DUMPBSnHOZsbBv81GFXZXvDpo6.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
     "id": "vimeus-anime-123249",
     "tmdb_id": 123249,
     "imdb_id": "tt15765670",
@@ -5886,16 +5966,6 @@
     "title": "Manaria Friends",
     "poster": "https://image.tmdb.org/t/p/w500/vsUiKjhonHkUA7vYpwry0JiIFVZ.jpg",
     "backdrop": "https://image.tmdb.org/t/p/original/dPFWFVz2YeGIkdiF0NRzbunF5xc.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
-    "id": "vimeus-anime-86031",
-    "tmdb_id": 86031,
-    "imdb_id": "tt9679542",
-    "title": "Dr. Stone",
-    "poster": "https://image.tmdb.org/t/p/w500/dLlnzbDCblBXcJqFLXyvN43NIwp.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/lN13BPAEnc5iXmoxxBQHOZ1ScfZ.jpg",
     "quality": "FULL HD",
     "type": "vimeus-anime"
   },
@@ -6840,16 +6910,6 @@
     "type": "vimeus-anime"
   },
   {
-    "id": "vimeus-anime-1429",
-    "tmdb_id": 1429,
-    "imdb_id": "tt2560140",
-    "title": "Attack on Titan",
-    "poster": "https://image.tmdb.org/t/p/w500/yFPQ4JhhirnCVe2UIKGMYX7TOGZ.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/rqbCbjB19amtOtFQbb3K2lgm2zv.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
     "id": "vimeus-anime-22254",
     "tmdb_id": 22254,
     "imdb_id": "tt1347975",
@@ -7006,16 +7066,6 @@
     "title": "Jinsei",
     "poster": "https://image.tmdb.org/t/p/w500/tvIn9ygQPjIRWuCA5E8y0Si5uiA.jpg",
     "backdrop": "https://image.tmdb.org/t/p/original/5iuH6AwlIqD9Fg2vpsVrWNftqCi.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
-    "id": "vimeus-anime-62715",
-    "tmdb_id": 62715,
-    "imdb_id": "tt4644488",
-    "title": "Dragon Ball Super (2015)",
-    "poster": "https://image.tmdb.org/t/p/w500/n0yIE4NRNJJq81okHHEmMytOznU.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/yJAOi2n0VYBEXdPI1NXv5FiOcBX.jpg",
     "quality": "FULL HD",
     "type": "vimeus-anime"
   },
@@ -8096,16 +8146,6 @@
     "title": "Schwarzesmarken",
     "poster": "https://image.tmdb.org/t/p/w500/76eOzNrqWWmOMte87S5rTt9XrxN.jpg",
     "backdrop": "https://image.tmdb.org/t/p/original/71crbYqR8MsPBQ6oWSDBnYjFXOa.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
-    "id": "vimeus-anime-13916",
-    "tmdb_id": 13916,
-    "imdb_id": "tt0877057",
-    "title": "Death Note (2006)",
-    "poster": "https://image.tmdb.org/t/p/w500/vapuYy7yrYcML9bHuq5ct97hpSY.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/2Yfzm5857lprGonYPl30XgEpTry.jpg",
     "quality": "FULL HD",
     "type": "vimeus-anime"
   },
@@ -9740,16 +9780,6 @@
     "type": "vimeus-anime"
   },
   {
-    "id": "vimeus-anime-280110",
-    "tmdb_id": 280110,
-    "imdb_id": "tt35636246",
-    "title": "My Hero Academia: Vigilantes",
-    "poster": "https://image.tmdb.org/t/p/w500/gbK6ihOGl52mWqrzstOsLMu5s3d.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/dfmwYLPYG0KGKP9vrWgRskB35KW.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
     "id": "vimeus-anime-12577",
     "tmdb_id": 12577,
     "imdb_id": null,
@@ -10120,16 +10150,6 @@
     "type": "vimeus-anime"
   },
   {
-    "id": "vimeus-anime-95479",
-    "tmdb_id": 95479,
-    "imdb_id": "tt12343534",
-    "title": "Jujutsu Kaisen",
-    "poster": "https://image.tmdb.org/t/p/w500/6VJy1E7PcgjKj6pZjqTVPr8CFal.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/gmECX1DvFgdUPjtio2zaL8BPYPu.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
     "id": "vimeus-anime-127714",
     "tmdb_id": 127714,
     "imdb_id": "tt15219320",
@@ -10156,16 +10176,6 @@
     "title": "Classroom of the Elite",
     "poster": "https://image.tmdb.org/t/p/w500/mmhx3dImdsfYpcFm3J1tlQt5IRN.jpg",
     "backdrop": "https://image.tmdb.org/t/p/original/d3yNn379emGP8xztqeOsB9oLNG2.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
-    "id": "vimeus-anime-127532",
-    "tmdb_id": 127532,
-    "imdb_id": "tt21209876",
-    "title": "Solo Leveling",
-    "poster": "https://image.tmdb.org/t/p/w500/4geiqSSkcktwWKzTNJmFfYkaeq5.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/qEmHC7sV1lj3JHf5xQKshmGcq24.jpg",
     "quality": "FULL HD",
     "type": "vimeus-anime"
   },
@@ -10526,16 +10536,6 @@
     "title": "Saint Seiya Ω Omega",
     "poster": "https://image.tmdb.org/t/p/w500/jzf5I5JBrFdjzfWl8a5OSNauQBy.jpg",
     "backdrop": "https://image.tmdb.org/t/p/original/gp8lGYzOVwhuYgkjM7v3t4sDeAT.jpg",
-    "quality": "FULL HD",
-    "type": "vimeus-anime"
-  },
-  {
-    "id": "vimeus-anime-73223",
-    "tmdb_id": 73223,
-    "imdb_id": null,
-    "title": "Black Clover",
-    "poster": "https://image.tmdb.org/t/p/w500/xoqmJpO3jGxEldDCItXuGj2MVTV.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/4RzRtLMlTeJvpvvdXDe854VLEG8.jpg",
     "quality": "FULL HD",
     "type": "vimeus-anime"
   },
