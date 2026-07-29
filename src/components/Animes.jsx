@@ -21,10 +21,10 @@ export default function Animes() {
   const [selectedAnime, setSelectedAnime] = useState(null);
   
   // Watch State inside modal
+  const [selectedSeasonIdx, setSelectedSeasonIdx] = useState(0);
   const [currentEpisode, setCurrentEpisode] = useState(1);
   const [selectedAudio, setSelectedAudio] = useState('sub'); // 'sub' or 'latino'
   const [selectedServer, setSelectedServer] = useState(1); // 1, 2, 3
-  const [episodeBatch, setEpisodeBatch] = useState(0); // 0 = 1-100, 1 = 101-200, etc.
 
   // Filter animes by category and search
   const filteredAnimes = useMemo(() => {
@@ -49,10 +49,10 @@ export default function Animes() {
   // Open anime detail modal
   const handleOpenAnime = (anime) => {
     setSelectedAnime(anime);
+    setSelectedSeasonIdx(0);
     setCurrentEpisode(1);
     setSelectedAudio(anime.hasLatino ? 'latino' : 'sub');
     setSelectedServer(1);
-    setEpisodeBatch(0);
 
     saveWatchProgress({
       id: anime.id,
@@ -62,27 +62,26 @@ export default function Animes() {
     });
   };
 
-  // Generate episode numbers array based on totalEpisodes
-  const episodesList = useMemo(() => {
-    if (!selectedAnime) return [];
-    const count = selectedAnime.totalEpisodes || 12;
-    return Array.from({ length: count }, (_, i) => i + 1);
-  }, [selectedAnime]);
-
-  // Batched episode chunks (100 episodes per tab)
-  const episodeBatches = useMemo(() => {
-    if (episodesList.length <= 100) return [episodesList];
-    const batches = [];
-    for (let i = 0; i < episodesList.length; i += 100) {
-      batches.push(episodesList.slice(i, i + 100));
+  // Current active season object
+  const activeSeason = useMemo(() => {
+    if (!selectedAnime || !selectedAnime.seasons || selectedAnime.seasons.length === 0) {
+      return { seasonNumber: 1, title: 'Temporada 1', episodeCount: 12 };
     }
-    return batches;
-  }, [episodesList]);
+    return selectedAnime.seasons[selectedSeasonIdx] || selectedAnime.seasons[0];
+  }, [selectedAnime, selectedSeasonIdx]);
 
-  // Current TokiAnime Embed URL
+  // List of episodes for current active season
+  const currentSeasonEpisodes = useMemo(() => {
+    const count = activeSeason.episodeCount || 12;
+    return Array.from({ length: count }, (_, i) => i + 1);
+  }, [activeSeason]);
+
+  // Current Player Embed URL with proxy bypass
   const activeEmbedUrl = useMemo(() => {
     if (!selectedAnime) return '';
-    return `https://tokianime.tv/watch/${selectedAnime.slug}/${currentEpisode}?server=${selectedServer}&audio=${selectedAudio}`;
+    const rawUrl = `https://tokianime.tv/watch/${selectedAnime.slug}/${currentEpisode}?server=${selectedServer}&audio=${selectedAudio}`;
+    const cfProxy = 'https://pirutv-proxy.skillful-part.workers.dev';
+    return `${cfProxy}?url=${encodeURIComponent(rawUrl)}`;
   }, [selectedAnime, currentEpisode, selectedServer, selectedAudio]);
 
   useDpadNavigation({
@@ -99,11 +98,11 @@ export default function Animes() {
       {/* Header section */}
       <div className="category-header">
         <div>
-          <h1 className="section-title" style={{ margin: 0 }}>
-            🔥 Animes TokiAnime ({animeDataset.length} Series)
+          <h1 className="section-title" style={{ margin: 0, fontSize: '1.6rem' }}>
+            🔥 Animes TokiAnime ({animeDataset.length} Series Destacadas)
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.3rem' }}>
-            Catálogo completo de anime en emisión, subtitulado y doblaje latino oficial
+            Series completas organizadas por temporadas, audio latino oficial y subtítulos
           </p>
         </div>
 
@@ -111,7 +110,7 @@ export default function Animes() {
           <span className="search-icon">🔍</span>
           <input
             type="text"
-            placeholder="Buscar anime (ej. One Piece, Demon Slayer, Jujutsu)..."
+            placeholder="Buscar anime (ej. Solo Leveling, One Piece, Demon Slayer)..."
             className="search-input"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -134,7 +133,7 @@ export default function Animes() {
         ))}
       </div>
 
-      {/* Main Grid */}
+      {/* Main Grid with Unique Posters */}
       <div className="media-grid">
         {filteredAnimes.length > 0 ? (
           filteredAnimes.map(anime => (
@@ -143,41 +142,41 @@ export default function Animes() {
               key={anime.id}
               className="media-card"
               onClick={() => handleOpenAnime(anime)}
-              style={{ textAlign: 'left', cursor: 'pointer' }}
+              style={{ textAlign: 'left', cursor: 'pointer', background: 'rgba(20, 20, 32, 0.5)', borderRadius: '18px', border: '1px solid var(--border-color)', padding: '0.6rem', transition: 'var(--transition-smooth)' }}
             >
-              <div className="card-poster" style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden' }}>
+              <div className="card-poster" style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', height: '270px' }}>
                 <img
                   src={anime.poster}
                   alt={anime.title}
                   loading="lazy"
-                  style={{ width: '100%', height: '280px', objectFit: 'cover' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/200x280?text=Anime'; }}
                 />
                 
                 {/* Audio Badges Overlay */}
                 <div style={{ position: 'absolute', top: '10px', left: '10px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   {anime.hasLatino && (
-                    <span style={{ background: 'rgba(34, 197, 94, 0.9)', color: '#fff', fontSize: '0.68rem', fontWeight: 800, padding: '3px 8px', borderRadius: '6px', backdropFilter: 'blur(4px)' }}>
+                    <span style={{ background: 'linear-gradient(135deg, #22c55e 0%, #15803d 100%)', color: '#fff', fontSize: '0.68rem', fontWeight: 800, padding: '4px 8px', borderRadius: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>
                       🇲🇽 LATINO
                     </span>
                   )}
                   {anime.hasSub && (
-                    <span style={{ background: 'rgba(229, 9, 20, 0.9)', color: '#fff', fontSize: '0.68rem', fontWeight: 800, padding: '3px 8px', borderRadius: '6px', backdropFilter: 'blur(4px)' }}>
+                    <span style={{ background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', color: '#fff', fontSize: '0.68rem', fontWeight: 800, padding: '4px 8px', borderRadius: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>
                       💬 SUB
                     </span>
                   )}
                 </div>
 
-                <div className="card-rating" style={{ position: 'absolute', bottom: '10px', right: '10px', background: 'rgba(0,0,0,0.75)', padding: '2px 8px', borderRadius: '8px', fontSize: '0.75rem', color: '#f59e0b', fontWeight: 700 }}>
+                <div className="card-rating" style={{ position: 'absolute', bottom: '10px', right: '10px', background: 'rgba(0,0,0,0.85)', padding: '3px 8px', borderRadius: '8px', fontSize: '0.78rem', color: '#f59e0b', fontWeight: 800 }}>
                   ⭐ {anime.rating}
                 </div>
               </div>
 
-              <div className="card-info" style={{ padding: '0.75rem 0.25rem 0' }}>
-                <span className="card-genre" style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
-                  {anime.totalEpisodes} Episodios • TokiAnime
+              <div className="card-info" style={{ padding: '0.75rem 0.25rem 0.25rem' }}>
+                <span className="card-genre" style={{ fontSize: '0.72rem', color: '#86efac', fontWeight: 700 }}>
+                  {anime.seasons ? `${anime.seasons.length} ${anime.seasons.length === 1 ? 'Temporada' : 'Temporadas'}` : 'Serie TV'}
                 </span>
-                <h3 className="card-title" style={{ fontSize: '0.92rem', fontWeight: 700, margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <h3 className="card-title" style={{ fontSize: '0.95rem', fontWeight: 800, margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff' }}>
                   {anime.title}
                 </h3>
               </div>
@@ -192,35 +191,35 @@ export default function Animes() {
         )}
       </div>
 
-      {/* Streaming Player & Episode Selector Modal */}
+      {/* Streaming Player & Season Selector Modal */}
       {selectedAnime && (
         <div className="modal-overlay" onClick={() => setSelectedAnime(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '920px' }}>
             <button className="modal-close-btn" onClick={() => setSelectedAnime(null)}>✕</button>
 
             {/* Video Player Frame */}
-            <div className="movie-player-container" style={{ height: '480px', background: '#000', borderRadius: '16px', overflow: 'hidden' }}>
+            <div className="movie-player-container" style={{ height: '480px', background: '#000', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 20px 40px rgba(0,0,0,0.9)' }}>
               <iframe
                 src={activeEmbedUrl}
-                title={`${selectedAnime.title} - Episodio ${currentEpisode}`}
+                title={`${selectedAnime.title} - ${activeSeason.title} Ep ${currentEpisode}`}
                 allowFullScreen
                 allow="autoplay; encrypted-media"
                 style={{ width: '100%', height: '100%', border: 'none' }}
               />
             </div>
 
-            {/* Modal Body & Episode Controls */}
+            {/* Modal Body & Season / Episode Controls */}
             <div className="modal-body" style={{ padding: '1.25rem 0 0' }}>
               
               {/* Header Title & Meta */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
                 <div>
-                  <h2 className="modal-title" style={{ margin: 0, fontSize: '1.3rem' }}>
+                  <h2 className="modal-title" style={{ margin: 0, fontSize: '1.3rem', color: '#fff' }}>
                     {selectedAnime.title} - <span style={{ color: '#ef4444' }}>Capítulo {currentEpisode}</span>
                   </h2>
                   <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
                     {selectedAnime.genres.map(g => (
-                      <span key={g} style={{ background: 'rgba(255,255,255,0.08)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                      <span key={g} style={{ background: 'rgba(255,255,255,0.08)', padding: '3px 9px', borderRadius: '6px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                         {g}
                       </span>
                     ))}
@@ -245,7 +244,7 @@ export default function Animes() {
                 </button>
               </div>
 
-              {/* Audio Selector & Server Switcher */}
+              {/* Audio Selector & Server Switcher Bar */}
               <div style={{ background: 'rgba(20,20,32,0.8)', border: '1px solid var(--border-color)', borderRadius: '14px', padding: '0.85rem 1rem', marginBottom: '1.25rem', display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 
                 {/* Audio Type Auto-Detector */}
@@ -315,60 +314,70 @@ export default function Animes() {
 
               </div>
 
-              {/* Episode Batch Tabs (for series with >100 episodes) */}
-              {episodeBatches.length > 1 && (
-                <div style={{ display: 'flex', gap: '0.4rem', overflowX: 'auto', marginBottom: '0.85rem', scrollbarWidth: 'none' }}>
-                  {episodeBatches.map((batch, idx) => {
-                    const start = idx * 100 + 1;
-                    const end = Math.min((idx + 1) * 100, selectedAnime.totalEpisodes);
-                    return (
+              {/* Season Selector Tabs */}
+              {selectedAnime.seasons && selectedAnime.seasons.length > 0 && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, display: 'block', marginBottom: '0.4rem' }}>
+                    🌸 SELECCIONAR TEMPORADA ({selectedAnime.seasons.length}):
+                  </span>
+                  <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.4rem', scrollbarWidth: 'none' }}>
+                    {selectedAnime.seasons.map((season, sIdx) => (
                       <button
-                        key={idx}
+                        key={sIdx}
                         type="button"
-                        onClick={() => setEpisodeBatch(idx)}
+                        onClick={() => {
+                          setSelectedSeasonIdx(sIdx);
+                          setCurrentEpisode(1);
+                        }}
                         style={{
-                          background: episodeBatch === idx ? '#e50914' : 'rgba(255,255,255,0.08)',
-                          border: 'none',
+                          background: selectedSeasonIdx === sIdx ? 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)' : 'rgba(255,255,255,0.08)',
+                          border: '1px solid rgba(255,255,255,0.1)',
                           color: '#fff',
-                          padding: '0.35rem 0.75rem',
-                          borderRadius: '8px',
-                          fontSize: '0.78rem',
+                          padding: '0.45rem 0.9rem',
+                          borderRadius: '10px',
+                          fontSize: '0.82rem',
                           fontWeight: 700,
+                          whiteSpace: 'nowrap',
                           cursor: 'pointer'
                         }}
                       >
-                        {start}-{end}
+                        {season.title} ({season.episodeCount} eps)
                       </button>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
               )}
 
               {/* Episode Grid Buttons */}
-              <div style={{ maxHeight: '220px', overflowY: 'auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '0.5rem', paddingRight: '0.2rem' }}>
-                {(episodeBatches[episodeBatch] || episodeBatches[0] || []).map(epNum => {
-                  const isActive = currentEpisode === epNum;
-                  return (
-                    <button
-                      key={epNum}
-                      type="button"
-                      onClick={() => setCurrentEpisode(epNum)}
-                      style={{
-                        padding: '0.5rem 0.25rem',
-                        background: isActive ? 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)' : 'rgba(255,255,255,0.05)',
-                        border: `1px solid ${isActive ? '#e50914' : 'transparent'}`,
-                        color: '#fff',
-                        borderRadius: '8px',
-                        fontSize: '0.8rem',
-                        fontWeight: isActive ? 800 : 500,
-                        cursor: 'pointer',
-                        textAlign: 'center'
-                      }}
-                    >
-                      Episodio {epNum}
-                    </button>
-                  );
-                })}
+              <div>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, display: 'block', marginBottom: '0.4rem' }}>
+                  📋 EPISODIOS ({currentSeasonEpisodes.length}):
+                </span>
+                <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '0.5rem', paddingRight: '0.2rem' }}>
+                  {currentSeasonEpisodes.map(epNum => {
+                    const isActive = currentEpisode === epNum;
+                    return (
+                      <button
+                        key={epNum}
+                        type="button"
+                        onClick={() => setCurrentEpisode(epNum)}
+                        style={{
+                          padding: '0.5rem 0.25rem',
+                          background: isActive ? 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)' : 'rgba(255,255,255,0.05)',
+                          border: `1px solid ${isActive ? '#e50914' : 'transparent'}`,
+                          color: '#fff',
+                          borderRadius: '8px',
+                          fontSize: '0.8rem',
+                          fontWeight: isActive ? 800 : 500,
+                          cursor: 'pointer',
+                          textAlign: 'center'
+                        }}
+                      >
+                        Episodio {epNum}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
             </div>
