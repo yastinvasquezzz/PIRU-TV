@@ -40,7 +40,7 @@ export default function Animes() {
   const [selectedEpisodeNumber, setSelectedEpisodeNumber] = useState(1);
   const [activeEpisodeData, setActiveEpisodeData] = useState(null);
 
-  // Hero anime index for Crunchyroll Spotlight
+  // Hero anime index for PIRU-TV Spotlight
   const [heroIndex, setHeroIndex] = useState(0);
   const heroList = useMemo(() => vimeusAnimesData.slice(0, 5), []);
   const activeHero = heroList[heroIndex] || heroList[0];
@@ -110,7 +110,6 @@ export default function Animes() {
         // 2. Fetch episodes for initial season
         fetchSeasonEpisodes(anime.tmdb_id, initialSeasonNum);
       } else {
-        // Fallback fallback season list
         fetchFallbackEpisodes(1);
       }
     } catch (e) {
@@ -205,22 +204,19 @@ export default function Animes() {
   return (
     <div className="animes-container" style={{ padding: '0.5rem 0 3rem' }}>
       
-      {/* Crunchyroll Style Header */}
+      {/* PIRU-TV Style Header */}
       <div className="category-header" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <span style={{ fontSize: '1.8rem' }}>🟧</span>
-            <h1 className="section-title" style={{ margin: 0, fontSize: '1.7rem', color: '#fff', letterSpacing: '-0.5px' }}>
-              Crunchyroll Anime Hub ({vimeusAnimesData.length} Series)
-            </h1>
-          </div>
-          <p style={{ color: '#94a3b8', fontSize: '0.88rem', marginTop: '0.3rem' }}>
-            Explora catálogos por temporadas oficiales, carátulas de episodios en HD y reproductor Vimeus sin publicidad
+          <h1 className="section-title" style={{ margin: 0, fontSize: '1.7rem', color: '#ffffff', letterSpacing: '-0.5px' }}>
+            🔥 PIRU-TV ANIME HUB (1069 Animes)
+          </h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', marginTop: '0.3rem' }}>
+            Explora catálogos por temporadas oficiales, carátulas de episodios en HD
           </p>
         </div>
 
         <div className="search-container" style={{ width: '340px' }}>
-          <span className="search-icon" style={{ color: '#f47521' }}>🔍</span>
+          <span className="search-icon">🔍</span>
           <input
             type="text"
             placeholder="Buscar anime (ej. SPY x FAMILY, One Piece)..."
@@ -234,7 +230,7 @@ export default function Animes() {
         </div>
       </div>
 
-      {/* Crunchyroll Spotlight Hero Banner */}
+      {/* PIRU-TV Spotlight Hero Banner */}
       {!searchTerm.trim() && activeHero && (
         <div 
           className="hero-banner"
@@ -248,31 +244,31 @@ export default function Animes() {
             backgroundSize: 'cover',
             backgroundPosition: 'center 20%',
             boxShadow: '0 20px 40px rgba(0,0,0,0.8)',
-            border: '1px solid rgba(244, 117, 33, 0.3)'
+            border: '1px solid var(--border-color)'
           }}
         >
           <div style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(90deg, #0b0c0d 0%, rgba(11,12,13,0.85) 45%, rgba(11,12,13,0.2) 100%)',
+            background: 'linear-gradient(to right, rgba(15,15,25,0.96) 0%, rgba(15,15,25,0.75) 50%, rgba(15,15,25,0.2) 100%)',
             display: 'flex',
             alignItems: 'center',
             padding: '3rem'
           }}>
             <div style={{ maxWidth: '600px' }}>
               <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '0.8rem', alignItems: 'center' }}>
-                <span style={{ background: '#f47521', color: '#000', fontSize: '0.72rem', fontWeight: 900, padding: '4px 10px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  🟧 CRUNCHYROLL SPOTLIGHT
+                <span style={{ background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', color: '#ffffff', fontSize: '0.72rem', fontWeight: 900, padding: '4px 10px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  🔥 DESTACADO PIRU-TV
                 </span>
-                <span style={{ background: 'rgba(255,255,255,0.12)', color: '#86efac', fontSize: '0.72rem', fontWeight: 700, padding: '4px 10px', borderRadius: '6px' }}>
+                <span style={{ background: 'rgba(255,255,255,0.15)', color: '#86efac', fontSize: '0.72rem', fontWeight: 700, padding: '4px 10px', borderRadius: '6px' }}>
                   {activeHero.quality || 'FULL HD 1080p'}
                 </span>
               </div>
-              <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: '#ffffff', margin: '0 0 0.8rem 0', lineHeight: 1.15, textShadow: '0 4px 15px rgba(0,0,0,0.9)' }}>
+              <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: '#ffffff', margin: '0 0 0.8rem 0', lineHeight: 1.15, textShadow: '0 4px 20px rgba(0,0,0,0.95)' }}>
                 {activeHero.title}
               </h2>
-              <p style={{ fontSize: '0.92rem', color: '#cbd5e1', lineHeight: '1.6', margin: '0 0 1.5rem 0', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
-                Disfruta de la experiencia oficial de Crunchyroll con {activeHero.title}. Episodios simulcast en alta definición con selector de servidores y subtítulos en español.
+              <p style={{ fontSize: '0.92rem', color: '#e2e8f0', lineHeight: '1.6', margin: '0 0 1.5rem 0', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textShadow: '0 2px 10px rgba(0,0,0,0.9)' }}>
+                Disfruta de {activeHero.title} completo en alta definición Full HD directamente en el reproductor de PIRU-TV con subtítulos en español.
               </p>
               <button
                 type="button"
@@ -281,11 +277,11 @@ export default function Animes() {
                   padding: '0.85rem 1.8rem',
                   fontSize: '1rem',
                   fontWeight: 900,
-                  background: 'linear-gradient(135deg, #f47521 0%, #ff640a 100%)',
+                  background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)',
                   border: 'none',
                   color: '#ffffff',
                   borderRadius: '12px',
-                  boxShadow: '0 6px 25px rgba(244, 117, 33, 0.55)',
+                  boxShadow: '0 6px 25px rgba(229, 9, 20, 0.55)',
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -300,7 +296,7 @@ export default function Animes() {
         </div>
       )}
 
-      {/* Crunchyroll Category Pills Bar */}
+      {/* PIRU-TV Category Pills Bar */}
       <div className="filters-wrapper" style={{ margin: '0 0 1.75rem 0', display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
         {ANIME_CATEGORIES.map(cat => (
           <button
@@ -312,8 +308,8 @@ export default function Animes() {
               setCurrentPage(1);
             }}
             style={{
-              background: activeCategory === cat ? 'linear-gradient(135deg, #f47521 0%, #ff640a 100%)' : 'rgba(255,255,255,0.06)',
-              borderColor: activeCategory === cat ? '#f47521' : 'rgba(255,255,255,0.1)',
+              background: activeCategory === cat ? 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)' : 'rgba(255,255,255,0.06)',
+              borderColor: activeCategory === cat ? '#e50914' : 'rgba(255,255,255,0.1)',
               color: '#fff',
               whiteSpace: 'nowrap'
             }}
@@ -343,14 +339,14 @@ export default function Animes() {
                   onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/200x280?text=Anime'; }}
                 />
                 
-                <div style={{ position: 'absolute', top: '10px', left: '10px', background: '#f47521', color: '#000', fontSize: '0.68rem', fontWeight: 900, padding: '3px 8px', borderRadius: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>
+                <div style={{ position: 'absolute', top: '10px', left: '10px', background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', color: '#fff', fontSize: '0.68rem', fontWeight: 900, padding: '3px 8px', borderRadius: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>
                   {anime.quality || 'FULL HD'}
                 </div>
               </div>
 
               <div className="card-info" style={{ padding: '0.75rem 0.25rem 0.25rem' }}>
                 <span className="card-genre" style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700 }}>
-                  Crunchyroll • TMDB #{anime.tmdb_id}
+                  PIRU-TV • TMDB #{anime.tmdb_id}
                 </span>
                 <h3 className="card-title" style={{ fontSize: '0.95rem', fontWeight: 800, margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff' }}>
                   {anime.title}
@@ -360,7 +356,7 @@ export default function Animes() {
           ))
         ) : (
           <div className="empty-state" style={{ gridColumn: '1 / -1', padding: '4rem 2rem', textAlign: 'center' }}>
-            <span className="empty-icon">🟧</span>
+            <span className="empty-icon">🔥</span>
             <h3 className="empty-title">No se encontraron animes</h3>
             <p>Intenta buscando con otro término de búsqueda.</p>
           </div>
@@ -379,7 +375,7 @@ export default function Animes() {
           >
             ◀ Anterior
           </button>
-          <span style={{ fontSize: '0.9rem', color: '#94a3b8', fontWeight: 700 }}>
+          <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 700 }}>
             Página {currentPage} de {totalPages}
           </span>
           <button
@@ -394,7 +390,7 @@ export default function Animes() {
         </div>
       )}
 
-      {/* Crunchyroll Modal Detail & Video Streaming Player */}
+      {/* PIRU-TV Modal Detail & Video Streaming Player */}
       {selectedAnime && (
         <div className="modal-overlay" onClick={() => { setSelectedAnime(null); setIsPlaying(false); }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '960px' }}>
@@ -415,7 +411,7 @@ export default function Animes() {
                   type="button"
                   className="player-placeholder-btn"
                   style={{
-                    background: `linear-gradient(to top, rgba(11,12,13,0.98), rgba(11,12,13,0.4)), url(${selectedAnime.backdrop || selectedAnime.poster})`,
+                    background: `linear-gradient(to top, rgba(15,15,25,0.98), rgba(15,15,25,0.4)), url(${selectedAnime.backdrop || selectedAnime.poster})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     gap: '1rem',
@@ -427,7 +423,7 @@ export default function Animes() {
                   }}
                   onClick={() => setIsPlaying(true)}
                 >
-                  <div className="play-icon" style={{ transform: 'scale(1.4)', background: '#f47521', color: '#fff' }}>▶</div>
+                  <div className="play-icon" style={{ transform: 'scale(1.4)', background: '#fff', color: '#000' }}>▶</div>
                   <strong style={{ color: '#fff', fontSize: '1.25rem', textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
                     Haga clic para reproducir {activeEpisodeData ? `Ep. ${selectedEpisodeNumber}: ${activeEpisodeData.name}` : ''}
                   </strong>
@@ -437,9 +433,9 @@ export default function Animes() {
 
             {/* Server Selector Bar when Playing */}
             {isPlaying && (
-              <div className="player-header" style={{ background: '#141519' }}>
+              <div className="player-header">
                 <div className="player-title-info">
-                  <span className="pulse-dot" style={{ background: '#f47521' }}></span>
+                  <span className="pulse-dot"></span>
                   <span>
                     Reproduciendo: {selectedAnime.title} - Temp. {selectedSeasonNumber}, Ep. {selectedEpisodeNumber} {activeEpisodeData ? `(${activeEpisodeData.name})` : ''}
                   </span>
@@ -467,8 +463,8 @@ export default function Animes() {
               </div>
             )}
 
-            {/* Crunchyroll Seasons Selector Bar */}
-            <div className="episodes-section" style={{ background: '#141519', padding: '1.5rem 2rem 1rem' }}>
+            {/* PIRU-TV Seasons Selector Bar */}
+            <div className="episodes-section" style={{ padding: '1.5rem 2rem 1rem' }}>
               <div className="episodes-header" style={{ marginBottom: '1.25rem' }}>
                 <span className="episodes-title" style={{ color: '#fff', fontSize: '1.1rem', fontWeight: 800 }}>
                   🌸 Seleccionar Temporada
@@ -479,7 +475,7 @@ export default function Animes() {
                     className="season-select"
                     value={selectedSeasonNumber}
                     onChange={(e) => handleSelectSeason(Number(e.target.value))}
-                    style={{ background: '#0b0c0d', color: '#fff', border: '1px solid #f47521', padding: '0.5rem 1rem', borderRadius: '10px', fontWeight: 700 }}
+                    style={{ background: 'var(--glass-bg)', color: '#fff', border: '1px solid var(--primary)', padding: '0.5rem 1rem', borderRadius: '10px', fontWeight: 700 }}
                   >
                     {animeDetails.seasons
                       .filter(s => s.season_number > 0)
@@ -491,18 +487,18 @@ export default function Animes() {
                     }
                   </select>
                 ) : (
-                  <span style={{ fontSize: '0.88rem', color: '#94a3b8' }}>Temporada 1</span>
+                  <span style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>Temporada 1</span>
                 )}
               </div>
 
-              {/* Crunchyroll Episode Cards Grid with Thumbnails & Synopses */}
+              {/* PIRU-TV Episode Cards Grid with Thumbnails & Synopses */}
               <div style={{ marginBottom: '1rem' }}>
                 <span style={{ color: '#cbd5e1', fontSize: '0.85rem', fontWeight: 700, display: 'block', marginBottom: '0.85rem' }}>
                   📺 EPISODIOS DE LA TEMPORADA ({seasonEpisodes.length}):
                 </span>
 
                 {isLoadingEpisodes ? (
-                  <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
+                  <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
                     Cargando carátulas de episodios desde TMDB...
                   </div>
                 ) : (
@@ -519,8 +515,8 @@ export default function Animes() {
                           type="button"
                           onClick={() => handleSelectEpisode(ep)}
                           style={{
-                            background: isActive ? 'rgba(244, 117, 33, 0.15)' : 'rgba(255,255,255,0.04)',
-                            border: `2px solid ${isActive ? '#f47521' : 'rgba(255,255,255,0.08)'}`,
+                            background: isActive ? 'rgba(229, 9, 20, 0.18)' : 'rgba(255,255,255,0.04)',
+                            border: `2px solid ${isActive ? '#e50914' : 'rgba(255,255,255,0.08)'}`,
                             borderRadius: '14px',
                             overflow: 'hidden',
                             textAlign: 'left',
@@ -540,17 +536,17 @@ export default function Animes() {
                               onError={(e) => { e.target.onerror = null; e.target.src = selectedAnime.poster; }}
                             />
                             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)' }} />
-                            <div style={{ position: 'absolute', bottom: '8px', left: '10px', background: '#f47521', color: '#fff', fontSize: '0.72rem', fontWeight: 900, padding: '2px 8px', borderRadius: '6px' }}>
+                            <div style={{ position: 'absolute', bottom: '8px', left: '10px', background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', color: '#fff', fontSize: '0.72rem', fontWeight: 900, padding: '2px 8px', borderRadius: '6px' }}>
                               Episodio {ep.episode_number}
                             </div>
                           </div>
 
                           {/* Episode Title & Overview */}
                           <div style={{ padding: '0.85rem' }}>
-                            <h4 style={{ margin: '0 0 0.3rem 0', fontSize: '0.9rem', fontWeight: 800, color: isActive ? '#f47521' : '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            <h4 style={{ margin: '0 0 0.3rem 0', fontSize: '0.9rem', fontWeight: 800, color: isActive ? '#f87171' : '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                               {ep.name || `Episodio ${ep.episode_number}`}
                             </h4>
-                            <p style={{ margin: 0, fontSize: '0.78rem', color: '#94a3b8', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                            <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                               {ep.overview || 'Sin descripción disponible para este episodio.'}
                             </p>
                           </div>
@@ -564,11 +560,9 @@ export default function Animes() {
             </div>
 
             {/* Modal Body & Action Buttons */}
-            <div className="modal-body" style={{ background: '#0b0c0d' }}>
+            <div className="modal-body">
               <div className="modal-meta">
-                <span className="modal-genre" style={{ background: 'rgba(244, 117, 33, 0.2)', color: '#f47521', borderColor: 'rgba(244, 117, 33, 0.4)' }}>
-                  🟧 Crunchyroll Anime
-                </span>
+                <span className="modal-genre">🔥 PIRU-TV Anime</span>
                 <span className="modal-lang">{selectedAnime.quality || 'FULL HD 1080p'}</span>
                 <span className="modal-lang">TMDB #{selectedAnime.tmdb_id}</span>
               </div>
@@ -605,10 +599,10 @@ export default function Animes() {
                     flex: 'none',
                     padding: '0.75rem 1.5rem',
                     fontSize: '0.95rem',
-                    background: 'linear-gradient(135deg, #f47521 0%, #ff640a 100%)',
+                    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
                     border: 'none',
                     color: '#ffffff',
-                    boxShadow: '0 4px 15px rgba(244, 117, 33, 0.45)'
+                    boxShadow: '0 4px 15px rgba(245, 158, 11, 0.45)'
                   }}
                   onClick={() => {
                     castWithWebVideoCaster(embedUrl, selectedAnime.title);
