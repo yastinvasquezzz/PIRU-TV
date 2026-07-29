@@ -76,13 +76,25 @@ export default function Animes() {
     return Array.from({ length: count }, (_, i) => i + 1);
   }, [activeSeason]);
 
-  // Current Player Embed URL with proxy bypass
-  const activeEmbedUrl = useMemo(() => {
+  // Raw TokiAnime Watch URL
+  const rawWatchUrl = useMemo(() => {
     if (!selectedAnime) return '';
-    const rawUrl = `https://tokianime.tv/watch/${selectedAnime.slug}/${currentEpisode}?server=${selectedServer}&audio=${selectedAudio}`;
+    return `https://tokianime.tv/watch/${selectedAnime.slug}/${currentEpisode}`;
+  }, [selectedAnime, currentEpisode]);
+
+  // Cloudflare Proxy Embed URL
+  const activeEmbedUrl = useMemo(() => {
+    if (!rawWatchUrl) return '';
     const cfProxy = 'https://pirutv-proxy.skillful-part.workers.dev';
-    return `${cfProxy}?url=${encodeURIComponent(rawUrl)}`;
-  }, [selectedAnime, currentEpisode, selectedServer, selectedAudio]);
+    return `${cfProxy}?url=${encodeURIComponent(rawWatchUrl)}`;
+  }, [rawWatchUrl]);
+
+  // Open Direct Player Window (bypasses Cloudflare Turnstile)
+  const openDirectPlayer = () => {
+    if (rawWatchUrl) {
+      window.open(rawWatchUrl, '_blank', 'width=1080,height=650');
+    }
+  };
 
   useDpadNavigation({
     onBack: () => {
@@ -197,21 +209,51 @@ export default function Animes() {
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '920px' }}>
             <button className="modal-close-btn" onClick={() => setSelectedAnime(null)}>✕</button>
 
-            {/* Video Player Frame */}
-            <div className="movie-player-container" style={{ height: '480px', background: '#000', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 20px 40px rgba(0,0,0,0.9)' }}>
-              <iframe
-                src={activeEmbedUrl}
-                title={`${selectedAnime.title} - ${activeSeason.title} Ep ${currentEpisode}`}
-                allowFullScreen
-                allow="autoplay; encrypted-media"
-                style={{ width: '100%', height: '100%', border: 'none' }}
-              />
+            {/* Video Player Frame Container */}
+            <div className="movie-player-container" style={{ height: '440px', background: '#000', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 20px 40px rgba(0,0,0,0.9)', position: 'relative' }}>
+              {selectedServer === 1 ? (
+                <iframe
+                  src={activeEmbedUrl}
+                  title={`${selectedAnime.title} - ${activeSeason.title} Ep ${currentEpisode}`}
+                  allowFullScreen
+                  allow="autoplay; encrypted-media"
+                  style={{ width: '100%', height: '100%', border: 'none' }}
+                />
+              ) : (
+                <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', textAlign: 'center', color: '#fff', background: 'linear-gradient(135deg, rgba(20,20,32,0.98), rgba(10,10,18,0.99))' }}>
+                  <div style={{ fontSize: '3.5rem', marginBottom: '0.5rem' }}>🎬</div>
+                  <h3 style={{ margin: '0 0 0.5rem 0', fontFamily: 'var(--font-title)', fontSize: '1.25rem' }}>
+                    Reproductor Directo TokiAnime
+                  </h3>
+                  <p style={{ fontSize: '0.88rem', color: '#cbd5e1', maxWidth: '440px', lineHeight: '1.5', marginBottom: '1.25rem' }}>
+                    Abre el reproductor oficial TokiAnime en alta definición sin publicidad o transmítelo a tu Smart TV.
+                  </p>
+                  <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      style={{ background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', border: 'none', padding: '0.75rem 1.4rem', borderRadius: '10px', fontSize: '0.9rem', fontWeight: 800 }}
+                      onClick={openDirectPlayer}
+                    >
+                      ▶ Abrir Reproductor TokiAnime
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', border: 'none', padding: '0.75rem 1.4rem', borderRadius: '10px', fontSize: '0.9rem', fontWeight: 800 }}
+                      onClick={() => castWithWebVideoCaster(rawWatchUrl, `${selectedAnime.title} Ep ${currentEpisode}`)}
+                    >
+                      📱 Transmitir a TV (Web Video Caster)
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Modal Body & Season / Episode Controls */}
             <div className="modal-body" style={{ padding: '1.25rem 0 0' }}>
               
-              {/* Header Title & Meta */}
+              {/* Header Title & Action Buttons */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
                 <div>
                   <h2 className="modal-title" style={{ margin: 0, fontSize: '1.3rem', color: '#fff' }}>
@@ -226,22 +268,40 @@ export default function Animes() {
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  className="btn-primary"
-                  style={{
-                    padding: '0.65rem 1.25rem',
-                    fontSize: '0.88rem',
-                    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                    border: 'none',
-                    color: '#ffffff',
-                    boxShadow: '0 4px 15px rgba(245, 158, 11, 0.45)',
-                    borderRadius: '10px'
-                  }}
-                  onClick={() => castWithWebVideoCaster(activeEmbedUrl, `${selectedAnime.title} Ep ${currentEpisode}`)}
-                >
-                  📱 Transmitir a TV (Web Video Caster)
-                </button>
+                <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{
+                      padding: '0.65rem 1.25rem',
+                      fontSize: '0.88rem',
+                      background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)',
+                      border: 'none',
+                      color: '#ffffff',
+                      boxShadow: '0 4px 15px rgba(229, 9, 20, 0.45)',
+                      borderRadius: '10px'
+                    }}
+                    onClick={openDirectPlayer}
+                  >
+                    ▶ Abrir Reproductor Directo
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{
+                      padding: '0.65rem 1.25rem',
+                      fontSize: '0.88rem',
+                      background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                      border: 'none',
+                      color: '#ffffff',
+                      boxShadow: '0 4px 15px rgba(245, 158, 11, 0.45)',
+                      borderRadius: '10px'
+                    }}
+                    onClick={() => castWithWebVideoCaster(rawWatchUrl, `${selectedAnime.title} Ep ${currentEpisode}`)}
+                  >
+                    📱 Transmitir a TV
+                  </button>
+                </div>
               </div>
 
               {/* Audio Selector & Server Switcher Bar */}
@@ -291,25 +351,38 @@ export default function Animes() {
                 {/* Video Server Selector */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                   <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 700 }}>SERVIDOR:</span>
-                  {[1, 2, 3].map(srv => (
-                    <button
-                      key={srv}
-                      type="button"
-                      onClick={() => setSelectedServer(srv)}
-                      style={{
-                        background: selectedServer === srv ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)',
-                        border: `1px solid ${selectedServer === srv ? '#fff' : 'transparent'}`,
-                        color: '#fff',
-                        padding: '0.35rem 0.7rem',
-                        borderRadius: '8px',
-                        fontSize: '0.8rem',
-                        fontWeight: 600,
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Servidor {srv} {srv === 1 ? '(Sin Anuncios)' : ''}
-                    </button>
-                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedServer(1)}
+                    style={{
+                      background: selectedServer === 1 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)',
+                      border: `1px solid ${selectedServer === 1 ? '#fff' : 'transparent'}`,
+                      color: '#fff',
+                      padding: '0.35rem 0.7rem',
+                      borderRadius: '8px',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Servidor Embed (Proxy)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedServer(2)}
+                    style={{
+                      background: selectedServer === 2 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.05)',
+                      border: `1px solid ${selectedServer === 2 ? '#fff' : 'transparent'}`,
+                      color: '#fff',
+                      padding: '0.35rem 0.7rem',
+                      borderRadius: '8px',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Servidor Directo TokiAnime
+                  </button>
                 </div>
 
               </div>
