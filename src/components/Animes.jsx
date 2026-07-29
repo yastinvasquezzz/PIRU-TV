@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import useDpadNavigation from '../hooks/useDpadNavigation';
 import { saveWatchProgress } from '../utils/storage';
 import { castWithWebVideoCaster } from '../utils/wvcCast';
@@ -82,7 +82,6 @@ export default function Animes() {
   // Current TokiAnime Embed URL
   const activeEmbedUrl = useMemo(() => {
     if (!selectedAnime) return '';
-    // TokiAnime watch URL
     return `https://tokianime.tv/watch/${selectedAnime.slug}/${currentEpisode}?server=${selectedServer}&audio=${selectedAudio}`;
   }, [selectedAnime, currentEpisode, selectedServer, selectedAudio]);
 
@@ -101,7 +100,7 @@ export default function Animes() {
       <div className="category-header">
         <div>
           <h1 className="section-title" style={{ margin: 0 }}>
-            🔥 Animes TokiAnime (HD & Audio Latino)
+            🔥 Animes TokiAnime ({animeDataset.length} Series)
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.3rem' }}>
             Catálogo completo de anime en emisión, subtitulado y doblaje latino oficial

@@ -1,197 +1,106 @@
 [
   {
-    "id": "anime-1",
-    "slug": "one-piece",
-    "title": "ONE PIECE",
+    "id": "anime-pop-cyberpunk-edgerunners",
+    "slug": "cyberpunk-edgerunners",
+    "title": "Cyberpunk: Edgerunners",
     "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
-    "rating": "8.8",
+    "rating": "9.8",
     "genres": [
       "Acción",
       "Aventura",
-      "Comedia",
       "Fantasía"
     ],
     "hasLatino": true,
     "hasSub": true,
-    "totalEpisodes": 1122,
-    "synopsis": "Disfruta de ONE PIECE online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/one-piece"
+    "totalEpisodes": 10,
+    "tokiUrl": "https://tokianime.tv/watch/cyberpunk-edgerunners"
   },
   {
-    "id": "anime-2",
-    "slug": "dragon-ball-super",
-    "title": "Dragon Ball Super",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC83M2Y1MDNiYzdmNzhjYTc3ZDFkNzI5OGM0N2U5NDFhMS5wbmc/640.webp",
-    "rating": "8.9",
+    "id": "anime-pop-blue-lock",
+    "slug": "blue-lock",
+    "title": "BLUELOCK",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
     "genres": [
       "Acción",
       "Aventura",
-      "Artes Marciales"
+      "Fantasía"
     ],
     "hasLatino": true,
     "hasSub": true,
-    "totalEpisodes": 131,
-    "synopsis": "Disfruta de Dragon Ball Super online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/dragon-ball-super"
+    "totalEpisodes": 38,
+    "tokiUrl": "https://tokianime.tv/watch/blue-lock"
   },
   {
-    "id": "anime-3",
-    "slug": "demon-slayer-kimetsu-no-yaiba",
-    "title": "Demon Slayer: Kimetsu no Yaiba",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yZjY5YWFiMjJjNGYxZTcxMmEzNzBhNjZkYzNlMTBkNy5wbmc/640.webp",
-    "rating": "9.0",
-    "genres": [
-      "Acción",
-      "Fantasía",
-      "Sobrenatural"
-    ],
-    "hasLatino": true,
-    "hasSub": true,
-    "totalEpisodes": 60,
-    "synopsis": "Disfruta de Demon Slayer: Kimetsu no Yaiba online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/demon-slayer-kimetsu-no-yaiba"
-  },
-  {
-    "id": "anime-4",
-    "slug": "naruto-shippuden",
-    "title": "Naruto Shippuden",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8xYjQzOWFlMzRhYTdlMWI3M2NjMTEzMTEzNWRkMmEzNy5wbmc/640.webp",
-    "rating": "9.1",
+    "id": "anime-pop-tokyo-revengers",
+    "slug": "tokyo-revengers",
+    "title": "Tokyo Revengers",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
     "genres": [
       "Acción",
       "Aventura",
-      "Ninja"
+      "Fantasía"
     ],
     "hasLatino": true,
     "hasSub": true,
-    "totalEpisodes": 500,
-    "synopsis": "Disfruta de Naruto Shippuden online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/naruto-shippuden"
+    "totalEpisodes": 50,
+    "tokiUrl": "https://tokianime.tv/watch/tokyo-revengers"
   },
   {
-    "id": "anime-5",
-    "slug": "jujutsu-kaisen",
-    "title": "Jujutsu Kaisen",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC9lNmY3YmY4OTQ3ZmQ5N2U0YWRiM2QzNmQzOGZiYTk2Yy5wbmc/640.webp",
-    "rating": "9.2",
+    "id": "anime-pop-black-clover",
+    "slug": "black-clover",
+    "title": "Black Clover",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
     "genres": [
       "Acción",
-      "Sobrenatural",
-      "Escolar"
+      "Aventura",
+      "Fantasía"
     ],
     "hasLatino": true,
     "hasSub": true,
-    "totalEpisodes": 47,
-    "synopsis": "Disfruta de Jujutsu Kaisen online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/jujutsu-kaisen"
+    "totalEpisodes": 170,
+    "tokiUrl": "https://tokianime.tv/watch/black-clover"
   },
   {
-    "id": "anime-6",
-    "slug": "shingeki-no-kyojin",
-    "title": "Shingeki no Kyojin (Attack on Titan)",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8zMGI0OGY3M2E5MDc4ZjkyNDlmMzc1Njc0NTAzYWNhNC5wbmc/640.webp",
-    "rating": "9.3",
+    "id": "anime-pop-dr-stone",
+    "slug": "dr-stone",
+    "title": "Dr. STONE",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
     "genres": [
       "Acción",
-      "Misterio",
-      "Drama"
+      "Aventura",
+      "Fantasía"
     ],
     "hasLatino": true,
     "hasSub": true,
-    "totalEpisodes": 89,
-    "synopsis": "Disfruta de Shingeki no Kyojin (Attack on Titan) online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/shingeki-no-kyojin"
+    "totalEpisodes": 57,
+    "tokiUrl": "https://tokianime.tv/watch/dr-stone"
   },
   {
-    "id": "anime-7",
-    "slug": "my-hero-academia",
-    "title": "Boku no Hero Academia (My Hero Academia)",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8wNDI4YmM1ODc0MmFlMGM3MGFjOGQ2NTlmM2M0NWE2OC5wbmc/640.webp",
-    "rating": "9.4",
+    "id": "anime-pop-spy-x-family",
+    "slug": "spy-x-family",
+    "title": "SPY x FAMILY",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
     "genres": [
       "Acción",
-      "Superhéroes",
-      "Escolar"
-    ],
-    "hasLatino": true,
-    "hasSub": true,
-    "totalEpisodes": 150,
-    "synopsis": "Disfruta de Boku no Hero Academia (My Hero Academia) online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/my-hero-academia"
-  },
-  {
-    "id": "anime-8",
-    "slug": "solo-leveling",
-    "title": "Solo Leveling",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC85ZDVkNDFjMmIxYjUyODM5NTZmNjM0NzcwNjNkYmNlOS5wbmc/640.webp",
-    "rating": "9.5",
-    "genres": [
-      "Acción",
-      "Fantasía",
-      "Magia"
-    ],
-    "hasLatino": true,
-    "hasSub": true,
-    "totalEpisodes": 12,
-    "synopsis": "Disfruta de Solo Leveling online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/solo-leveling"
-  },
-  {
-    "id": "anime-9",
-    "slug": "chainsaw-man",
-    "title": "Chainsaw Man",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC80ZDZkMTM4MmNlNzBjOGVjZWE4MmM1YjQ0MmE1MTEzMC5wbmc/640.webp",
-    "rating": "9.6",
-    "genres": [
-      "Acción",
-      "Terror",
-      "Sobrenatural"
-    ],
-    "hasLatino": true,
-    "hasSub": true,
-    "totalEpisodes": 12,
-    "synopsis": "Disfruta de Chainsaw Man online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/chainsaw-man"
-  },
-  {
-    "id": "anime-10",
-    "slug": "bleach-sennen-kessen-hen",
-    "title": "Bleach: Sennen Kessen-hen",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC9mZTVhMTQyMGVmZDE0MTA5MjgzZGM1MmY3ZjkyMzA1ZS5wbmc/640.webp",
-    "rating": "9.7",
-    "genres": [
-      "Acción",
-      "Sobrenatural"
-    ],
-    "hasLatino": true,
-    "hasSub": true,
-    "totalEpisodes": 39,
-    "synopsis": "Disfruta de Bleach: Sennen Kessen-hen online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/bleach-sennen-kessen-hen"
-  },
-  {
-    "id": "anime-11",
-    "slug": "death-note",
-    "title": "Death Note",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC82OGYwNDNlOGY0ZDVhNjgzNTlmZjBmNGQxYTlhMTAwMi5wbmc/640.webp",
-    "rating": "8.8",
-    "genres": [
-      "Suspenso",
-      "Psicológico",
-      "Sobrenatural"
+      "Aventura",
+      "Fantasía"
     ],
     "hasLatino": true,
     "hasSub": true,
     "totalEpisodes": 37,
-    "synopsis": "Disfruta de Death Note online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/death-note"
+    "tokiUrl": "https://tokianime.tv/watch/spy-x-family"
   },
   {
-    "id": "anime-12",
+    "id": "anime-pop-hunter-x-hunter-2011",
     "slug": "hunter-x-hunter-2011",
     "title": "Hunter x Hunter (2011)",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8xY2M5YTdjYTlhZTc4ZTQ0ZGUyYzZkMmEzODk4MTNhYi5wbmc/640.webp",
-    "rating": "8.9",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
     "genres": [
       "Acción",
       "Aventura",
@@ -200,109 +109,2086 @@
     "hasLatino": true,
     "hasSub": true,
     "totalEpisodes": 148,
-    "synopsis": "Disfruta de Hunter x Hunter (2011) online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
     "tokiUrl": "https://tokianime.tv/watch/hunter-x-hunter-2011"
   },
   {
-    "id": "anime-13",
-    "slug": "spy-x-family",
-    "title": "SPY x FAMILY",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC82MmI0YzE4NDg0M2Q3MDM5Mzc0Mjc4MjJjOTlmZWVmYy5wbmc/640.webp",
-    "rating": "9.0",
+    "id": "anime-pop-death-note",
+    "slug": "death-note",
+    "title": "Death Note",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
     "genres": [
-      "Comedia",
       "Acción",
-      "Escolar"
-    ],
-    "hasLatino": true,
-    "hasSub": true,
-    "totalEpisodes": 37,
-    "synopsis": "Disfruta de SPY x FAMILY online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/spy-x-family"
-  },
-  {
-    "id": "anime-14",
-    "slug": "dr-stone",
-    "title": "Dr. STONE",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC9kYzEzMDkyZDVlODlhNzg4MWUzYjY5Yzk3ZDQ2MGJmOC5wbmc/640.webp",
-    "rating": "9.1",
-    "genres": [
-      "Sci-Fi",
       "Aventura",
-      "Comedia"
-    ],
-    "hasLatino": true,
-    "hasSub": true,
-    "totalEpisodes": 57,
-    "synopsis": "Disfruta de Dr. STONE online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/dr-stone"
-  },
-  {
-    "id": "anime-15",
-    "slug": "black-clover",
-    "title": "Black Clover",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC84Y2Y0ZmFlMzdkYjYyMDNhMTkwNTQ1NmQ1NGU3MzJhYS5wbmc/640.webp",
-    "rating": "9.2",
-    "genres": [
-      "Acción",
-      "Magia",
       "Fantasía"
     ],
     "hasLatino": true,
     "hasSub": true,
-    "totalEpisodes": 170,
-    "synopsis": "Disfruta de Black Clover online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/black-clover"
+    "totalEpisodes": 37,
+    "tokiUrl": "https://tokianime.tv/watch/death-note"
   },
   {
-    "id": "anime-16",
-    "slug": "tokyo-revengers",
-    "title": "Tokyo Revengers",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC9mZDE2YTEyMTA4OTRjOGRiZmIwYjY0ZDI1ZDIwNDJkMi5wbmc/640.webp",
+    "id": "anime-pop-bleach-sennen-kessen-hen",
+    "slug": "bleach-sennen-kessen-hen",
+    "title": "Bleach: Sennen Kessen-hen",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 39,
+    "tokiUrl": "https://tokianime.tv/watch/bleach-sennen-kessen-hen"
+  },
+  {
+    "id": "anime-pop-chainsaw-man",
+    "slug": "chainsaw-man",
+    "title": "Chainsaw Man",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/chainsaw-man"
+  },
+  {
+    "id": "anime-pop-solo-leveling",
+    "slug": "solo-leveling",
+    "title": "Solo Leveling",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/solo-leveling"
+  },
+  {
+    "id": "anime-pop-my-hero-academia",
+    "slug": "my-hero-academia",
+    "title": "Boku no Hero Academia",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 150,
+    "tokiUrl": "https://tokianime.tv/watch/my-hero-academia"
+  },
+  {
+    "id": "anime-pop-shingeki-no-kyojin",
+    "slug": "shingeki-no-kyojin",
+    "title": "Shingeki no Kyojin (Attack on Titan)",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 89,
+    "tokiUrl": "https://tokianime.tv/watch/shingeki-no-kyojin"
+  },
+  {
+    "id": "anime-pop-jujutsu-kaisen",
+    "slug": "jujutsu-kaisen",
+    "title": "Jujutsu Kaisen",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 47,
+    "tokiUrl": "https://tokianime.tv/watch/jujutsu-kaisen"
+  },
+  {
+    "id": "anime-pop-naruto-shippuden",
+    "slug": "naruto-shippuden",
+    "title": "Naruto Shippuden",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 500,
+    "tokiUrl": "https://tokianime.tv/watch/naruto-shippuden"
+  },
+  {
+    "id": "anime-pop-demon-slayer-kimetsu-no-yaiba",
+    "slug": "demon-slayer-kimetsu-no-yaiba",
+    "title": "Demon Slayer: Kimetsu no Yaiba",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 60,
+    "tokiUrl": "https://tokianime.tv/watch/demon-slayer-kimetsu-no-yaiba"
+  },
+  {
+    "id": "anime-pop-dragon-ball-super",
+    "slug": "dragon-ball-super",
+    "title": "Dragon Ball Super",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 131,
+    "tokiUrl": "https://tokianime.tv/watch/dragon-ball-super"
+  },
+  {
+    "id": "anime-1",
+    "slug": "sora-wa-akai-kawa-no-hotori",
+    "title": "Sora Wa Akai Kawa No Hotori",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.5",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/sora-wa-akai-kawa-no-hotori"
+  },
+  {
+    "id": "anime-2",
+    "slug": "koukaku-kidoutai-the-ghost-in-the-shell",
+    "title": "Koukaku Kidoutai The Ghost In The Shell",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.6",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/koukaku-kidoutai-the-ghost-in-the-shell"
+  },
+  {
+    "id": "anime-3",
+    "slug": "yoroi-shin-den-samurai-troopers-part-2",
+    "title": "Yoroi Shin Den Samurai Troopers Part 2",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.7",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/yoroi-shin-den-samurai-troopers-part-2"
+  },
+  {
+    "id": "anime-4",
+    "slug": "tefuda-ga-oome-no-victoria",
+    "title": "Tefuda Ga Oome No Victoria",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/tefuda-ga-oome-no-victoria"
+  },
+  {
+    "id": "anime-5",
+    "slug": "bai-ri-cheng-wang",
+    "title": "Bai Ri Cheng Wang",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/bai-ri-cheng-wang"
+  },
+  {
+    "id": "anime-6",
+    "slug": "mujikaku-seijo-wa-kyou-mo-muishiki-ni-chikara-wo-tare-nagasu",
+    "title": "Mujikaku Seijo Wa Kyou Mo Muishiki Ni Chikara Wo Tare Nagasu",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.0",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/mujikaku-seijo-wa-kyou-mo-muishiki-ni-chikara-wo-tare-nagasu"
+  },
+  {
+    "id": "anime-7",
+    "slug": "kimi-ga-shinu-made-koi-wo-shitai",
+    "title": "Kimi Ga Shinu Made Koi Wo Shitai",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.1",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/kimi-ga-shinu-made-koi-wo-shitai"
+  },
+  {
+    "id": "anime-8",
+    "slug": "liar-game",
+    "title": "Liar Game",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.2",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 17,
+    "tokiUrl": "https://tokianime.tv/watch/liar-game"
+  },
+  {
+    "id": "anime-9",
+    "slug": "grand-blue-season-3",
+    "title": "Grand Blue Season 3",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
     "rating": "9.3",
     "genres": [
       "Acción",
-      "Drama",
-      "Viajes en el Tiempo"
+      "Aventura",
+      "Fantasía"
     ],
     "hasLatino": true,
     "hasSub": true,
-    "totalEpisodes": 50,
-    "synopsis": "Disfruta de Tokyo Revengers online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/tokyo-revengers"
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/grand-blue-season-3"
+  },
+  {
+    "id": "anime-10",
+    "slug": "fei-ren-zai-3-part-2",
+    "title": "Fei Ren Zai 3 Part 2",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.4",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/fei-ren-zai-3-part-2"
+  },
+  {
+    "id": "anime-11",
+    "slug": "suterare-seijo-no-isekai-gohantabi-kakure-skill-de-camping-car-wo-shoukan-shimashita",
+    "title": "Suterare Seijo No Isekai Gohantabi Kakure Skill De Camping Car Wo Shoukan Shimashita",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.5",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/suterare-seijo-no-isekai-gohantabi-kakure-skill-de-camping-car-wo-shoukan-shimashita"
+  },
+  {
+    "id": "anime-12",
+    "slug": "honoo-no-toukyuujo-dodge-danko",
+    "title": "Honoo No Toukyuujo Dodge Danko",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.6",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/honoo-no-toukyuujo-dodge-danko"
+  },
+  {
+    "id": "anime-13",
+    "slug": "tenkou-saki-no-seiso-karen-na-bishoujo-ga-mukashi-danshi-to-omotte-issho-ni-asonda-osananajimi-datta-ken",
+    "title": "Tenkou Saki No Seiso Karen Na Bishoujo Ga Mukashi Danshi To Omotte Issho Ni Asonda Osananajimi Datta Ken",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.7",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/tenkou-saki-no-seiso-karen-na-bishoujo-ga-mukashi-danshi-to-omotte-issho-ni-asonda-osananajimi-datta-ken"
+  },
+  {
+    "id": "anime-14",
+    "slug": "meitantei-precure",
+    "title": "Meitantei Precure",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 26,
+    "tokiUrl": "https://tokianime.tv/watch/meitantei-precure"
+  },
+  {
+    "id": "anime-15",
+    "slug": "world-is-dancing",
+    "title": "World Is Dancing",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/world-is-dancing"
+  },
+  {
+    "id": "anime-16",
+    "slug": "buchigire-reijou-wa-houfuku-wo-chikaimashita-madousho-no-chikara-de-sokoku-wo-tatakitsubushimasu",
+    "title": "Buchigire Reijou Wa Houfuku Wo Chikaimashita Madousho No Chikara De Sokoku Wo Tatakitsubushimasu",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.5",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/buchigire-reijou-wa-houfuku-wo-chikaimashita-madousho-no-chikara-de-sokoku-wo-tatakitsubushimasu"
   },
   {
     "id": "anime-17",
-    "slug": "blue-lock",
-    "title": "BLUELOCK",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC82MmRjODFkMDIzYWE4YTFiOGQwNGIwNWI3N2JhOWYyOS5wbmc/640.webp",
-    "rating": "9.4",
+    "slug": "gaikotsu-kishi-sama-tadaima-isekai-e-odekakechuu-ii",
+    "title": "Gaikotsu Kishi Sama Tadaima Isekai E Odekakechuu Ii",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.6",
     "genres": [
-      "Deportes",
       "Acción",
-      "Escolar"
+      "Aventura",
+      "Fantasía"
     ],
     "hasLatino": true,
     "hasSub": true,
-    "totalEpisodes": 38,
-    "synopsis": "Disfruta de BLUELOCK online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/blue-lock"
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/gaikotsu-kishi-sama-tadaima-isekai-e-odekakechuu-ii"
   },
   {
     "id": "anime-18",
-    "slug": "cyberpunk-edgerunners",
-    "title": "Cyberpunk: Edgerunners",
-    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8wMjA2N2JmODlhOWE0MDdlMGYwNDZkYzg5OWRhMTllMC5wbmc/640.webp",
-    "rating": "9.5",
+    "slug": "toumei-na-yoru-ni-kakeru-kimi-to-me-ni-mienai-koi-wo-shita",
+    "title": "Toumei Na Yoru Ni Kakeru Kimi To Me Ni Mienai Koi Wo Shita",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.7",
     "genres": [
-      "Sci-Fi",
       "Acción",
-      "Cyberpunk"
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/toumei-na-yoru-ni-kakeru-kimi-to-me-ni-mienai-koi-wo-shita"
+  },
+  {
+    "id": "anime-19",
+    "slug": "quanzhi-fashi-7",
+    "title": "Quanzhi Fashi 7",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
     ],
     "hasLatino": true,
     "hasSub": true,
-    "totalEpisodes": 10,
-    "synopsis": "Disfruta de Cyberpunk: Edgerunners online en HD con audio subtitulado y doblaje latino oficial en TokiAnime / PIRU TV.",
-    "tokiUrl": "https://tokianime.tv/watch/cyberpunk-edgerunners"
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/quanzhi-fashi-7"
+  },
+  {
+    "id": "anime-20",
+    "slug": "xian-ni",
+    "title": "Xian Ni",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 151,
+    "tokiUrl": "https://tokianime.tv/watch/xian-ni"
+  },
+  {
+    "id": "anime-21",
+    "slug": "azur-lane-bisoku-zenshin-ni",
+    "title": "Azur Lane Bisoku Zenshin Ni",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.0",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/azur-lane-bisoku-zenshin-ni"
+  },
+  {
+    "id": "anime-22",
+    "slug": "wei-miao-rensheng",
+    "title": "Wei Miao Rensheng",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.1",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 36,
+    "tokiUrl": "https://tokianime.tv/watch/wei-miao-rensheng"
+  },
+  {
+    "id": "anime-23",
+    "slug": "kai-pai-la-guaishou-da-dianying",
+    "title": "Kai Pai La Guaishou Da Dianying",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.2",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/kai-pai-la-guaishou-da-dianying"
+  },
+  {
+    "id": "anime-24",
+    "slug": "digimon-beatbreak",
+    "title": "Digimon Beatbreak",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.3",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 40,
+    "tokiUrl": "https://tokianime.tv/watch/digimon-beatbreak"
+  },
+  {
+    "id": "anime-25",
+    "slug": "sayonara-lara",
+    "title": "Sayonara Lara",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.4",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/sayonara-lara"
+  },
+  {
+    "id": "anime-26",
+    "slug": "one-piece",
+    "title": "One Piece",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.5",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 1171,
+    "tokiUrl": "https://tokianime.tv/watch/one-piece"
+  },
+  {
+    "id": "anime-27",
+    "slug": "let-s-go-kaiki-gumi",
+    "title": "Let S Go Kaiki Gumi",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.6",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/let-s-go-kaiki-gumi"
+  },
+  {
+    "id": "anime-28",
+    "slug": "mushoku-tensei-iii-isekai-ittara-honki-dasu",
+    "title": "Mushoku Tensei Iii Isekai Ittara Honki Dasu",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.7",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/mushoku-tensei-iii-isekai-ittara-honki-dasu"
+  },
+  {
+    "id": "anime-29",
+    "slug": "kuroneko-to-majo-no-kyoushitsu",
+    "title": "Kuroneko To Majo No Kyoushitsu",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 16,
+    "tokiUrl": "https://tokianime.tv/watch/kuroneko-to-majo-no-kyoushitsu"
+  },
+  {
+    "id": "anime-30",
+    "slug": "sekai-saikyou-no-kouei-meikyuukoku-no-shinjin-tansakusha",
+    "title": "Sekai Saikyou No Kouei Meikyuukoku No Shinjin Tansakusha",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/sekai-saikyou-no-kouei-meikyuukoku-no-shinjin-tansakusha"
+  },
+  {
+    "id": "anime-31",
+    "slug": "tetsunabe-no-jan",
+    "title": "Tetsunabe No Jan",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.5",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/tetsunabe-no-jan"
+  },
+  {
+    "id": "anime-32",
+    "slug": "seihantai-na-kimi-to-boku-2nd-season",
+    "title": "Seihantai Na Kimi To Boku 2nd Season",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.6",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/seihantai-na-kimi-to-boku-2nd-season"
+  },
+  {
+    "id": "anime-33",
+    "slug": "kabushikigaisha-magi-lumiere-2nd-season",
+    "title": "Kabushikigaisha Magi Lumiere 2nd Season",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.7",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/kabushikigaisha-magi-lumiere-2nd-season"
+  },
+  {
+    "id": "anime-34",
+    "slug": "hanaori-san-wa-tensei-shitemo-kenka-ga-shitai",
+    "title": "Hanaori San Wa Tensei Shitemo Kenka Ga Shitai",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/hanaori-san-wa-tensei-shitemo-kenka-ga-shitai"
+  },
+  {
+    "id": "anime-35",
+    "slug": "oni-no-hanayome",
+    "title": "Oni No Hanayome",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/oni-no-hanayome"
+  },
+  {
+    "id": "anime-36",
+    "slug": "saijo-no-osewa-takane-no-hanadarake-na-meimonkou-de-gakuin-ichi-no-ojousama-seikatsu-nouryoku-kaimu-wo-kagenagara-osewa-suru-koto-ni-narimashita",
+    "title": "Saijo No Osewa Takane No Hanadarake Na Meimonkou De Gakuin Ichi No Ojousama Seikatsu Nouryoku Kaimu Wo Kagenagara Osewa Suru Koto Ni Narimashita",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.0",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/saijo-no-osewa-takane-no-hanadarake-na-meimonkou-de-gakuin-ichi-no-ojousama-seikatsu-nouryoku-kaimu-wo-kagenagara-osewa-suru-koto-ni-narimashita"
+  },
+  {
+    "id": "anime-37",
+    "slug": "mahou-shoujo-lyrical-nanoha-exceeds-gun-blaze-vengeance",
+    "title": "Mahou Shoujo Lyrical Nanoha Exceeds Gun Blaze Vengeance",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.1",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/mahou-shoujo-lyrical-nanoha-exceeds-gun-blaze-vengeance"
+  },
+  {
+    "id": "anime-38",
+    "slug": "kimi-wo-aisuru-ki-wa-nai-to-itta-jiki-koushaku-sama-ga-nazeka-dekiai-shitekimasu",
+    "title": "Kimi Wo Aisuru Ki Wa Nai To Itta Jiki Koushaku Sama Ga Nazeka Dekiai Shitekimasu",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.2",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/kimi-wo-aisuru-ki-wa-nai-to-itta-jiki-koushaku-sama-ga-nazeka-dekiai-shitekimasu"
+  },
+  {
+    "id": "anime-39",
+    "slug": "mao",
+    "title": "Mao",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.3",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 17,
+    "tokiUrl": "https://tokianime.tv/watch/mao"
+  },
+  {
+    "id": "anime-40",
+    "slug": "yomi-no-tsugai",
+    "title": "Yomi No Tsugai",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.4",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 16,
+    "tokiUrl": "https://tokianime.tv/watch/yomi-no-tsugai"
+  },
+  {
+    "id": "anime-41",
+    "slug": "tenmaku-no-jaadugar",
+    "title": "Tenmaku No Jaadugar",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.5",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/tenmaku-no-jaadugar"
+  },
+  {
+    "id": "anime-42",
+    "slug": "grow-up-show-himawari-no-circus-dan",
+    "title": "Grow Up Show Himawari No Circus Dan",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.6",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/grow-up-show-himawari-no-circus-dan"
+  },
+  {
+    "id": "anime-43",
+    "slug": "honzuki-no-gekokujou-ryoushu-no-youjo",
+    "title": "Honzuki No Gekokujou Ryoushu No Youjo",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.7",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 15,
+    "tokiUrl": "https://tokianime.tv/watch/honzuki-no-gekokujou-ryoushu-no-youjo"
+  },
+  {
+    "id": "anime-44",
+    "slug": "iwamoto-senpai-no-suisen",
+    "title": "Iwamoto Senpai No Suisen",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/iwamoto-senpai-no-suisen"
+  },
+  {
+    "id": "anime-45",
+    "slug": "meitantei-conan",
+    "title": "Meitantei Conan",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 1208,
+    "tokiUrl": "https://tokianime.tv/watch/meitantei-conan"
+  },
+  {
+    "id": "anime-46",
+    "slug": "neko-to-ryuu",
+    "title": "Neko To Ryuu",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.5",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/neko-to-ryuu"
+  },
+  {
+    "id": "anime-47",
+    "slug": "black-torch",
+    "title": "Black Torch",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.6",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/black-torch"
+  },
+  {
+    "id": "anime-48",
+    "slug": "mairimashita-iruma-kun-4",
+    "title": "Mairimashita Iruma Kun 4",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.7",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 17,
+    "tokiUrl": "https://tokianime.tv/watch/mairimashita-iruma-kun-4"
+  },
+  {
+    "id": "anime-49",
+    "slug": "rilakkuma-goyururi-yume-no-tabi",
+    "title": "Rilakkuma Goyururi Yume No Tabi",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 17,
+    "tokiUrl": "https://tokianime.tv/watch/rilakkuma-goyururi-yume-no-tabi"
+  },
+  {
+    "id": "anime-50",
+    "slug": "ushiro-no-shoumen-kamui-san",
+    "title": "Ushiro No Shoumen Kamui San",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/ushiro-no-shoumen-kamui-san"
+  },
+  {
+    "id": "anime-51",
+    "slug": "uchi-no-otouto-domo-ga-sumimasen",
+    "title": "Uchi No Otouto Domo Ga Sumimasen",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.0",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/uchi-no-otouto-domo-ga-sumimasen"
+  },
+  {
+    "id": "anime-52",
+    "slug": "nige-jouzu-no-wakagimi-2nd-season",
+    "title": "Nige Jouzu No Wakagimi 2nd Season",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.1",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/nige-jouzu-no-wakagimi-2nd-season"
+  },
+  {
+    "id": "anime-53",
+    "slug": "kore-kaite-shine",
+    "title": "Kore Kaite Shine",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.2",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/kore-kaite-shine"
+  },
+  {
+    "id": "anime-54",
+    "slug": "kami-no-shizuku",
+    "title": "Kami No Shizuku",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.3",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 16,
+    "tokiUrl": "https://tokianime.tv/watch/kami-no-shizuku"
+  },
+  {
+    "id": "anime-55",
+    "slug": "tensei-shitara-slime-datta-ken-4th-season",
+    "title": "Tensei Shitara Slime Datta Ken 4th Season",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.4",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 16,
+    "tokiUrl": "https://tokianime.tv/watch/tensei-shitara-slime-datta-ken-4th-season"
+  },
+  {
+    "id": "anime-56",
+    "slug": "koko-wa-ore-ni-makasete-saki-ni-ike-to-ittekara-10-nen-ga-tattara-densetsu-ni-natteita",
+    "title": "Koko Wa Ore Ni Makasete Saki Ni Ike To Ittekara 10 Nen Ga Tattara Densetsu Ni Natteita",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.5",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/koko-wa-ore-ni-makasete-saki-ni-ike-to-ittekara-10-nen-ga-tattara-densetsu-ni-natteita"
+  },
+  {
+    "id": "anime-57",
+    "slug": "ryoumin-0-nin-start-no-henkyou-ryoushu-sama",
+    "title": "Ryoumin 0 Nin Start No Henkyou Ryoushu Sama",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.6",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/ryoumin-0-nin-start-no-henkyou-ryoushu-sama"
+  },
+  {
+    "id": "anime-58",
+    "slug": "super-no-ura-de-yani-suu-futari",
+    "title": "Super No Ura De Yani Suu Futari",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.7",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 15,
+    "tokiUrl": "https://tokianime.tv/watch/super-no-ura-de-yani-suu-futari"
+  },
+  {
+    "id": "anime-59",
+    "slug": "otome-kaijuu-carameliser",
+    "title": "Otome Kaijuu Carameliser",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/otome-kaijuu-carameliser"
+  },
+  {
+    "id": "anime-60",
+    "slug": "tsuihou-sareta-tensei-juukishi-wa-game-chishiki-de-musou-suru",
+    "title": "Tsuihou Sareta Tensei Juukishi Wa Game Chishiki De Musou Suru",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/tsuihou-sareta-tensei-juukishi-wa-game-chishiki-de-musou-suru"
+  },
+  {
+    "id": "anime-61",
+    "slug": "yani-neko",
+    "title": "Yani Neko",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.5",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/yani-neko"
+  },
+  {
+    "id": "anime-62",
+    "slug": "rakudai-kenja-no-gakuin-musou-nidome-no-tensei-s-rank-cheat-majutsushi-boukenroku",
+    "title": "Rakudai Kenja No Gakuin Musou Nidome No Tensei S Rank Cheat Majutsushi Boukenroku",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.6",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/rakudai-kenja-no-gakuin-musou-nidome-no-tensei-s-rank-cheat-majutsushi-boukenroku"
+  },
+  {
+    "id": "anime-63",
+    "slug": "mebius-dust",
+    "title": "Mebius Dust",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.7",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/mebius-dust"
+  },
+  {
+    "id": "anime-64",
+    "slug": "bang-dream-yume-mita",
+    "title": "Bang Dream Yume Mita",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/bang-dream-yume-mita"
+  },
+  {
+    "id": "anime-65",
+    "slug": "bungou-stray-dogs-wan-2",
+    "title": "Bungou Stray Dogs Wan 2",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/bungou-stray-dogs-wan-2"
+  },
+  {
+    "id": "anime-66",
+    "slug": "reiwa-no-dara-san",
+    "title": "Reiwa No Dara San",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.0",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/reiwa-no-dara-san"
+  },
+  {
+    "id": "anime-67",
+    "slug": "thunder-3",
+    "title": "Thunder 3",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.1",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/thunder-3"
+  },
+  {
+    "id": "anime-68",
+    "slug": "ibitte-konai-gibo-to-gishi",
+    "title": "Ibitte Konai Gibo To Gishi",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.2",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/ibitte-konai-gibo-to-gishi"
+  },
+  {
+    "id": "anime-69",
+    "slug": "lv999-no-murabito",
+    "title": "Lv999 No Murabito",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.3",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/lv999-no-murabito"
+  },
+  {
+    "id": "anime-70",
+    "slug": "otomege-sekai-wa-mob-ni-kibishii-sekai-desu-2",
+    "title": "Otomege Sekai Wa Mob Ni Kibishii Sekai Desu 2",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.4",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/otomege-sekai-wa-mob-ni-kibishii-sekai-desu-2"
+  },
+  {
+    "id": "anime-71",
+    "slug": "katainaka-no-ossan-kensei-ni-naru-ii",
+    "title": "Katainaka No Ossan Kensei Ni Naru Ii",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.5",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/katainaka-no-ossan-kensei-ni-naru-ii"
+  },
+  {
+    "id": "anime-72",
+    "slug": "youjo-senki-ii",
+    "title": "Youjo Senki Ii",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.6",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/youjo-senki-ii"
+  },
+  {
+    "id": "anime-73",
+    "slug": "onegai-aipri",
+    "title": "Onegai Aipri",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.7",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 16,
+    "tokiUrl": "https://tokianime.tv/watch/onegai-aipri"
+  },
+  {
+    "id": "anime-74",
+    "slug": "onee-chan-gokko",
+    "title": "Onee Chan Gokko",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/onee-chan-gokko"
+  },
+  {
+    "id": "anime-75",
+    "slug": "pocket-monsters-2023",
+    "title": "Pocket Monsters 2023",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 143,
+    "tokiUrl": "https://tokianime.tv/watch/pocket-monsters-2023"
+  },
+  {
+    "id": "anime-76",
+    "slug": "youjo-senki-sabaku-no-pasta-daisakusen",
+    "title": "Youjo Senki Sabaku No Pasta Daisakusen",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.5",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/youjo-senki-sabaku-no-pasta-daisakusen"
+  },
+  {
+    "id": "anime-77",
+    "slug": "shibou-yuugi-de-meshi-wo-kuu-44-cloudy-beach",
+    "title": "Shibou Yuugi De Meshi Wo Kuu 44 Cloudy Beach",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.6",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/shibou-yuugi-de-meshi-wo-kuu-44-cloudy-beach"
+  },
+  {
+    "id": "anime-78",
+    "slug": "hell-mode-yarikomi-zuki-no-gamer-wa-haisettei-no-isekai-de-musou-suru-2nd-season",
+    "title": "Hell Mode Yarikomi Zuki No Gamer Wa Haisettei No Isekai De Musou Suru 2nd Season",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.7",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/hell-mode-yarikomi-zuki-no-gamer-wa-haisettei-no-isekai-de-musou-suru-2nd-season"
+  },
+  {
+    "id": "anime-79",
+    "slug": "boku-no-kokoro-no-yabai-yatsu-movie",
+    "title": "Boku No Kokoro No Yabai Yatsu Movie",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/boku-no-kokoro-no-yabai-yatsu-movie"
+  },
+  {
+    "id": "anime-80",
+    "slug": "hanazakari-no-kimitachi-e-2nd-season",
+    "title": "Hanazakari No Kimitachi E 2nd Season",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/hanazakari-no-kimitachi-e-2nd-season"
+  },
+  {
+    "id": "anime-81",
+    "slug": "perfect-addiction",
+    "title": "Perfect Addiction",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.0",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/perfect-addiction"
+  },
+  {
+    "id": "anime-82",
+    "slug": "bleach-sennen-kessen-hen-kashin-tan",
+    "title": "Bleach Sennen Kessen Hen Kashin Tan",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.1",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/bleach-sennen-kessen-hen-kashin-tan"
+  },
+  {
+    "id": "anime-83",
+    "slug": "clevatess-ii-majuu-no-ou-to-itsuwari-no-yuusha-denshou",
+    "title": "Clevatess Ii Majuu No Ou To Itsuwari No Yuusha Denshou",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.2",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/clevatess-ii-majuu-no-ou-to-itsuwari-no-yuusha-denshou"
+  },
+  {
+    "id": "anime-84",
+    "slug": "princess-principal-crown-handler-chapter-1",
+    "title": "Princess Principal Crown Handler Chapter 1",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.3",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/princess-principal-crown-handler-chapter-1"
+  },
+  {
+    "id": "anime-85",
+    "slug": "migawari-reijou-wo-sukutta-no-wa-reikoku-mujihi-na-koori-no-ouji-no-ai-deshita",
+    "title": "Migawari Reijou Wo Sukutta No Wa Reikoku Mujihi Na Koori No Ouji No Ai Deshita",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.4",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/migawari-reijou-wo-sukutta-no-wa-reikoku-mujihi-na-koori-no-ouji-no-ai-deshita"
+  },
+  {
+    "id": "anime-86",
+    "slug": "mushoku-tensei-ii-isekai-ittara-honki-dasu-part-2",
+    "title": "Mushoku Tensei Ii Isekai Ittara Honki Dasu Part 2",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.5",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/mushoku-tensei-ii-isekai-ittara-honki-dasu-part-2"
+  },
+  {
+    "id": "anime-87",
+    "slug": "mushoku-tensei-ii-isekai-ittara-honki-dasu",
+    "title": "Mushoku Tensei Ii Isekai Ittara Honki Dasu",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.6",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/mushoku-tensei-ii-isekai-ittara-honki-dasu"
+  },
+  {
+    "id": "anime-88",
+    "slug": "mushoku-tensei-isekai-ittara-honki-dasu-part-2",
+    "title": "Mushoku Tensei Isekai Ittara Honki Dasu Part 2",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.7",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/mushoku-tensei-isekai-ittara-honki-dasu-part-2"
+  },
+  {
+    "id": "anime-89",
+    "slug": "mushoku-tensei-isekai-ittara-honki-dasu",
+    "title": "Mushoku Tensei Isekai Ittara Honki Dasu",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/mushoku-tensei-isekai-ittara-honki-dasu"
+  },
+  {
+    "id": "anime-90",
+    "slug": "netoge-no-yome-wa-onnanoko-ja-nai-to-omotta",
+    "title": "Netoge No Yome Wa Onnanoko Ja Nai To Omotta",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/netoge-no-yome-wa-onnanoko-ja-nai-to-omotta"
+  },
+  {
+    "id": "anime-91",
+    "slug": "grand-blue",
+    "title": "Grand Blue",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.5",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/grand-blue"
+  },
+  {
+    "id": "anime-92",
+    "slug": "grand-blue-season-2",
+    "title": "Grand Blue Season 2",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.6",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/grand-blue-season-2"
+  },
+  {
+    "id": "anime-93",
+    "slug": "koupen-chan",
+    "title": "Koupen Chan",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.7",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 65,
+    "tokiUrl": "https://tokianime.tv/watch/koupen-chan"
+  },
+  {
+    "id": "anime-94",
+    "slug": "marika-chan-no-koukando-wa-bukkowareteiru",
+    "title": "Marika Chan No Koukando Wa Bukkowareteiru",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/marika-chan-no-koukando-wa-bukkowareteiru"
+  },
+  {
+    "id": "anime-95",
+    "slug": "one-piece-heroines",
+    "title": "One Piece Heroines",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/one-piece-heroines"
+  },
+  {
+    "id": "anime-96",
+    "slug": "kimi-no-na-wa",
+    "title": "Kimi No Na Wa",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.0",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/kimi-no-na-wa"
+  },
+  {
+    "id": "anime-97",
+    "slug": "cider-no-you-ni-kotoba-ga-wakiagaru",
+    "title": "Cider No You Ni Kotoba Ga Wakiagaru",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.1",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/cider-no-you-ni-kotoba-ga-wakiagaru"
+  },
+  {
+    "id": "anime-98",
+    "slug": "koori-no-jouheki",
+    "title": "Koori No Jouheki",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.2",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 14,
+    "tokiUrl": "https://tokianime.tv/watch/koori-no-jouheki"
+  },
+  {
+    "id": "anime-99",
+    "slug": "marriagetoxin",
+    "title": "Marriagetoxin",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.3",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 13,
+    "tokiUrl": "https://tokianime.tv/watch/marriagetoxin"
+  },
+  {
+    "id": "anime-100",
+    "slug": "aishiteru-game-wo-owarasetai",
+    "title": "Aishiteru Game Wo Owarasetai",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.4",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/aishiteru-game-wo-owarasetai"
+  },
+  {
+    "id": "anime-101",
+    "slug": "replica-datte-koi-wo-suru",
+    "title": "Replica Datte Koi Wo Suru",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.5",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 13,
+    "tokiUrl": "https://tokianime.tv/watch/replica-datte-koi-wo-suru"
+  },
+  {
+    "id": "anime-102",
+    "slug": "hidarikiki-no-eren",
+    "title": "Hidarikiki No Eren",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.6",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 13,
+    "tokiUrl": "https://tokianime.tv/watch/hidarikiki-no-eren"
+  },
+  {
+    "id": "anime-103",
+    "slug": "yozakura-san-chi-no-daisakusen-2nd-season",
+    "title": "Yozakura San Chi No Daisakusen 2nd Season",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.7",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/yozakura-san-chi-no-daisakusen-2nd-season"
+  },
+  {
+    "id": "anime-104",
+    "slug": "diamond-no-ace-act-ii-second-season",
+    "title": "Diamond No Ace Act Ii Second Season",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 13,
+    "tokiUrl": "https://tokianime.tv/watch/diamond-no-ace-act-ii-second-season"
+  },
+  {
+    "id": "anime-105",
+    "slug": "yowa-yowa-sensei",
+    "title": "Yowa Yowa Sensei",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/yowa-yowa-sensei"
+  },
+  {
+    "id": "anime-106",
+    "slug": "kill-ao",
+    "title": "Kill Ao",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.5",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/kill-ao"
+  },
+  {
+    "id": "anime-107",
+    "slug": "shunkashuutou-daikousha-haru-no-mai",
+    "title": "Shunkashuutou Daikousha Haru No Mai",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.6",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 14,
+    "tokiUrl": "https://tokianime.tv/watch/shunkashuutou-daikousha-haru-no-mai"
+  },
+  {
+    "id": "anime-108",
+    "slug": "needy-girl-overdose",
+    "title": "Needy Girl Overdose",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.7",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 13,
+    "tokiUrl": "https://tokianime.tv/watch/needy-girl-overdose"
+  },
+  {
+    "id": "anime-109",
+    "slug": "yuusha-no-kuzu",
+    "title": "Yuusha No Kuzu",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 24,
+    "tokiUrl": "https://tokianime.tv/watch/yuusha-no-kuzu"
+  },
+  {
+    "id": "anime-110",
+    "slug": "dr-stone-science-future",
+    "title": "Dr Stone Science Future",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "8.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 37,
+    "tokiUrl": "https://tokianime.tv/watch/dr-stone-science-future"
+  },
+  {
+    "id": "anime-111",
+    "slug": "tsue-to-tsurugi-no-wistoria-season-2",
+    "title": "Tsue To Tsurugi No Wistoria Season 2",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.0",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/tsue-to-tsurugi-no-wistoria-season-2"
+  },
+  {
+    "id": "anime-112",
+    "slug": "guimi-zhi-zhu-tebie-pian-liewu",
+    "title": "Guimi Zhi Zhu Tebie Pian Liewu",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.1",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/guimi-zhi-zhu-tebie-pian-liewu"
+  },
+  {
+    "id": "anime-113",
+    "slug": "higeki-no-genkyou-to-naru-saikyou-gedou-last-boss-joou-wa-tami-no-tame-ni-tsukushimasu-season-2",
+    "title": "Higeki No Genkyou To Naru Saikyou Gedou Last Boss Joou Wa Tami No Tame Ni Tsukushimasu Season 2",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.2",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/higeki-no-genkyou-to-naru-saikyou-gedou-last-boss-joou-wa-tami-no-tame-ni-tsukushimasu-season-2"
+  },
+  {
+    "id": "anime-114",
+    "slug": "kanan-sama-wa-akumade-choroi",
+    "title": "Kanan Sama Wa Akumade Choroi",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.3",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/kanan-sama-wa-akumade-choroi"
+  },
+  {
+    "id": "anime-115",
+    "slug": "mahou-no-shimai-luluttolilly",
+    "title": "Mahou No Shimai Luluttolilly",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.4",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/mahou-no-shimai-luluttolilly"
+  },
+  {
+    "id": "anime-116",
+    "slug": "tongari-boushi-no-atelier",
+    "title": "Tongari Boushi No Atelier",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.5",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 13,
+    "tokiUrl": "https://tokianime.tv/watch/tongari-boushi-no-atelier"
+  },
+  {
+    "id": "anime-117",
+    "slug": "tadaima-ojamasaremasu",
+    "title": "Tadaima Ojamasaremasu",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.6",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/tadaima-ojamasaremasu"
+  },
+  {
+    "id": "anime-118",
+    "slug": "dr-stone-science-future-part-3",
+    "title": "Dr Stone Science Future Part 3",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.7",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 13,
+    "tokiUrl": "https://tokianime.tv/watch/dr-stone-science-future-part-3"
+  },
+  {
+    "id": "anime-119",
+    "slug": "megami-isekai-tensei-nani-ni-naritai-desu-ka-ore-yuusha-no-rokkotsu-de",
+    "title": "Megami Isekai Tensei Nani Ni Naritai Desu Ka Ore Yuusha No Rokkotsu De",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.8",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": true,
+    "hasSub": true,
+    "totalEpisodes": 12,
+    "tokiUrl": "https://tokianime.tv/watch/megami-isekai-tensei-nani-ni-naritai-desu-ka-ore-yuusha-no-rokkotsu-de"
+  },
+  {
+    "id": "anime-120",
+    "slug": "youkoso-jitsuryoku-shijou-shugi-no-kyoushitsu-e-4th-season-2-nensei-hen-ichi-gakki",
+    "title": "Youkoso Jitsuryoku Shijou Shugi No Kyoushitsu E 4th Season 2 Nensei Hen Ichi Gakki",
+    "poster": "https://img.tokianime.tv/t/aHR0cHM6Ly93d3cuY3J1bmNoeXJvbGwuY29tL2ltZ3Nydi9kaXNwbGF5L3RodW1ibmFpbC8xOTIweDEwODAvY2F0YWxvZy9jcnVuY2h5cm9sbC8yYjYyMmVjZTczODhhMzQ2ODdkZjdjYWEzMjNhYTkyNi5wbmc/640.webp",
+    "rating": "9.9",
+    "genres": [
+      "Acción",
+      "Aventura",
+      "Fantasía"
+    ],
+    "hasLatino": false,
+    "hasSub": true,
+    "totalEpisodes": 16,
+    "tokiUrl": "https://tokianime.tv/watch/youkoso-jitsuryoku-shijou-shugi-no-kyoushitsu-e-4th-season-2-nensei-hen-ichi-gakki"
   }
 ]
