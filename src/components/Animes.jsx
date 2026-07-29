@@ -132,13 +132,18 @@ export default function Animes() {
     }));
   }, [seasonGroups, selectedSeason]);
 
-  // Construct Embed URL matching Peliculas.jsx exact pattern!
+  // Construct Embed URL matching Peliculas.jsx exact pattern and Vimeus specs!
   const embedUrl = useMemo(() => {
     if (!selectedAnime) return '';
     const id = selectedAnime.tmdb_id;
 
     if (selectedServer === 'vimeus') {
-      return `https://vimeus.com/e/anime?tmdb=${id}&se=${selectedSeason}&ep=${selectedEpisode}&view_key=${encodeURIComponent(VIMEUS_VIEW_KEY)}${VIMEUS_PARAMS}`;
+      return `https://vimeus.com/e/anime?tmdb=${id}&se=${selectedSeason}&ep=${selectedEpisode}&view_key=${VIMEUS_VIEW_KEY}${VIMEUS_PARAMS}`;
+    }
+
+    if (selectedServer === 'vimeus-proxy') {
+      const rawUrl = `https://vimeus.com/e/anime?tmdb=${id}&se=${selectedSeason}&ep=${selectedEpisode}&view_key=${VIMEUS_VIEW_KEY}`;
+      return `https://pirutv-proxy.skillful-part.workers.dev?url=${encodeURIComponent(rawUrl)}`;
     }
 
     if (selectedServer === 'vidsrc') {
@@ -395,6 +400,12 @@ export default function Animes() {
                     onClick={() => setSelectedServer('vimeus')}
                   >
                     Vimeus HD
+                  </button>
+                  <button 
+                    className={`server-btn ${selectedServer === 'vimeus-proxy' ? 'active' : ''}`}
+                    onClick={() => setSelectedServer('vimeus-proxy')}
+                  >
+                    Vimeus (Proxy)
                   </button>
                   <button 
                     className={`server-btn ${selectedServer === 'vidsrc' ? 'active' : ''}`}
