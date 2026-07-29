@@ -592,9 +592,9 @@ export default function Peliculas() {
 
     if (selectedServer === 'vidsrc') {
       if (selectedItem.type === 'movie') {
-        return `https://vidsrc.xyz/embed/movie/${id}?ds_lang=es`;
+        return `https://vidsrc-embed.ru/embed/movie/${id}?ds_lang=es`;
       }
-      return `https://vidsrc.xyz/embed/tv/${id}/${selectedSeason}-${selectedEpisode}?ds_lang=es`;
+      return `https://vidsrc-embed.ru/embed/tv/${id}/${selectedSeason}-${selectedEpisode}?ds_lang=es`;
     }
 
     if (selectedServer === '2embed') {
