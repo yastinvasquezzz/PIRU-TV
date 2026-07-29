@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import useDpadNavigation from '../hooks/useDpadNavigation';
-import { saveWatchProgress } from '../utils/storage';
+import { saveWatchProgress, toggleFavorite, isFavorite } from '../utils/storage';
 import { castWithWebVideoCaster } from '../utils/wvcCast';
 import vimeusAnimesData from '../data/animes.json';
 
 const VIMEUS_API_KEY = 'ak_YxtAmgEstw2LMOLzzd8vBG8bXE2JOBXF';
 const VIMEUS_VIEW_KEY = 'iarbNU-o7YfhpHWctm-mGokugr75cd7iwSrO7NKiVAs';
-const VIMEUS_PARAMS = '&title=PiruTv&theme=red';
+const VIMEUS_PARAMS = '&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3';
 
 const CATEGORIES = ['🔥 Todos', '⭐ Top Populares', 'FULL HD'];
 
@@ -15,15 +15,16 @@ export default function Animes() {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   
-  // Selected Anime for modal
+  // Selected Anime for Modal
   const [selectedAnime, setSelectedAnime] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [selectedServer, setSelectedServer] = useState('vimeus'); // 'vimeus', 'vidsrc', '2embed'
+  
+  // Episode & Season state
   const [episodes, setEpisodes] = useState([]);
   const [isLoadingEpisodes, setIsLoadingEpisodes] = useState(false);
-  
-  // Watch State
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [selectedEpisode, setSelectedEpisode] = useState(1);
-  const [playerMode, setPlayerMode] = useState('embed'); // 'embed' or 'direct'
 
   // Hero anime index
   const [heroIndex, setHeroIndex] = useState(0);
@@ -67,9 +68,10 @@ export default function Animes() {
   // Handle open anime modal
   const handleOpenAnime = async (anime) => {
     setSelectedAnime(anime);
+    setIsPlaying(false);
+    setSelectedServer('vimeus');
     setSelectedSeason(1);
     setSelectedEpisode(1);
-    setPlayerMode('embed');
     setIsLoadingEpisodes(true);
     setEpisodes([]);
 
@@ -130,22 +132,31 @@ export default function Animes() {
     }));
   }, [seasonGroups, selectedSeason]);
 
-  // Vimeus Embed URL
-  const activeEmbedUrl = useMemo(() => {
+  // Construct Embed URL matching Peliculas.jsx exact pattern!
+  const embedUrl = useMemo(() => {
     if (!selectedAnime) return '';
-    return `https://vimeus.com/e/anime?tmdb=${selectedAnime.tmdb_id}&view_key=${VIMEUS_VIEW_KEY}&se=${selectedSeason}&ep=${selectedEpisode}${VIMEUS_PARAMS}`;
-  }, [selectedAnime, selectedSeason, selectedEpisode]);
+    const id = selectedAnime.tmdb_id;
 
-  const openDirectPlayerWindow = () => {
-    if (activeEmbedUrl) {
-      window.open(activeEmbedUrl, '_blank', 'width=1080,height=650');
+    if (selectedServer === 'vimeus') {
+      return `https://vimeus.com/e/anime?tmdb=${id}&se=${selectedSeason}&ep=${selectedEpisode}&view_key=${encodeURIComponent(VIMEUS_VIEW_KEY)}${VIMEUS_PARAMS}`;
     }
-  };
+
+    if (selectedServer === 'vidsrc') {
+      return `https://vidsrc-embed.ru/embed/tv/${id}/${selectedSeason}-${selectedEpisode}?ds_lang=es`;
+    }
+
+    if (selectedServer === '2embed') {
+      return `https://www.2embed.cc/embedtv/${id}&s=${selectedSeason}&e=${selectedEpisode}&lang=es`;
+    }
+
+    return '';
+  }, [selectedAnime, selectedServer, selectedSeason, selectedEpisode]);
 
   useDpadNavigation({
     onBack: () => {
       if (selectedAnime) {
         setSelectedAnime(null);
+        setIsPlaying(false);
       }
     }
   });
@@ -328,192 +339,184 @@ export default function Animes() {
         </div>
       )}
 
-      {/* Streaming Player & Season Selector Modal */}
+      {/* Detail & Video Streaming Player Modal (Exact Peliculas.jsx Structure) */}
       {selectedAnime && (
-        <div className="modal-overlay" onClick={() => setSelectedAnime(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '920px' }}>
-            <button className="modal-close-btn" onClick={() => setSelectedAnime(null)}>✕</button>
+        <div className="modal-overlay" onClick={() => { setSelectedAnime(null); setIsPlaying(false); }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close-btn" onClick={() => { setSelectedAnime(null); setIsPlaying(false); }}>✕</button>
 
-            {/* Video Player Frame Container */}
-            <div className="movie-player-container" style={{ height: '460px', background: '#000', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 20px 40px rgba(0,0,0,0.9)' }}>
-              {playerMode === 'embed' ? (
+            {/* Movie Player Container */}
+            <div className="movie-player-container">
+              {isPlaying ? (
                 <iframe
-                  src={activeEmbedUrl}
+                  src={embedUrl}
                   title={`${selectedAnime.title} - T${selectedSeason} E${selectedEpisode}`}
                   allowFullScreen
                   allow="autoplay; encrypted-media"
-                  style={{ width: '100%', height: '100%', border: 'none' }}
                 />
               ) : (
-                <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', textAlign: 'center', color: '#fff', background: 'linear-gradient(135deg, rgba(20,20,32,0.98), rgba(10,10,18,0.99))' }}>
-                  <div style={{ fontSize: '3.5rem', marginBottom: '0.5rem' }}>🎬</div>
-                  <h3 style={{ margin: '0 0 0.5rem 0', fontFamily: 'var(--font-title)', fontSize: '1.25rem' }}>
-                    Reproductor Directo Vimeus
-                  </h3>
-                  <p style={{ fontSize: '0.88rem', color: '#cbd5e1', maxWidth: '440px', lineHeight: '1.5', marginBottom: '1.25rem' }}>
-                    Abre el reproductor Vimeus en una ventana dedicada en alta definición o transmítelo a tu TV.
-                  </p>
-                  <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                    <button
-                      type="button"
-                      className="btn-primary"
-                      style={{ background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', border: 'none', padding: '0.75rem 1.4rem', borderRadius: '10px', fontSize: '0.9rem', fontWeight: 800 }}
-                      onClick={openDirectPlayerWindow}
-                    >
-                      ▶ Abrir en Ventana Directa
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-primary"
-                      style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', border: 'none', padding: '0.75rem 1.4rem', borderRadius: '10px', fontSize: '0.9rem', fontWeight: 800 }}
-                      onClick={() => castWithWebVideoCaster(activeEmbedUrl, `${selectedAnime.title} T${selectedSeason} E${selectedEpisode}`)}
-                    >
-                      📱 Transmitir a TV (Web Video Caster)
-                    </button>
-                  </div>
+                <button
+                  type="button"
+                  style={{
+                    background: `linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.4)), url(${selectedAnime.backdrop || selectedAnime.poster})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    gap: '1rem',
+                    cursor: 'pointer',
+                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    font: 'inherit'
+                  }}
+                  onClick={() => setIsPlaying(true)}
+                >
+                  <div className="play-icon" style={{ transform: 'scale(1.4)', background: '#fff', color: '#000' }}>▶</div>
+                  <strong style={{ color: '#fff', fontSize: '1.25rem', textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
+                    Haga clic para reproducir
+                  </strong>
+                </button>
+              )}
+            </div>
+
+            {/* Server Selector Bar when Playing */}
+            {isPlaying && (
+              <div className="player-header">
+                <div className="player-title-info">
+                  <span className="pulse-dot"></span>
+                  <span>
+                    Reproduciendo: {selectedAnime.title} - Temp. {selectedSeason}, Ep. {selectedEpisode}
+                  </span>
+                </div>
+                <div className="server-selector">
+                  <button 
+                    className={`server-btn ${selectedServer === 'vimeus' ? 'active' : ''}`}
+                    onClick={() => setSelectedServer('vimeus')}
+                  >
+                    Vimeus HD
+                  </button>
+                  <button 
+                    className={`server-btn ${selectedServer === 'vidsrc' ? 'active' : ''}`}
+                    onClick={() => setSelectedServer('vidsrc')}
+                  >
+                    VidSrc
+                  </button>
+                  <button 
+                    className={`server-btn ${selectedServer === '2embed' ? 'active' : ''}`}
+                    onClick={() => setSelectedServer('2embed')}
+                  >
+                    2Embed
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Season and Episode Selector Grid */}
+            <div className="episodes-section">
+              <div className="episodes-header">
+                <span className="episodes-title">Seleccionar Episodio</span>
+                <select 
+                  className="season-select"
+                  value={selectedSeason}
+                  onChange={(e) => {
+                    setSelectedSeason(Number(e.target.value));
+                    setSelectedEpisode(1);
+                  }}
+                >
+                  {availableSeasons.map(sNum => (
+                    <option key={sNum} value={sNum}>
+                      Temporada {sNum}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {isLoadingEpisodes ? (
+                <div style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                  Cargando episodios de Vimeus API...
+                </div>
+              ) : (
+                <div className="episodes-grid">
+                  {activeSeasonEpisodes.map((epItem, idx) => {
+                    const epNum = Number(epItem.episode) || (idx + 1);
+                    const isActive = selectedEpisode === epNum;
+                    return (
+                      <button
+                        key={idx}
+                        className={`episode-btn ${isActive ? 'active' : ''}`}
+                        onClick={() => {
+                          setSelectedEpisode(epNum);
+                          setIsPlaying(true);
+                        }}
+                      >
+                        {epNum}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
 
-            {/* Modal Body & Controls */}
-            <div className="modal-body" style={{ padding: '1.25rem 0 0' }}>
-              
-              {/* Header Title & Mode Controls */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
-                <div>
-                  <h2 className="modal-title" style={{ margin: 0, fontSize: '1.3rem', color: '#fff' }}>
-                    {selectedAnime.title} - <span style={{ color: '#ef4444' }}>T{selectedSeason} : Ep. {selectedEpisode}</span>
-                  </h2>
-                  <span style={{ fontSize: '0.8rem', color: '#86efac', fontWeight: 700, marginTop: '0.3rem', display: 'block' }}>
-                    Reproductor Oficial Vimeus HD
-                  </span>
-                </div>
-
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <button
-                    type="button"
-                    className="btn-primary"
-                    style={{
-                      padding: '0.6rem 1rem',
-                      fontSize: '0.82rem',
-                      background: playerMode === 'embed' ? 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)' : 'rgba(255,255,255,0.08)',
-                      border: 'none',
-                      color: '#fff',
-                      borderRadius: '8px'
-                    }}
-                    onClick={() => setPlayerMode('embed')}
-                  >
-                    📺 Reproductor Integrado
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-primary"
-                    style={{
-                      padding: '0.6rem 1rem',
-                      fontSize: '0.82rem',
-                      background: playerMode === 'direct' ? 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)' : 'rgba(255,255,255,0.08)',
-                      border: 'none',
-                      color: '#fff',
-                      borderRadius: '8px'
-                    }}
-                    onClick={() => setPlayerMode('direct')}
-                  >
-                    🚀 Reproductor Directo
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-primary"
-                    style={{
-                      padding: '0.6rem 1rem',
-                      fontSize: '0.82rem',
-                      background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                      border: 'none',
-                      color: '#fff',
-                      borderRadius: '8px'
-                    }}
-                    onClick={() => castWithWebVideoCaster(activeEmbedUrl, `${selectedAnime.title} T${selectedSeason} E${selectedEpisode}`)}
-                  >
-                    📱 Transmitir a TV
-                  </button>
-                </div>
+            {/* Modal Body & Action Buttons */}
+            <div className="modal-body">
+              <div className="modal-meta">
+                <span className="modal-genre">🔥 Anime Vimeus HD</span>
+                <span className="modal-lang">{selectedAnime.quality || 'FULL HD'}</span>
+                <span className="modal-lang">TMDB #{selectedAnime.tmdb_id}</span>
               </div>
+              <h2 className="modal-title">{selectedAnime.title}</h2>
+              <p className="modal-summary">
+                Disfruta de {selectedAnime.title} en alta definición Full HD directamente en PIRU TV con servidores Vimeus, VidSrc y 2Embed.
+              </p>
 
-              {/* Season Selector Tabs */}
-              <div style={{ marginBottom: '1rem' }}>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, display: 'block', marginBottom: '0.4rem' }}>
-                  🌸 SELECCIONAR TEMPORADA ({availableSeasons.length}):
-                </span>
-                <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.4rem', scrollbarWidth: 'none' }}>
-                  {availableSeasons.map((seasonNum) => (
-                    <button
-                      key={seasonNum}
-                      type="button"
-                      onClick={() => {
-                        setSelectedSeason(seasonNum);
-                        setSelectedEpisode(1);
-                      }}
-                      style={{
-                        background: selectedSeason === seasonNum ? 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)' : 'rgba(255,255,255,0.08)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        color: '#fff',
-                        padding: '0.45rem 0.9rem',
-                        borderRadius: '10px',
-                        fontSize: '0.82rem',
-                        fontWeight: 700,
-                        whiteSpace: 'nowrap',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Temporada {seasonNum}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', margin: '1.25rem 0' }}>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{
+                    flex: 'none',
+                    padding: '0.75rem 1.5rem',
+                    fontSize: '0.95rem',
+                    background: isFavorite(selectedAnime.id) ? 'rgba(239, 68, 68, 0.25)' : 'rgba(255, 255, 255, 0.08)',
+                    border: `1px solid ${isFavorite(selectedAnime.id) ? '#ef4444' : 'rgba(255, 255, 255, 0.2)'}`,
+                    color: isFavorite(selectedAnime.id) ? '#fca5a5' : '#fff',
+                    boxShadow: isFavorite(selectedAnime.id) ? '0 0 15px rgba(239, 68, 68, 0.4)' : 'none'
+                  }}
+                  onClick={async () => {
+                    await toggleFavorite(selectedAnime);
+                    setSelectedAnime({ ...selectedAnime });
+                  }}
+                >
+                  {isFavorite(selectedAnime.id) ? '❤️ En Mi Lista' : '🤍 Agregar a Mi Lista'}
+                </button>
 
-              {/* Episode Grid Buttons */}
-              <div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 700, display: 'block', marginBottom: '0.4rem' }}>
-                  📋 EPISODIOS ({activeSeasonEpisodes.length}):
-                </span>
-                
-                {isLoadingEpisodes ? (
-                  <div style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                    Cargando episodios de Vimeus API...
-                  </div>
-                ) : (
-                  <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '0.5rem', paddingRight: '0.2rem' }}>
-                    {activeSeasonEpisodes.map((epItem, idx) => {
-                      const epNum = Number(epItem.episode) || (idx + 1);
-                      const isActive = selectedEpisode === epNum;
-                      return (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => setSelectedEpisode(epNum)}
-                          style={{
-                            padding: '0.5rem 0.25rem',
-                            background: isActive ? 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)' : 'rgba(255,255,255,0.05)',
-                            border: `1px solid ${isActive ? '#e50914' : 'transparent'}`,
-                            color: '#fff',
-                            borderRadius: '8px',
-                            fontSize: '0.8rem',
-                            fontWeight: isActive ? 800 : 500,
-                            cursor: 'pointer',
-                            textAlign: 'center'
-                          }}
-                        >
-                          Episodio {epNum}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{
+                    flex: 'none',
+                    padding: '0.75rem 1.5rem',
+                    fontSize: '0.95rem',
+                    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                    border: 'none',
+                    color: '#ffffff',
+                    boxShadow: '0 4px 15px rgba(245, 158, 11, 0.45)'
+                  }}
+                  onClick={() => {
+                    castWithWebVideoCaster(embedUrl, selectedAnime.title);
+                  }}
+                >
+                  📱 Transmitir a TV (Web Video Caster)
+                </button>
               </div>
 
             </div>
+
           </div>
         </div>
       )}
+
     </div>
   );
 }
