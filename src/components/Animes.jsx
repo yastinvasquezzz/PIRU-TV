@@ -4,9 +4,9 @@ import { saveWatchProgress, toggleFavorite, isFavorite } from '../utils/storage'
 import { castWithWebVideoCaster } from '../utils/wvcCast';
 import vimeusAnimesData from '../data/animes.json';
 
-const VIMEUS_API_KEY = 'ak_YxtAmgEstw2LMOLzzd8vBG8bXE2JOBXF';
-const VIMEUS_VIEW_KEY = 'iarbNU-o7YfhpHWctm-mGokugr75cd7iwSrO7NKiVAs';
+const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
 const VIMEUS_PARAMS = '&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3';
+const VIMEUS_API_KEY = 'ak_YxtAmgEstw2LMOLzzd8vBG8bXE2JOBXF';
 
 const CATEGORIES = ['🔥 Todos', '⭐ Top Populares', 'FULL HD'];
 
@@ -132,18 +132,14 @@ export default function Animes() {
     }));
   }, [seasonGroups, selectedSeason]);
 
-  // Construct Embed URL matching Peliculas.jsx exact pattern and Vimeus specs!
+  // Construct Embed URL matching Peliculas.jsx exact pattern!
   const embedUrl = useMemo(() => {
     if (!selectedAnime) return '';
     const id = selectedAnime.tmdb_id;
 
     if (selectedServer === 'vimeus') {
-      return `https://vimeus.com/e/anime?tmdb=${id}&se=${selectedSeason}&ep=${selectedEpisode}&view_key=${VIMEUS_VIEW_KEY}${VIMEUS_PARAMS}`;
-    }
-
-    if (selectedServer === 'vimeus-proxy') {
-      const rawUrl = `https://vimeus.com/e/anime?tmdb=${id}&se=${selectedSeason}&ep=${selectedEpisode}&view_key=${VIMEUS_VIEW_KEY}`;
-      return `https://pirutv-proxy.skillful-part.workers.dev?url=${encodeURIComponent(rawUrl)}`;
+      const vk = VIMEUS_VIEW_KEY ? `&view_key=${encodeURIComponent(VIMEUS_VIEW_KEY)}` : '';
+      return `https://vimeus.com/e/anime?tmdb=${id}&se=${selectedSeason}&ep=${selectedEpisode}${vk}${VIMEUS_PARAMS}`;
     }
 
     if (selectedServer === 'vidsrc') {
@@ -344,17 +340,18 @@ export default function Animes() {
         </div>
       )}
 
-      {/* Detail & Video Streaming Player Modal (Exact Peliculas.jsx Structure) */}
+      {/* Detail & Video Streaming Player Modal (EXACT Peliculas.jsx Structure & CSS Classes!) */}
       {selectedAnime && (
         <div className="modal-overlay" onClick={() => { setSelectedAnime(null); setIsPlaying(false); }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close-btn" onClick={() => { setSelectedAnime(null); setIsPlaying(false); }}>✕</button>
 
-            {/* Movie Player Container */}
+            {/* Movie Player Container with EXACT Peliculas.jsx classes */}
             <div className="movie-player-container">
               {isPlaying ? (
                 <iframe
                   src={embedUrl}
+                  className="player-iframe"
                   title={`${selectedAnime.title} - T${selectedSeason} E${selectedEpisode}`}
                   allowFullScreen
                   allow="autoplay; encrypted-media"
@@ -362,6 +359,7 @@ export default function Animes() {
               ) : (
                 <button
                   type="button"
+                  className="player-placeholder-btn"
                   style={{
                     background: `linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.4)), url(${selectedAnime.backdrop || selectedAnime.poster})`,
                     backgroundSize: 'cover',
@@ -371,9 +369,7 @@ export default function Animes() {
                     border: 'none',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    font: 'inherit'
+                    justifyContent: 'center'
                   }}
                   onClick={() => setIsPlaying(true)}
                 >
@@ -399,13 +395,7 @@ export default function Animes() {
                     className={`server-btn ${selectedServer === 'vimeus' ? 'active' : ''}`}
                     onClick={() => setSelectedServer('vimeus')}
                   >
-                    Vimeus HD
-                  </button>
-                  <button 
-                    className={`server-btn ${selectedServer === 'vimeus-proxy' ? 'active' : ''}`}
-                    onClick={() => setSelectedServer('vimeus-proxy')}
-                  >
-                    Vimeus (Proxy)
+                    Vimeus
                   </button>
                   <button 
                     className={`server-btn ${selectedServer === 'vidsrc' ? 'active' : ''}`}
@@ -445,7 +435,7 @@ export default function Animes() {
 
               {isLoadingEpisodes ? (
                 <div style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                  Cargando episodios de Vimeus API...
+                  Cargando episodios...
                 </div>
               ) : (
                 <div className="episodes-grid">
