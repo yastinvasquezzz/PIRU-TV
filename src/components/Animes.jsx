@@ -4,7 +4,7 @@ import { saveWatchProgress, toggleFavorite, isFavorite } from '../utils/storage'
 import { castWithWebVideoCaster } from '../utils/wvcCast';
 import vimeusAnimesData from '../data/animes.json';
 
-const TMDB_KEY = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiMGM4MjRjMmFkMzllODUwNmE5ZGUzOGI5ZTA2ZjJmZiIsIm5iZiI6MTc0ODI3MjY1Ni43MDMsInN1YiI6IjY4MzQ4NjEwNjFmMWZlZmI4YmViMzYxZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KUIiE74vCOP05_Y0M5CKyCBfZ6bQn6Xs';
+const TMDB_KEY = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiMGM4MjRjMmFkMzllODUwNmE5ZGUzOGI5ZTA2ZjJmZiIsIm5iZiI6MTc0ODI3MjY1Ni43MDMsInN1YiI6IjY4MzQ4NjEwNjFmMWZlZmI4YmViMzYxZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KUIiE74vCOP05_Y0M5CKyCBtj9m5lN1WzCfZ6bQn6Xs';
 const TMDB_HDR = { Authorization: `Bearer ${TMDB_KEY}` };
 
 const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
@@ -25,7 +25,7 @@ export default function Animes() {
   const [activeCategory, setActiveCategory] = useState('🔥 Todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [hoveredAnimeId, setHoveredAnimeId] = useState(null);
+  const [hoveredAnimeKey, setHoveredAnimeKey] = useState(null); // Unique key per row + ID
   
   // Selected Anime State
   const [selectedAnime, setSelectedAnime] = useState(null);
@@ -477,83 +477,88 @@ export default function Animes() {
               {/* Horizontal Scroll Row */}
               <div className="carousel-row">
                 <div className="carousel-scroll">
-                  {itemsList.map(anime => (
-                    <div
-                      key={anime.id}
-                      className="carousel-item-card media-card"
-                      onMouseEnter={() => setHoveredAnimeId(anime.id)}
-                      onMouseLeave={() => setHoveredAnimeId(null)}
-                      onClick={() => handleOpenAnime(anime)}
-                      style={{
-                        position: 'relative',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        background: 'rgba(20, 20, 32, 0.6)',
-                        borderRadius: '16px',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        padding: '0.5rem',
-                        transition: 'transform 0.25s ease, border-color 0.25s ease',
-                        transform: hoveredAnimeId === anime.id ? 'translateY(-4px) scale(1.02)' : 'none',
-                        borderColor: hoveredAnimeId === anime.id ? '#e50914' : 'rgba(255,255,255,0.08)',
-                        minWidth: '180px'
-                      }}
-                    >
-                      <div className="card-poster" style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', height: '240px' }}>
-                        <img
-                          src={anime.poster}
-                          alt={anime.title}
-                          loading="lazy"
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/200x280?text=Anime'; }}
-                        />
-                        
-                        <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', color: '#fff', fontSize: '0.65rem', fontWeight: 900, padding: '3px 7px', borderRadius: '5px' }}>
-                          {anime.quality || 'FULL HD'}
+                  {itemsList.map((anime, idx) => {
+                    const uniqueCardKey = `row-${catTitle}-${anime.id}-${idx}`;
+                    const isCardHovered = hoveredAnimeKey === uniqueCardKey;
+
+                    return (
+                      <div
+                        key={uniqueCardKey}
+                        className="carousel-item-card media-card"
+                        onMouseEnter={() => setHoveredAnimeKey(uniqueCardKey)}
+                        onMouseLeave={() => setHoveredAnimeKey(null)}
+                        onClick={() => handleOpenAnime(anime)}
+                        style={{
+                          position: 'relative',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          background: 'rgba(20, 20, 32, 0.6)',
+                          borderRadius: '16px',
+                          border: '1px solid rgba(255,255,255,0.08)',
+                          padding: '0.5rem',
+                          transition: 'transform 0.25s ease, border-color 0.25s ease',
+                          transform: isCardHovered ? 'translateY(-4px) scale(1.02)' : 'none',
+                          borderColor: isCardHovered ? '#e50914' : 'rgba(255,255,255,0.08)',
+                          minWidth: '180px'
+                        }}
+                      >
+                        <div className="card-poster" style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', height: '240px' }}>
+                          <img
+                            src={anime.poster}
+                            alt={anime.title}
+                            loading="lazy"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/200x280?text=Anime'; }}
+                          />
+                          
+                          <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', color: '#fff', fontSize: '0.65rem', fontWeight: 900, padding: '3px 7px', borderRadius: '5px' }}>
+                            {anime.quality || 'FULL HD'}
+                          </div>
+
+                          {/* Hover Synopsis Popover (UNIQUE TO THIS EXACT CARD) */}
+                          {isCardHovered && (
+                            <div 
+                              style={{
+                                position: 'absolute',
+                                inset: 0,
+                                background: 'rgba(10, 10, 18, 0.95)',
+                                backdropFilter: 'blur(8px)',
+                                padding: '0.85rem',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'space-between',
+                                animation: 'fadeIn 0.2s ease-in-out'
+                              }}
+                            >
+                              <div>
+                                <span style={{ fontSize: '0.68rem', color: '#86efac', fontWeight: 800, textTransform: 'uppercase', display: 'block', marginBottom: '0.3rem' }}>
+                                  PIRU-TV ANIME • TMDB #{anime.tmdb_id}
+                                </span>
+                                <h4 style={{ margin: '0 0 0.4rem 0', fontSize: '0.88rem', fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>
+                                  {anime.title}
+                                </h4>
+                                <p style={{ margin: 0, fontSize: '0.75rem', color: '#cbd5e1', lineHeight: '1.35', display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                  Disfruta de {anime.title} completo en alta definición Full HD con temporadas oficiales.
+                                </p>
+                              </div>
+
+                              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                                <span style={{ background: 'rgba(229, 9, 20, 0.25)', color: '#f87171', border: '1px solid rgba(229, 9, 20, 0.4)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 800 }}>
+                                  ▶ REPRODUCIR
+                                </span>
+                              </div>
+                            </div>
+                          )}
                         </div>
 
-                        {/* Hover Synopsis Popover (Kdramas Style) */}
-                        {hoveredAnimeId === anime.id && (
-                          <div 
-                            style={{
-                              position: 'absolute',
-                              inset: 0,
-                              background: 'rgba(10, 10, 18, 0.94)',
-                              backdropFilter: 'blur(8px)',
-                              padding: '0.85rem',
-                              display: 'flex',
-                              flexDirection: 'column',
-                              justifyContent: 'space-between',
-                              animation: 'fadeIn 0.2s ease-in-out'
-                            }}
-                          >
-                            <div>
-                              <span style={{ fontSize: '0.68rem', color: '#86efac', fontWeight: 800, textTransform: 'uppercase', display: 'block', marginBottom: '0.3rem' }}>
-                                PIRU-TV ANIME • TMDB #{anime.tmdb_id}
-                              </span>
-                              <h4 style={{ margin: '0 0 0.4rem 0', fontSize: '0.88rem', fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>
-                                {anime.title}
-                              </h4>
-                              <p style={{ margin: 0, fontSize: '0.75rem', color: '#cbd5e1', lineHeight: '1.35', display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                                Disfruta de {anime.title} completo en alta definición Full HD con temporadas oficiales.
-                              </p>
-                            </div>
-
-                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
-                              <span style={{ background: 'rgba(229, 9, 20, 0.25)', color: '#f87171', border: '1px solid rgba(229, 9, 20, 0.4)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 800 }}>
-                                ▶ REPRODUCIR
-                              </span>
-                            </div>
-                          </div>
-                        )}
+                        <div className="card-info" style={{ padding: '0.6rem 0.2rem 0.2rem' }}>
+                          <h3 className="card-title" style={{ fontSize: '0.88rem', fontWeight: 800, margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff' }}>
+                            {anime.title}
+                          </h3>
+                        </div>
                       </div>
-
-                      <div className="card-info" style={{ padding: '0.6rem 0.2rem 0.2rem' }}>
-                        <h3 className="card-title" style={{ fontSize: '0.88rem', fontWeight: 800, margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff' }}>
-                          {anime.title}
-                        </h3>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -570,85 +575,90 @@ export default function Animes() {
 
           <div className="media-grid">
             {paginatedAnimes.length > 0 ? (
-              paginatedAnimes.map(anime => (
-                <div
-                  key={anime.id}
-                  className="media-card"
-                  onMouseEnter={() => setHoveredAnimeId(anime.id)}
-                  onMouseLeave={() => setHoveredAnimeId(null)}
-                  onClick={() => handleOpenAnime(anime)}
-                  style={{
-                    position: 'relative',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    background: 'rgba(20, 20, 32, 0.6)',
-                    borderRadius: '18px',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    padding: '0.6rem',
-                    transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease',
-                    transform: hoveredAnimeId === anime.id ? 'translateY(-6px) scale(1.02)' : 'none',
-                    borderColor: hoveredAnimeId === anime.id ? '#e50914' : 'rgba(255,255,255,0.08)'
-                  }}
-                >
-                  <div className="card-poster" style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', height: '270px' }}>
-                    <img
-                      src={anime.poster}
-                      alt={anime.title}
-                      loading="lazy"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/200x280?text=Anime'; }}
-                    />
-                    
-                    <div style={{ position: 'absolute', top: '10px', left: '10px', background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', color: '#fff', fontSize: '0.68rem', fontWeight: 900, padding: '3px 8px', borderRadius: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>
-                      {anime.quality || 'FULL HD'}
+              paginatedAnimes.map((anime, idx) => {
+                const uniqueCardKey = `grid-${activeCategory}-${anime.id}-${idx}`;
+                const isCardHovered = hoveredAnimeKey === uniqueCardKey;
+
+                return (
+                  <div
+                    key={uniqueCardKey}
+                    className="media-card"
+                    onMouseEnter={() => setHoveredAnimeKey(uniqueCardKey)}
+                    onMouseLeave={() => setHoveredAnimeKey(null)}
+                    onClick={() => handleOpenAnime(anime)}
+                    style={{
+                      position: 'relative',
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      background: 'rgba(20, 20, 32, 0.6)',
+                      borderRadius: '18px',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      padding: '0.6rem',
+                      transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease',
+                      transform: isCardHovered ? 'translateY(-6px) scale(1.02)' : 'none',
+                      borderColor: isCardHovered ? '#e50914' : 'rgba(255,255,255,0.08)'
+                    }}
+                  >
+                    <div className="card-poster" style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', height: '270px' }}>
+                      <img
+                        src={anime.poster}
+                        alt={anime.title}
+                        loading="lazy"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/200x280?text=Anime'; }}
+                      />
+                      
+                      <div style={{ position: 'absolute', top: '10px', left: '10px', background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', color: '#fff', fontSize: '0.68rem', fontWeight: 900, padding: '3px 8px', borderRadius: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>
+                        {anime.quality || 'FULL HD'}
+                      </div>
+
+                      {/* Hover Synopsis Popover (UNIQUE TO THIS EXACT CARD) */}
+                      {isCardHovered && (
+                        <div 
+                          style={{
+                            position: 'absolute',
+                            inset: 0,
+                            background: 'rgba(10, 10, 18, 0.95)',
+                            backdropFilter: 'blur(8px)',
+                            padding: '1rem',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                            animation: 'fadeIn 0.2s ease-in-out'
+                          }}
+                        >
+                          <div>
+                            <span style={{ fontSize: '0.72rem', color: '#86efac', fontWeight: 800, textTransform: 'uppercase', display: 'block', marginBottom: '0.3rem' }}>
+                              PIRU-TV ANIME • TMDB #{anime.tmdb_id}
+                            </span>
+                            <h4 style={{ margin: '0 0 0.4rem 0', fontSize: '0.92rem', fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>
+                              {anime.title}
+                            </h4>
+                            <p style={{ margin: 0, fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                              Disfruta de {anime.title} completo en alta definición Full HD con reproductor sin anuncios y temporadas oficiales.
+                            </p>
+                          </div>
+
+                          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                            <span style={{ background: 'rgba(229, 9, 20, 0.25)', color: '#f87171', border: '1px solid rgba(229, 9, 20, 0.4)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800 }}>
+                              ▶ REPRODUCIR
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Hover Synopsis Popover (Kdramas Style) */}
-                    {hoveredAnimeId === anime.id && (
-                      <div 
-                        style={{
-                          position: 'absolute',
-                          inset: 0,
-                          background: 'rgba(10, 10, 18, 0.94)',
-                          backdropFilter: 'blur(8px)',
-                          padding: '1rem',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'space-between',
-                          animation: 'fadeIn 0.2s ease-in-out'
-                        }}
-                      >
-                        <div>
-                          <span style={{ fontSize: '0.72rem', color: '#86efac', fontWeight: 800, textTransform: 'uppercase', display: 'block', marginBottom: '0.3rem' }}>
-                            PIRU-TV ANIME • TMDB #{anime.tmdb_id}
-                          </span>
-                          <h4 style={{ margin: '0 0 0.4rem 0', fontSize: '0.92rem', fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>
-                            {anime.title}
-                          </h4>
-                          <p style={{ margin: 0, fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                            Disfruta de {anime.title} completo en alta definición Full HD con reproductor sin anuncios y temporadas oficiales.
-                          </p>
-                        </div>
-
-                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
-                          <span style={{ background: 'rgba(229, 9, 20, 0.25)', color: '#f87171', border: '1px solid rgba(229, 9, 20, 0.4)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800 }}>
-                            ▶ REPRODUCIR
-                          </span>
-                        </div>
-                      </div>
-                    )}
+                    <div className="card-info" style={{ padding: '0.75rem 0.25rem 0.25rem' }}>
+                      <span className="card-genre" style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700 }}>
+                        PIRU-TV • TMDB #{anime.tmdb_id}
+                      </span>
+                      <h3 className="card-title" style={{ fontSize: '0.95rem', fontWeight: 800, margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff' }}>
+                        {anime.title}
+                      </h3>
+                    </div>
                   </div>
-
-                  <div className="card-info" style={{ padding: '0.75rem 0.25rem 0.25rem' }}>
-                    <span className="card-genre" style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700 }}>
-                      PIRU-TV • TMDB #{anime.tmdb_id}
-                    </span>
-                    <h3 className="card-title" style={{ fontSize: '0.95rem', fontWeight: 800, margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff' }}>
-                      {anime.title}
-                    </h3>
-                  </div>
-                </div>
-              ))
+                );
+              })
             ) : (
               <div className="empty-state" style={{ gridColumn: '1 / -1', padding: '4rem 2rem', textAlign: 'center' }}>
                 <span className="empty-icon">🔥</span>
