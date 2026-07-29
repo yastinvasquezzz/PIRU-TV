@@ -4,7 +4,7 @@ import { saveWatchProgress, toggleFavorite, isFavorite } from '../utils/storage'
 import { castWithWebVideoCaster } from '../utils/wvcCast';
 import vimeusAnimesData from '../data/animes.json';
 
-const TMDB_KEY = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiMGM4MjRjMmFkMzllODUwNmE5ZGUzOGI5ZTA2ZjJmZiIsIm5iZiI6MTc0ODI3MjY1Ni43MDMsInN1YiI6IjY4MzQ4NjEwNjFmMWZlZmI4YmViMzYxZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KUIiE74vCOP05_Y0M5CKyCBtj9m5lN1WzCfZ6bQn6Xs';
+const TMDB_KEY = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiMGM4MjRjMmFkMzllODUwNmE5ZGUzOGI5ZTA2ZjJmZiIsIm5iZiI6MTc0ODI3MjY1Ni43MDMsInN1YiI6IjY4MzQ4NjEwNjFmMWZlZmI4YmViMzYxZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KUIiE74vCOP05_Y0M5CKyCBfZ6bQn6Xs';
 const TMDB_HDR = { Authorization: `Bearer ${TMDB_KEY}` };
 
 const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
@@ -272,7 +272,7 @@ export default function Animes() {
         /* DASHBOARD ROW VIEWS (LIKE PELICULAS.JSX) */
         <div className="dashboard-home">
           
-          {/* Top Populares Featured Hero Banner Slider (Matching User Reference Image) */}
+          {/* Top Populares Featured Hero Banner Slider (COMPLETELY CLEAN IMAGE - NO BLACK OVERLAY FADE) */}
           {activeHero && (
             <div 
               className="hero-banner"
@@ -289,11 +289,11 @@ export default function Animes() {
                 border: '1px solid rgba(255,255,255,0.1)'
               }}
             >
-              {/* Soft Left Text Area Gradient Overlay */}
+              {/* CLEAN CONTAINER WITHOUT BLACK OVERLAY LAYER */}
               <div style={{
                 position: 'absolute',
                 inset: 0,
-                background: 'linear-gradient(to right, rgba(11,11,18,0.96) 0%, rgba(11,11,18,0.7) 45%, rgba(11,11,18,0.15) 100%)',
+                background: 'transparent',
                 display: 'flex',
                 alignItems: 'center',
                 padding: '3rem 3.5rem'
@@ -301,24 +301,24 @@ export default function Animes() {
                 <div style={{ maxWidth: '580px', zIndex: 5 }}>
                   {/* Top Category Badges (e.g. En Emisión, Acción, Shonen) */}
                   <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <span style={{ background: 'rgba(34, 197, 94, 0.2)', border: '1px solid rgba(34, 197, 94, 0.5)', color: '#4ade80', fontSize: '0.72rem', fontWeight: 800, padding: '3px 10px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e' }} /> En emisión
+                    <span style={{ background: 'rgba(34, 197, 94, 0.35)', border: '1px solid rgba(34, 197, 94, 0.7)', color: '#ffffff', fontSize: '0.72rem', fontWeight: 900, padding: '4px 12px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '5px', backdropFilter: 'blur(8px)', boxShadow: '0 2px 10px rgba(0,0,0,0.6)' }}>
+                      <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#22c55e' }} /> En emisión
                     </span>
-                    <span style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)', color: '#e2e8f0', fontSize: '0.72rem', fontWeight: 700, padding: '3px 10px', borderRadius: '12px' }}>
+                    <span style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.25)', color: '#ffffff', fontSize: '0.72rem', fontWeight: 800, padding: '4px 12px', borderRadius: '12px', backdropFilter: 'blur(8px)', boxShadow: '0 2px 10px rgba(0,0,0,0.6)' }}>
                       Top Populares #{heroIndex + 1}
                     </span>
-                    <span style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)', color: '#e2e8f0', fontSize: '0.72rem', fontWeight: 700, padding: '3px 10px', borderRadius: '12px' }}>
+                    <span style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.25)', color: '#ffffff', fontSize: '0.72rem', fontWeight: 800, padding: '4px 12px', borderRadius: '12px', backdropFilter: 'blur(8px)', boxShadow: '0 2px 10px rgba(0,0,0,0.6)' }}>
                       {activeHero.quality || 'FULL HD'}
                     </span>
                   </div>
 
-                  {/* Hero Title */}
-                  <h2 style={{ fontSize: '2.6rem', fontWeight: 900, color: '#ffffff', margin: '0 0 0.8rem 0', lineHeight: 1.1, letterSpacing: '-0.5px', textShadow: '0 4px 20px rgba(0,0,0,0.95)' }}>
+                  {/* Hero Title with crisp text shadows over full image */}
+                  <h2 style={{ fontSize: '2.8rem', fontWeight: 900, color: '#ffffff', margin: '0 0 0.8rem 0', lineHeight: 1.1, letterSpacing: '-0.5px', textShadow: '0 4px 20px rgba(0,0,0,1), 0 0 35px rgba(0,0,0,1)' }}>
                     {activeHero.title}
                   </h2>
 
-                  {/* Hero Synopsis Description */}
-                  <p style={{ fontSize: '0.92rem', color: '#cbd5e1', lineHeight: '1.6', margin: '0 0 1.5rem 0', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textShadow: '0 2px 10px rgba(0,0,0,0.9)' }}>
+                  {/* Hero Synopsis Description with text shadow over full image */}
+                  <p style={{ fontSize: '0.95rem', color: '#ffffff', lineHeight: '1.6', margin: '0 0 1.6rem 0', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textShadow: '0 2px 12px rgba(0,0,0,1), 0 0 25px rgba(0,0,0,1)', fontWeight: 600 }}>
                     Disfruta de {activeHero.title} completo en alta definición Full HD directamente en PIRU-TV con subtítulos y doblaje en español.
                   </p>
 
@@ -335,7 +335,7 @@ export default function Animes() {
                         border: 'none',
                         color: '#0b0b12',
                         borderRadius: '12px',
-                        boxShadow: '0 6px 20px rgba(255,255,255,0.25)',
+                        boxShadow: '0 6px 25px rgba(0,0,0,0.6)',
                         cursor: 'pointer',
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -351,16 +351,17 @@ export default function Animes() {
                       style={{
                         padding: '0.85rem 1.6rem',
                         fontSize: '0.95rem',
-                        fontWeight: 700,
-                        background: 'rgba(255, 255, 255, 0.08)',
-                        border: '1px solid rgba(255, 255, 255, 0.25)',
+                        fontWeight: 800,
+                        background: 'rgba(0, 0, 0, 0.65)',
+                        border: '1px solid rgba(255, 255, 255, 0.4)',
                         color: '#ffffff',
                         borderRadius: '12px',
                         cursor: 'pointer',
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '0.5rem',
-                        backdropFilter: 'blur(6px)'
+                        backdropFilter: 'blur(8px)',
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.6)'
                       }}
                       onClick={async () => {
                         await toggleFavorite(activeHero);
@@ -381,9 +382,10 @@ export default function Animes() {
                           width: heroIndex === idx ? '32px' : '10px',
                           height: '4px',
                           borderRadius: '2px',
-                          background: heroIndex === idx ? '#e50914' : 'rgba(255, 255, 255, 0.25)',
+                          background: heroIndex === idx ? '#e50914' : 'rgba(255, 255, 255, 0.4)',
                           cursor: 'pointer',
-                          transition: 'all 0.3s ease'
+                          transition: 'all 0.3s ease',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.8)'
                         }}
                         title={h.title}
                       />
@@ -404,8 +406,8 @@ export default function Animes() {
                   width: '42px',
                   height: '42px',
                   borderRadius: '50%',
-                  background: 'rgba(0, 0, 0, 0.5)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  background: 'rgba(0, 0, 0, 0.65)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
                   color: '#ffffff',
                   fontSize: '1.1rem',
                   display: 'flex',
@@ -413,8 +415,9 @@ export default function Animes() {
                   justifyContent: 'center',
                   cursor: 'pointer',
                   zIndex: 10,
-                  backdropFilter: 'blur(4px)',
-                  transition: 'all 0.2s ease'
+                  backdropFilter: 'blur(6px)',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.7)'
                 }}
               >
                 ❮
@@ -432,8 +435,8 @@ export default function Animes() {
                   width: '42px',
                   height: '42px',
                   borderRadius: '50%',
-                  background: 'rgba(0, 0, 0, 0.5)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  background: 'rgba(0, 0, 0, 0.65)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
                   color: '#ffffff',
                   fontSize: '1.1rem',
                   display: 'flex',
@@ -441,8 +444,9 @@ export default function Animes() {
                   justifyContent: 'center',
                   cursor: 'pointer',
                   zIndex: 10,
-                  backdropFilter: 'blur(4px)',
-                  transition: 'all 0.2s ease'
+                  backdropFilter: 'blur(6px)',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.7)'
                 }}
               >
                 ❯
