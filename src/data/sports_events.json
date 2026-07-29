@@ -1,830 +1,727 @@
 [
   {
-    "id": "sport-1",
-    "title": "Copa Centroamericana de CONCACAF: Hankook Verdes vs Motagua",
-    "time": "19:00",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "disney1",
-    "global1": "https://streamx488.sbs/global1.php?channel=disney1",
-    "global2": "https://streamx488.sbs/global2.php?channel=disney1"
-  },
-  {
-    "id": "sport-2",
-    "title": "Liga Profesional: Argentinos Juniors vs Estudiantes Río Cuarto",
-    "time": "19:15",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "fanatiz7",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz7",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz7"
-  },
-  {
-    "id": "sport-3",
-    "title": "Liga Profesional: Argentinos Juniors vs Estudiantes Río Cuarto",
-    "time": "19:15",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "disney2",
-    "global1": "https://streamx488.sbs/global1.php?channel=disney2",
-    "global2": "https://streamx488.sbs/global2.php?channel=disney2"
-  },
-  {
-    "id": "sport-4",
-    "title": "Liga Profesional: Argentinos Juniors vs Estudiantes Río Cuarto",
-    "time": "19:15",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "espnpremium",
-    "global1": "https://streamx488.sbs/global1.php?channel=espnpremium",
-    "global2": "https://streamx488.sbs/global2.php?channel=espnpremium"
-  },
-  {
-    "id": "sport-5",
-    "title": "Liga Profesional: Rosario Central vs Racing Club",
-    "time": "19:15",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "fanatiz8",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz8",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz8"
-  },
-  {
-    "id": "sport-6",
-    "title": "Liga Profesional: Rosario Central vs Racing Club",
-    "time": "19:15",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "disney3",
-    "global1": "https://streamx488.sbs/global1.php?channel=disney3",
-    "global2": "https://streamx488.sbs/global2.php?channel=disney3"
-  },
-  {
-    "id": "sport-7",
-    "title": "Liga Profesional: Rosario Central vs Racing Club",
-    "time": "19:15",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "tntar",
-    "global1": "https://streamx488.sbs/global1.php?channel=tntar",
-    "global2": "https://streamx488.sbs/global2.php?channel=tntar"
-  },
-  {
-    "id": "sport-8",
-    "title": "Liga Profesional: Rosario Central vs Racing Club",
-    "time": "19:15",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "foxdeportes",
-    "global1": "https://streamx488.sbs/global1.php?channel=foxdeportes",
-    "global2": "https://streamx488.sbs/global2.php?channel=foxdeportes"
-  },
-  {
-    "id": "sport-9",
-    "title": "Copa Sudamericana: Santos vs UCV",
-    "time": "19:30",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "fanatiz9",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz9",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz9"
-  },
-  {
-    "id": "sport-10",
-    "title": "Copa Sudamericana: Santos vs UCV",
-    "time": "19:30",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "disney4",
-    "global1": "https://streamx488.sbs/global1.php?channel=disney4",
-    "global2": "https://streamx488.sbs/global2.php?channel=disney4"
-  },
-  {
-    "id": "sport-11",
-    "title": "Copa Sudamericana: Santos vs UCV",
-    "time": "19:30",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "dsportsar",
-    "global1": "https://streamx488.sbs/global1.php?channel=dsportsar",
-    "global2": "https://streamx488.sbs/global2.php?channel=dsportsar"
-  },
-  {
-    "id": "sport-12",
-    "title": "Copa Sudamericana: Santos vs UCV",
-    "time": "19:30",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "dsports",
-    "global1": "https://streamx488.sbs/global1.php?channel=dsports",
-    "global2": "https://streamx488.sbs/global2.php?channel=dsports"
-  },
-  {
-    "id": "sport-13",
-    "title": "Copa Colombia: Tigres vs Atlético Nacional",
-    "time": "20:30",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "fanatiz10",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz10",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz10"
-  },
-  {
-    "id": "sport-14",
-    "title": "Copa Colombia: Tigres vs Atlético Nacional",
-    "time": "20:30",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "winplus",
-    "global1": "https://streamx488.sbs/global1.php?channel=winplus",
-    "global2": "https://streamx488.sbs/global2.php?channel=winplus"
-  },
-  {
-    "id": "sport-15",
-    "title": "Copa Centroamericana de CONCACAF: Diriangén vs Plaza Amador",
-    "time": "21:00",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "disney5",
-    "global1": "https://streamx488.sbs/global1.php?channel=disney5",
-    "global2": "https://streamx488.sbs/global2.php?channel=disney5"
-  },
-  {
-    "id": "sport-16",
-    "title": "Copa Centroamericana de CONCACAF: Olimpia vs Mixco",
-    "time": "21:00",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "disney6",
-    "global1": "https://streamx488.sbs/global1.php?channel=disney6",
-    "global2": "https://streamx488.sbs/global2.php?channel=disney6"
-  },
-  {
-    "id": "sport-17",
-    "title": "Copa Centroamericana de CONCACAF: Olimpia vs Mixco",
-    "time": "21:00",
-    "date": "2026-07-28",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "foxone1",
-    "global1": "https://streamx488.sbs/global1.php?channel=foxone1",
-    "global2": "https://streamx488.sbs/global2.php?channel=foxone1"
-  },
-  {
-    "id": "sport-18",
-    "title": "Amistoso: Tottenham Hotspur vs Sydney FC",
+    "id": "hd-1",
+    "title": "Tottenham Hotspur vs Sydney FC",
+    "homeTeam": "Tottenham Hotspur",
+    "awayTeam": "Sydney FC",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/dfyfhl1604094109.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/utgq8z1546110747.png",
+    "league": "Amistoso",
+    "category": "Football",
+    "icon": "⚽",
     "time": "04:45",
     "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
     "isLive": true,
-    "channel": "clarosports",
-    "global1": "https://streamx488.sbs/global1.php?channel=clarosports",
-    "global2": "https://streamx488.sbs/global2.php?channel=clarosports"
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Claro Sports",
+        "stream": "claro1",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=claro1",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=claro1"
+      }
+    ]
   },
   {
-    "id": "sport-19",
-    "title": "Liga Profesional: Barracas Central vs Aldosivi",
-    "time": "12:30",
+    "id": "hd-2",
+    "title": "Cerezo Osaka vs Borussia Dortmund",
+    "homeTeam": "Cerezo Osaka",
+    "awayTeam": "Borussia Dortmund",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/a7oyde1706245108.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/tqo8ge1716960353.png",
+    "league": "Amistoso",
+    "category": "Football",
+    "icon": "⚽",
+    "time": "05:00",
     "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
     "isLive": true,
-    "channel": "fanatiz1",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz1",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz1"
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Xsports BR",
+        "stream": "evento1",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=evento1",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=evento1"
+      }
+    ]
   },
   {
-    "id": "sport-20",
-    "title": "Liga Profesional: Barracas Central vs Aldosivi",
-    "time": "12:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "disney1",
-    "global1": "https://streamx488.sbs/global1.php?channel=disney1",
-    "global2": "https://streamx488.sbs/global2.php?channel=disney1"
-  },
-  {
-    "id": "sport-21",
-    "title": "Liga Profesional: Barracas Central vs Aldosivi",
-    "time": "12:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "espnpremium",
-    "global1": "https://streamx488.sbs/global1.php?channel=espnpremium",
-    "global2": "https://streamx488.sbs/global2.php?channel=espnpremium"
-  },
-  {
-    "id": "sport-22",
-    "title": "Liga Profesional: Barracas Central vs Aldosivi",
-    "time": "12:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "espnar",
-    "global1": "https://streamx488.sbs/global1.php?channel=espnar",
-    "global2": "https://streamx488.sbs/global2.php?channel=espnar"
-  },
-  {
-    "id": "sport-23",
-    "title": "Amistoso: Real Betis vs Olympique Lyonnais",
+    "id": "hd-3",
+    "title": "Real Betis vs Olympique Lyonnais",
+    "homeTeam": "Real Betis",
+    "awayTeam": "Olympique Lyonnais",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/2oqulv1663245386.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/blk9771656932845.png/medium",
+    "league": "Amistoso",
+    "category": "Football",
+    "icon": "⚽",
     "time": "13:00",
     "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
     "isLive": true,
-    "channel": "disney2",
-    "global1": "https://streamx488.sbs/global1.php?channel=disney2",
-    "global2": "https://streamx488.sbs/global2.php?channel=disney2"
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Xsports BR",
+        "stream": "evento1",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=evento1",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=evento1"
+      }
+    ]
   },
   {
-    "id": "sport-24",
-    "title": "Amistoso: Real Betis vs Olympique Lyonnais",
+    "id": "hd-4",
+    "title": "Kairat vs Omonia Nicosia",
+    "homeTeam": "Kairat",
+    "awayTeam": "Omonia Nicosia",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/sz5y1m1579285078.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/nmd7vt1779579017.png",
+    "league": "UEFA Champions League",
+    "category": "Football",
+    "icon": "⚽",
+    "time": "10:00",
+    "date": "2026-07-29",
+    "isLive": true,
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Xsports BR",
+        "stream": "evento1",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=evento1",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=evento1"
+      }
+    ]
+  },
+  {
+    "id": "hd-5",
+    "title": "Górnik Zabrze vs Fenerbahçe",
+    "homeTeam": "Górnik Zabrze",
+    "awayTeam": "Fenerbahçe",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/fk1fam1767928408.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/twxxvs1448199691.png",
+    "league": "UEFA Champions League",
+    "category": "Football",
+    "icon": "⚽",
     "time": "13:00",
     "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
     "isLive": true,
-    "channel": "premier1uk",
-    "global1": "https://streamx488.sbs/global1.php?channel=premier1uk",
-    "global2": "https://streamx488.sbs/global2.php?channel=premier1uk"
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Eventos",
+        "stream": "evento3",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=evento3",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=evento3"
+      }
+    ]
   },
   {
-    "id": "sport-25",
-    "title": "Copa de Primera: Sportivo Luqueño vs Sportivo Trinidense",
+    "id": "hd-6",
+    "title": "Barracas Central vs Aldosivi",
+    "homeTeam": "Barracas Central",
+    "awayTeam": "Aldosivi",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/rbkjba1707458543.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/nqrjqb1517767667.png",
+    "league": "Liga Profesional",
+    "category": "Football",
+    "icon": "⚽",
+    "time": "12:30",
+    "date": "2026-07-29",
+    "isLive": true,
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Disney+",
+        "stream": "disney1",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=disney1",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=disney1"
+      },
+      {
+        "name": "Fanatiz",
+        "stream": "fanatiz1",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=fanatiz1",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=fanatiz1"
+      },
+      {
+        "name": "ESPN Premium",
+        "stream": "espnpremium",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=espnpremium",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=espnpremium"
+      },
+      {
+        "name": "ESPN",
+        "stream": "espn",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=espn",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=espn"
+      }
+    ]
+  },
+  {
+    "id": "hd-7",
+    "title": "Defensa y Justicia vs Deportivo Riestra",
+    "homeTeam": "Defensa y Justicia",
+    "awayTeam": "Deportivo Riestra",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/3guvlh1775778978.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/332h0l1578824392.png",
+    "league": "Liga Profesional",
+    "category": "Football",
+    "icon": "⚽",
+    "time": "15:00",
+    "date": "2026-07-29",
+    "isLive": true,
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Fanatiz",
+        "stream": "fanatiz3",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=fanatiz3",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=fanatiz3"
+      },
+      {
+        "name": "TNT Sports",
+        "stream": "tntsports",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=tntsports",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=tntsports"
+      }
+    ]
+  },
+  {
+    "id": "hd-8",
+    "title": "Gimnasia La Plata vs River Plate",
+    "homeTeam": "Gimnasia La Plata",
+    "awayTeam": "River Plate",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/dtqto61775838814.png/medium",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/03dmi31645539717.png",
+    "league": "Liga Profesional",
+    "category": "Football",
+    "icon": "⚽",
+    "time": "17:15",
+    "date": "2026-07-29",
+    "isLive": true,
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Disney+",
+        "stream": "disney3",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=disney3",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=disney3"
+      },
+      {
+        "name": "Fanatiz",
+        "stream": "fanatiz6",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=fanatiz6",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=fanatiz6"
+      },
+      {
+        "name": "ESPN Premium",
+        "stream": "espnpremium",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=espnpremium",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=espnpremium"
+      },
+      {
+        "name": "ESPN",
+        "stream": "espn",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=espn",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=espn"
+      }
+    ]
+  },
+  {
+    "id": "hd-9",
+    "title": "Instituto vs Platense",
+    "homeTeam": "Instituto",
+    "awayTeam": "Platense",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/jup59w1578825794.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/lbs14n1769317149.png",
+    "league": "Liga Profesional",
+    "category": "Football",
+    "icon": "⚽",
+    "time": "19:30",
+    "date": "2026-07-29",
+    "isLive": true,
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Fanatiz",
+        "stream": "fanatiz10",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=fanatiz10",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=fanatiz10"
+      },
+      {
+        "name": "TNT Sports",
+        "stream": "tntsports",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=tntsports",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=tntsports"
+      }
+    ]
+  },
+  {
+    "id": "hd-10",
+    "title": "Sportivo Luqueño vs Sportivo Trinidense",
+    "homeTeam": "Sportivo Luqueño",
+    "awayTeam": "Sportivo Trinidense",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/nsmlja1579991077.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/oi8bxo1766423607.png",
+    "league": "Copa de Primera",
+    "category": "Football",
+    "icon": "⚽",
     "time": "14:00",
     "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
     "isLive": true,
-    "channel": "fanatiz2",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz2",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz2"
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Fanatiz",
+        "stream": "fanatiz2",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=fanatiz2",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=fanatiz2"
+      }
+    ]
   },
   {
-    "id": "sport-26",
-    "title": "Liga Profesional: Defensa y Justicia vs Deportivo Riestra",
-    "time": "15:00",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "fanatiz3",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz3",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz3"
-  },
-  {
-    "id": "sport-27",
-    "title": "Liga Profesional: Defensa y Justicia vs Deportivo Riestra",
-    "time": "15:00",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "tntar",
-    "global1": "https://streamx488.sbs/global1.php?channel=tntar",
-    "global2": "https://streamx488.sbs/global2.php?channel=tntar"
-  },
-  {
-    "id": "sport-28",
-    "title": "Liga Profesional: Defensa y Justicia vs Deportivo Riestra",
-    "time": "15:00",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "tycint",
-    "global1": "https://streamx488.sbs/global1.php?channel=tycint",
-    "global2": "https://streamx488.sbs/global2.php?channel=tycint"
-  },
-  {
-    "id": "sport-29",
-    "title": "Copa de Primera: Nacional Asunción vs Olimpia",
+    "id": "hd-11",
+    "title": "Nacional Asunción vs Olimpia",
+    "homeTeam": "Nacional Asunción",
+    "awayTeam": "Olimpia",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/uv7z921579989369.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/tyfnp11765859175.png",
+    "league": "Copa de Primera",
+    "category": "Football",
+    "icon": "⚽",
     "time": "16:30",
     "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
     "isLive": true,
-    "channel": "fanatiz4",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz4",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz4"
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Fanatiz",
+        "stream": "fanatiz4",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=fanatiz4",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=fanatiz4"
+      }
+    ]
   },
   {
-    "id": "sport-30",
-    "title": "Copa Sudamericana: Vasco da Gama vs Medellín",
+    "id": "hd-12",
+    "title": "Vasco da Gama vs Medellín",
+    "homeTeam": "Vasco da Gama",
+    "awayTeam": "Medellín",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/ynqlxo1630521109.png",
+    "awayLogo": "https://www.thesportsdb.com/images/media/team/badge/mzezh31783226830.png",
+    "league": "Sudamericana",
+    "category": "Football",
+    "icon": "⚽",
     "time": "17:00",
     "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
     "isLive": true,
-    "channel": "fanatiz5",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz5",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz5"
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Disney+",
+        "stream": "disney2",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=disney2",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=disney2"
+      },
+      {
+        "name": "Fanatiz",
+        "stream": "fanatiz5",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=fanatiz5",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=fanatiz5"
+      },
+      {
+        "name": "DSports",
+        "stream": "dsports",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=dsports",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=dsports"
+      }
+    ]
   },
   {
-    "id": "sport-31",
-    "title": "Copa Sudamericana: Vasco da Gama vs Medellín",
-    "time": "17:00",
+    "id": "hd-13",
+    "title": "Cienciano vs Lanús",
+    "homeTeam": "Cienciano",
+    "awayTeam": "Lanús",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/yla9k51734242161.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/ddty0w1769146364.png",
+    "league": "Sudamericana",
+    "category": "Football",
+    "icon": "⚽",
+    "time": "19:30",
     "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
     "isLive": true,
-    "channel": "disney3",
-    "global1": "https://streamx488.sbs/global1.php?channel=disney3",
-    "global2": "https://streamx488.sbs/global2.php?channel=disney3"
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Disney+",
+        "stream": "disney5",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=disney5",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=disney5"
+      },
+      {
+        "name": "Fanatiz",
+        "stream": "fanatiz13",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=fanatiz13",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=fanatiz13"
+      },
+      {
+        "name": "ESPN",
+        "stream": "espn",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=espn",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=espn"
+      }
+    ]
   },
   {
-    "id": "sport-32",
-    "title": "Copa Sudamericana: Vasco da Gama vs Medellín",
-    "time": "17:00",
+    "id": "hd-14",
+    "title": "RB Bragantino vs Sporting Cristal",
+    "homeTeam": "RB Bragantino",
+    "awayTeam": "Sporting Cristal",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/2p7tl41701423595.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/ive4ya1766423194.png",
+    "league": "Sudamericana",
+    "category": "Football",
+    "icon": "⚽",
+    "time": "19:30",
     "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
     "isLive": true,
-    "channel": "dsportsar",
-    "global1": "https://streamx488.sbs/global1.php?channel=dsportsar",
-    "global2": "https://streamx488.sbs/global2.php?channel=dsportsar"
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Fanatiz",
+        "stream": "fanatiz14",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=fanatiz14",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=fanatiz14"
+      },
+      {
+        "name": "DSports",
+        "stream": "dsports",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=dsports",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=dsports"
+      }
+    ]
   },
   {
-    "id": "sport-33",
-    "title": "Copa Sudamericana: Vasco da Gama vs Medellín",
-    "time": "17:00",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "espn",
-    "global1": "https://streamx488.sbs/global1.php?channel=espn",
-    "global2": "https://streamx488.sbs/global2.php?channel=espn"
-  },
-  {
-    "id": "sport-34",
-    "title": "Liga Profesional: Gimnasia La Plata vs River Plate",
-    "time": "17:15",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "fanatiz6",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz6",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz6"
-  },
-  {
-    "id": "sport-35",
-    "title": "Liga Profesional: Gimnasia La Plata vs River Plate",
-    "time": "17:15",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "disney4",
-    "global1": "https://streamx488.sbs/global1.php?channel=disney4",
-    "global2": "https://streamx488.sbs/global2.php?channel=disney4"
-  },
-  {
-    "id": "sport-36",
-    "title": "Liga Profesional: Gimnasia La Plata vs River Plate",
-    "time": "17:15",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "espnpremium",
-    "global1": "https://streamx488.sbs/global1.php?channel=espnpremium",
-    "global2": "https://streamx488.sbs/global2.php?channel=espnpremium"
-  },
-  {
-    "id": "sport-37",
-    "title": "Liga Profesional: Gimnasia La Plata vs River Plate",
-    "time": "17:15",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "espn2",
-    "global1": "https://streamx488.sbs/global1.php?channel=espn2",
-    "global2": "https://streamx488.sbs/global2.php?channel=espn2"
-  },
-  {
-    "id": "sport-38",
-    "title": "Liga Profesional: Gimnasia La Plata vs River Plate",
-    "time": "17:15",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "foxdeportes",
-    "global1": "https://streamx488.sbs/global1.php?channel=foxdeportes",
-    "global2": "https://streamx488.sbs/global2.php?channel=foxdeportes"
-  },
-  {
-    "id": "sport-39",
-    "title": "Copa Colombia: Barranquilla vs Junior",
+    "id": "hd-15",
+    "title": "Internacional vs Flamengo",
+    "homeTeam": "Internacional",
+    "awayTeam": "Flamengo",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/yprvxx1473538097.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/syptwx1473538074.png",
+    "league": "Brasileirão",
+    "category": "Football",
+    "icon": "⚽",
     "time": "17:30",
     "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
     "isLive": true,
-    "channel": "fanatiz7",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz7",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz7"
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Fanatiz",
+        "stream": "fanatiz7",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=fanatiz7",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=fanatiz7"
+      },
+      {
+        "name": "Prime Video",
+        "stream": "amazon1",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=amazon1",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=amazon1"
+      },
+      {
+        "name": "Win Sports",
+        "stream": "winsports",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=winsports",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=winsports"
+      }
+    ]
   },
   {
-    "id": "sport-40",
-    "title": "Copa Colombia: Barranquilla vs Junior",
+    "id": "hd-16",
+    "title": "Mirassol vs Remo",
+    "homeTeam": "Mirassol",
+    "awayTeam": "Remo",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/pw8uo11765900737.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/u36jfy1579341655.png",
+    "league": "Brasileirão",
+    "category": "Football",
+    "icon": "⚽",
     "time": "17:30",
     "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
     "isLive": true,
-    "channel": "winplus",
-    "global1": "https://streamx488.sbs/global1.php?channel=winplus",
-    "global2": "https://streamx488.sbs/global2.php?channel=winplus"
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Fanatiz",
+        "stream": "fanatiz8",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=fanatiz8",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=fanatiz8"
+      },
+      {
+        "name": "Premiere 4",
+        "stream": "premiere4",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=premiere4",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=premiere4"
+      }
+    ]
   },
   {
-    "id": "sport-41",
-    "title": "Brasileirão: Internacional vs Flamengo",
+    "id": "hd-17",
+    "title": "Fluminense vs Bahia",
+    "homeTeam": "Fluminense",
+    "awayTeam": "Bahia",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/stvvwp1473538082.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/xuvtsv1473539308.png",
+    "league": "Brasileirão",
+    "category": "Football",
+    "icon": "⚽",
+    "time": "19:30",
+    "date": "2026-07-29",
+    "isLive": true,
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Win Sports",
+        "stream": "winsports",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=winsports",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=winsports"
+      },
+      {
+        "name": "Fanatiz",
+        "stream": "fanatiz11",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=fanatiz11",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=fanatiz11"
+      },
+      {
+        "name": "Premiere 3",
+        "stream": "premiere3",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=premiere3",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=premiere3"
+      }
+    ]
+  },
+  {
+    "id": "hd-18",
+    "title": "Vitória vs Palmeiras",
+    "homeTeam": "Vitória",
+    "awayTeam": "Palmeiras",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/tysrrx1473538156.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/vsqwqp1473538105.png",
+    "league": "Brasileirão",
+    "category": "Football",
+    "icon": "⚽",
+    "time": "19:30",
+    "date": "2026-07-29",
+    "isLive": true,
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Fanatiz",
+        "stream": "fanatiz12",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=fanatiz12",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=fanatiz12"
+      },
+      {
+        "name": "Premiere 1",
+        "stream": "premiere1",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=premiere1",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=premiere1"
+      }
+    ]
+  },
+  {
+    "id": "hd-19",
+    "title": "Barranquilla vs Junior",
+    "homeTeam": "Barranquilla",
+    "awayTeam": "Junior",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/mveht31615832167.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/zzarls1576161686.png",
+    "league": "Copa Colombia",
+    "category": "Football",
+    "icon": "⚽",
     "time": "17:30",
     "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
     "isLive": true,
-    "channel": "fanatiz8",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz8",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz8"
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Fanatiz",
+        "stream": "fanatiz9",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=fanatiz9",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=fanatiz9"
+      },
+      {
+        "name": "Win Fútbol+",
+        "stream": "winplus",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=winplus",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=winplus"
+      }
+    ]
   },
   {
-    "id": "sport-42",
-    "title": "Brasileirão: Internacional vs Flamengo",
-    "time": "17:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "amazon1",
-    "global1": "https://streamx488.sbs/global1.php?channel=amazon1",
-    "global2": "https://streamx488.sbs/global2.php?channel=amazon1"
-  },
-  {
-    "id": "sport-43",
-    "title": "Brasileirão: Mirassol vs Remo",
-    "time": "17:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "fanatiz9",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz9",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz9"
-  },
-  {
-    "id": "sport-44",
-    "title": "Brasileirão: Mirassol vs Remo",
-    "time": "17:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "premiere4",
-    "global1": "https://streamx488.sbs/global1.php?channel=premiere4",
-    "global2": "https://streamx488.sbs/global2.php?channel=premiere4"
-  },
-  {
-    "id": "sport-45",
-    "title": "Amistoso: Wrexham vs Liverpool",
-    "time": "18:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "clarosports",
-    "global1": "https://streamx488.sbs/global1.php?channel=clarosports",
-    "global2": "https://streamx488.sbs/global2.php?channel=clarosports"
-  },
-  {
-    "id": "sport-46",
-    "title": "Amistoso: Wrexham vs Liverpool",
-    "time": "18:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "espndeportes",
-    "global1": "https://streamx488.sbs/global1.php?channel=espndeportes",
-    "global2": "https://streamx488.sbs/global2.php?channel=espndeportes"
-  },
-  {
-    "id": "sport-47",
-    "title": "MLS All-Star: MLS All Star Team vs Liga MX All-Stars",
-    "time": "19:00",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "mls1",
-    "global1": "https://streamx488.sbs/global1.php?channel=mls1",
-    "global2": "https://streamx488.sbs/global2.php?channel=mls1"
-  },
-  {
-    "id": "sport-48",
-    "title": "MLS All-Star: MLS All Star Team vs Liga MX All-Stars",
-    "time": "19:00",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "mls2",
-    "global1": "https://streamx488.sbs/global1.php?channel=mls2",
-    "global2": "https://streamx488.sbs/global2.php?channel=mls2"
-  },
-  {
-    "id": "sport-49",
-    "title": "Copa Centroamericana de CONCACAF: UMECIT vs Deportivo Saprissa",
-    "time": "19:00",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "disney5",
-    "global1": "https://streamx488.sbs/global1.php?channel=disney5",
-    "global2": "https://streamx488.sbs/global2.php?channel=disney5"
-  },
-  {
-    "id": "sport-50",
-    "title": "Copa Centroamericana de CONCACAF: UMECIT vs Deportivo Saprissa",
-    "time": "19:00",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "foxone1",
-    "global1": "https://streamx488.sbs/global1.php?channel=foxone1",
-    "global2": "https://streamx488.sbs/global2.php?channel=foxone1"
-  },
-  {
-    "id": "sport-51",
-    "title": "Copa Sudamericana: Cienciano vs Lanús",
-    "time": "19:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "fanatiz10",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz10",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz10"
-  },
-  {
-    "id": "sport-52",
-    "title": "Copa Sudamericana: Cienciano vs Lanús",
-    "time": "19:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "disney6",
-    "global1": "https://streamx488.sbs/global1.php?channel=disney6",
-    "global2": "https://streamx488.sbs/global2.php?channel=disney6"
-  },
-  {
-    "id": "sport-53",
-    "title": "Copa Sudamericana: Cienciano vs Lanús",
-    "time": "19:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "espnar",
-    "global1": "https://streamx488.sbs/global1.php?channel=espnar",
-    "global2": "https://streamx488.sbs/global2.php?channel=espnar"
-  },
-  {
-    "id": "sport-54",
-    "title": "Copa Sudamericana: Cienciano vs Lanús",
-    "time": "19:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "espn2",
-    "global1": "https://streamx488.sbs/global1.php?channel=espn2",
-    "global2": "https://streamx488.sbs/global2.php?channel=espn2"
-  },
-  {
-    "id": "sport-55",
-    "title": "Copa Sudamericana: RB Bragantino vs Sporting Cristal",
-    "time": "19:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "fanatiz1",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz1",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz1"
-  },
-  {
-    "id": "sport-56",
-    "title": "Copa Sudamericana: RB Bragantino vs Sporting Cristal",
-    "time": "19:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "dsportsar",
-    "global1": "https://streamx488.sbs/global1.php?channel=dsportsar",
-    "global2": "https://streamx488.sbs/global2.php?channel=dsportsar"
-  },
-  {
-    "id": "sport-57",
-    "title": "Copa Sudamericana: RB Bragantino vs Sporting Cristal",
-    "time": "19:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "dsports",
-    "global1": "https://streamx488.sbs/global1.php?channel=dsports",
-    "global2": "https://streamx488.sbs/global2.php?channel=dsports"
-  },
-  {
-    "id": "sport-58",
-    "title": "Liga Profesional: Instituto vs Platense",
-    "time": "19:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "fanatiz2",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz2",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz2"
-  },
-  {
-    "id": "sport-59",
-    "title": "Liga Profesional: Instituto vs Platense",
-    "time": "19:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "tntar",
-    "global1": "https://streamx488.sbs/global1.php?channel=tntar",
-    "global2": "https://streamx488.sbs/global2.php?channel=tntar"
-  },
-  {
-    "id": "sport-60",
-    "title": "Liga Profesional: Instituto vs Platense",
-    "time": "19:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "tycint",
-    "global1": "https://streamx488.sbs/global1.php?channel=tycint",
-    "global2": "https://streamx488.sbs/global2.php?channel=tycint"
-  },
-  {
-    "id": "sport-61",
-    "title": "Brasileirão: Fluminense vs Bahia",
-    "time": "19:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "fanatiz3",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz3",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz3"
-  },
-  {
-    "id": "sport-62",
-    "title": "Brasileirão: Fluminense vs Bahia",
-    "time": "19:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "premiere3",
-    "global1": "https://streamx488.sbs/global1.php?channel=premiere3",
-    "global2": "https://streamx488.sbs/global2.php?channel=premiere3"
-  },
-  {
-    "id": "sport-63",
-    "title": "Brasileirão: Vitória vs Palmeiras",
-    "time": "19:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "fanatiz4",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz4",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz4"
-  },
-  {
-    "id": "sport-64",
-    "title": "Brasileirão: Vitória vs Palmeiras",
-    "time": "19:30",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "premiere1",
-    "global1": "https://streamx488.sbs/global1.php?channel=premiere1",
-    "global2": "https://streamx488.sbs/global2.php?channel=premiere1"
-  },
-  {
-    "id": "sport-65",
-    "title": "Copa Colombia: Real Cartagena vs América de Cali",
+    "id": "hd-20",
+    "title": "Real Cartagena vs América de Cali",
+    "homeTeam": "Real Cartagena",
+    "awayTeam": "América de Cali",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/1galb31615832205.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/lwxcn71576156105.png",
+    "league": "Copa Colombia",
+    "category": "Football",
+    "icon": "⚽",
     "time": "20:00",
     "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
     "isLive": true,
-    "channel": "fanatiz5",
-    "global1": "https://streamx488.sbs/global1.php?channel=fanatiz5",
-    "global2": "https://streamx488.sbs/global2.php?channel=fanatiz5"
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Fanatiz",
+        "stream": "fanatiz15",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=fanatiz15",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=fanatiz15"
+      },
+      {
+        "name": "Win Fútbol+",
+        "stream": "winplus",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=winplus",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=winplus"
+      }
+    ]
   },
   {
-    "id": "sport-66",
-    "title": "Copa Colombia: Real Cartagena vs América de Cali",
-    "time": "20:00",
+    "id": "hd-21",
+    "title": "Wrexham vs Liverpool",
+    "homeTeam": "Wrexham",
+    "awayTeam": "Liverpool",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/ezpymt1675092551.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/kfaher1737969724.png",
+    "league": "Premier League Summer",
+    "category": "Football",
+    "icon": "⚽",
+    "time": "18:30",
     "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
     "isLive": true,
-    "channel": "winplus",
-    "global1": "https://streamx488.sbs/global1.php?channel=winplus",
-    "global2": "https://streamx488.sbs/global2.php?channel=winplus"
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Claro Sports",
+        "stream": "claro1",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=claro1",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=claro1"
+      },
+      {
+        "name": "ESPN Deportes",
+        "stream": "espndeportes",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=espndeportes",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=espndeportes"
+      }
+    ]
   },
   {
-    "id": "sport-67",
-    "title": "Copa Centroamericana de CONCACAF: Alajuelense vs Xelajú",
+    "id": "hd-22",
+    "title": "MLS All-Star Team vs Liga MX All-Stars",
+    "homeTeam": "MLS All-Star Team",
+    "awayTeam": "Liga MX All-Stars",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/pxwesi1689917655.png/medium",
+    "awayLogo": "https://images.mlssoccer.com/image/upload/t_q-best/v1629144633/assets/competitions/all-star-game/liga-mx-all-stars-480.png",
+    "league": "MLS",
+    "category": "Football",
+    "icon": "⚽",
+    "time": "19:00",
+    "date": "2026-07-29",
+    "isLive": true,
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Apple TV Español",
+        "stream": "appletv1",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=appletv1",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=appletv1"
+      },
+      {
+        "name": "Apple TV English",
+        "stream": "appletv2",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=appletv2",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=appletv2"
+      }
+    ]
+  },
+  {
+    "id": "hd-23",
+    "title": "UMECIT vs Deportivo Saprissa",
+    "homeTeam": "UMECIT",
+    "awayTeam": "Deportivo Saprissa",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/nhwml41674118697.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/tvj33z1707630611.png",
+    "league": "Copa Centroamericana",
+    "category": "Football",
+    "icon": "⚽",
+    "time": "19:00",
+    "date": "2026-07-29",
+    "isLive": true,
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Disney+",
+        "stream": "disney4",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=disney4",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=disney4"
+      },
+      {
+        "name": "FOX One",
+        "stream": "foxone",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=foxone",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=foxone"
+      }
+    ]
+  },
+  {
+    "id": "hd-24",
+    "title": "Alajuelense vs Xelajú",
+    "homeTeam": "Alajuelense",
+    "awayTeam": "Xelajú",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/zi9ft21707630526.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/qqlpvb1761130279.png",
+    "league": "Copa Centroamericana",
+    "category": "Football",
+    "icon": "⚽",
     "time": "21:00",
     "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
     "isLive": true,
-    "channel": "disney7",
-    "global1": "https://streamx488.sbs/global1.php?channel=disney7",
-    "global2": "https://streamx488.sbs/global2.php?channel=disney7"
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Disney+",
+        "stream": "disney6",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=disney6",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=disney6"
+      },
+      {
+        "name": "FOX One",
+        "stream": "foxone",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=foxone",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=foxone"
+      }
+    ]
   },
   {
-    "id": "sport-68",
-    "title": "Copa Centroamericana de CONCACAF: Alajuelense vs Xelajú",
+    "id": "hd-25",
+    "title": "Alianza vs Antigua GFC",
+    "homeTeam": "Alianza",
+    "awayTeam": "Antigua GFC",
+    "homeLogo": "https://r2.thesportsdb.com/images/media/team/badge/4qhii21589297781.png",
+    "awayLogo": "https://r2.thesportsdb.com/images/media/team/badge/ixsg8a1782187686.png",
+    "league": "Copa Centroamericana",
+    "category": "Football",
+    "icon": "⚽",
     "time": "21:00",
     "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
     "isLive": true,
-    "channel": "foxone2",
-    "global1": "https://streamx488.sbs/global1.php?channel=foxone2",
-    "global2": "https://streamx488.sbs/global2.php?channel=foxone2"
-  },
-  {
-    "id": "sport-69",
-    "title": "Copa Centroamericana de CONCACAF: Alianza vs Antigua GFC",
-    "time": "21:00",
-    "date": "2026-07-29",
-    "category": "Fútbol",
-    "status": "En vivo",
-    "isLive": true,
-    "channel": "disney8",
-    "global1": "https://streamx488.sbs/global1.php?channel=disney8",
-    "global2": "https://streamx488.sbs/global2.php?channel=disney8"
+    "status": "🔴 EN VIVO",
+    "servers": [
+      {
+        "name": "Disney+",
+        "stream": "disney7",
+        "live1Url": "https://streamx-hd.com/live1.php?stream=disney7",
+        "live2Url": "https://streamx-hd.com/live2.php?stream=disney7"
+      }
+    ]
   }
 ]
