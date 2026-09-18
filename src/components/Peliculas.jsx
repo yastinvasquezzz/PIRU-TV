@@ -355,22 +355,46 @@ export default function Peliculas() {
     return null;
   };
 
-  // Fetch dashboard items on mount
+  // Fetch dashboard items on mount (con actualización automática en tiempo real de estrenos y tendencias)
   useEffect(() => {
     const loadDashboard = async () => {
-      // 1. Fetch Hero item
-      let hero = await fetchItemDetails(HERO_REF.id, HERO_REF.type);
+      // 1. Cargar dinámicamente las películas en tendencia mundial y estrenos (TMDb Trending en tiempo real)
+      let heroesLoaded = false;
+      try {
+        const trendRes = await fetch(`${TMDB}/trending/movie/day?language=es-ES`, { headers: HDR });
+        if (trendRes.ok) {
+          const trendData = await trendRes.json();
+          const trendingMovies = (trendData.results || []).slice(0, 6);
+          if (trendingMovies.length > 0) {
+            const dynamicDetails = await Promise.all(
+              trendingMovies.map(m => fetchItemDetails(m.id, 'movie'))
+            );
+            const cleanDynamic = dynamicDetails.filter(Boolean);
+            if (cleanDynamic.length > 0) {
+              setHeroItem(cleanDynamic[0]);
+              setHeroList(cleanDynamic);
+              setTop5Items(cleanDynamic.slice(0, 5));
+              heroesLoaded = true;
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error al obtener tendencias dinámicas de TMDb:', err);
+      }
 
-      // 2. Fetch Top 5 items
-      const top5 = await Promise.all(
-        TOP5_REFS.map(ref => fetchItemDetails(ref.id, ref.type))
-      );
-      const cleanTop5 = top5.filter(Boolean);
-      setTop5Items(cleanTop5);
+      // Fallback de respaldo en caso de desconexión o fallo en TMDb
+      if (!heroesLoaded) {
+        let hero = await fetchItemDetails(HERO_REF.id, HERO_REF.type);
+        const top5 = await Promise.all(
+          TOP5_REFS.map(ref => fetchItemDetails(ref.id, ref.type))
+        );
+        const cleanTop5 = top5.filter(Boolean);
+        setTop5Items(cleanTop5);
 
-      const heroes = [hero, ...cleanTop5].filter(Boolean);
-      setHeroList(heroes);
-      if (heroes.length > 0) setHeroItem(heroes[0]);
+        const heroes = [hero, ...cleanTop5].filter(Boolean);
+        setHeroList(heroes);
+        if (heroes.length > 0) setHeroItem(heroes[0]);
+      }
 
       // 3. Fetch all category rows via TMDB Discover (12 items per category) to prevent rate limits
       const dataMap = {};
