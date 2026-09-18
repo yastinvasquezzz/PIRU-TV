@@ -15,6 +15,94 @@ const HDR  = { Authorization: `Bearer ${TMDB_KEY}` };
 const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
 const VIMEUS_PARAMS = '&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3';
 
+// ── Lista de Servidores Clasificados por Idioma (Vimeus Oficial Intacto) ──
+const SERVERS = [
+  {
+    id: 'vimeus',
+    name: 'Vimeus',
+    lang: 'LAT / ESP',
+    langGroup: 'latino',
+    badge: '⭐ Oficial',
+    desc: 'Audio Latino y Castellano nativo',
+    quality: 'HD'
+  },
+  {
+    id: 'vidlink',
+    name: 'VidLink VIP',
+    lang: 'MULTI',
+    langGroup: 'multi',
+    badge: '🚀 Rápido',
+    desc: 'Multi-Audio (Latino, Castellano e Inglés con subtítulos)',
+    quality: '1080p',
+    getUrl: (id, type, season, episode) => {
+      if (type === 'movie') {
+        return `https://vidlink.pro/movie/${id}?primaryColor=e50914&secondaryColor=9333ea&iconColor=e50914&icons=netflix&title=true&poster=true`;
+      }
+      return `https://vidlink.pro/tv/${id}/${season}/${episode}?primaryColor=e50914&secondaryColor=9333ea&iconColor=e50914&icons=netflix&title=true&poster=true`;
+    }
+  },
+  {
+    id: 'multiembed',
+    name: 'MultiEmbed',
+    lang: 'LAT / SUB',
+    langGroup: 'latino',
+    badge: '🌐 Multi',
+    desc: 'Servidor multi-fuente con pistas de audio en español',
+    quality: 'HD',
+    getUrl: (id, type, season, episode) => {
+      if (type === 'movie') {
+        return `https://multiembed.mov/?video_id=${id}&tmdb=1`;
+      }
+      return `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${episode}`;
+    }
+  },
+  {
+    id: 'autoembed',
+    name: 'AutoEmbed VIP',
+    lang: 'MULTI',
+    langGroup: 'multi',
+    badge: '⚡ VIP',
+    desc: 'Selector inteligente multi-servidor con subtítulos',
+    quality: '1080p',
+    getUrl: (id, type, season, episode) => {
+      if (type === 'movie') {
+        return `https://player.autoembed.cc/embed/movie/${id}`;
+      }
+      return `https://player.autoembed.cc/embed/tv/${id}/${season}/${episode}`;
+    }
+  },
+  {
+    id: 'vidsrc_cc',
+    name: 'VidSrc CC',
+    lang: 'SUB / VO',
+    langGroup: 'sub',
+    badge: '🔄 Respaldo',
+    desc: 'Servidor alternativo de alta disponibilidad',
+    quality: 'HD',
+    getUrl: (id, type, season, episode) => {
+      if (type === 'movie') {
+        return `https://vidsrc.cc/v2/embed/movie/${id}?autoPlay=false`;
+      }
+      return `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}?autoPlay=false`;
+    }
+  },
+  {
+    id: 'smashy',
+    name: 'SmashyStream',
+    lang: 'SUB / VO',
+    langGroup: 'sub',
+    badge: '🛡️ Estable',
+    desc: 'Reproductor ligero sin interrupciones',
+    quality: 'HD',
+    getUrl: (id, type, season, episode) => {
+      if (type === 'movie') {
+        return `https://embed.smashystream.com/playere.php?tmdb=${id}`;
+      }
+      return `https://embed.smashystream.com/playere.php?tmdb=${id}&season=${season}&episode=${episode}`;
+    }
+  }
+];
+
 // ── Doramasflix Latino Movies (via Cloudflare Worker proxy) ──
 const DFLIX_PROXY = import.meta.env.DEV
   ? '/api/gql'
@@ -167,6 +255,16 @@ export default function Peliculas() {
   const [latinoMovieLinks, setLatinoMovieLinks] = useState([]);
   const [activeLatinoServer, setActiveLatinoServer] = useState(null);
 
+  // Modal navigation tabs & server language filter
+  const [modalTab, setModalTab] = useState('player'); // 'player', 'cast', 'trailer', 'details'
+  const [serverLangFilter, setServerLangFilter] = useState('all'); // 'all', 'latino', 'multi', 'sub'
+
+  // Filter servers according to selected audio language tab
+  const filteredServers = useMemo(() => {
+    if (serverLangFilter === 'all') return SERVERS;
+    return SERVERS.filter(s => s.langGroup === serverLangFilter);
+  }, [serverLangFilter]);
+
   // Handle Smart TV D-Pad Remote Back button
   useDpadNavigation({
     onBack: () => {
@@ -196,24 +294,58 @@ export default function Peliculas() {
     return ['Home', ...Object.keys(catalogData), 'Dramas Chinos', LATINO_MOVIES_CAT];
   }, []);
 
-  // Fetch TMDB helper function
+  // Fetch TMDB helper function (con reparto, directores, trailer y ficha técnica completa)
   const fetchItemDetails = async (id, type, terabox = null) => {
     try {
-      const res = await fetch(`${TMDB}/${type}/${id}?language=es-ES`, { headers: HDR });
+      const res = await fetch(`${TMDB}/${type}/${id}?language=es-ES&append_to_response=credits,videos`, { headers: HDR });
       if (res.ok) {
         const data = await res.json();
+
+        // Extraer elenco de actores (hasta 15 actores principales con foto y personaje)
+        const cast = (data.credits?.cast || []).slice(0, 15).map(actor => ({
+          id: actor.id,
+          name: actor.name,
+          character: actor.character,
+          photo: actor.profile_path ? `https://image.tmdb.org/t/p/w185${actor.profile_path}` : null
+        }));
+
+        // Extraer directores
+        const directors = (data.credits?.crew || [])
+          .filter(c => c.job === 'Director')
+          .map(d => ({
+            id: d.id,
+            name: d.name,
+            photo: d.profile_path ? `https://image.tmdb.org/t/p/w185${d.profile_path}` : null
+          }));
+
+        // Extraer trailer oficial de YouTube
+        const videos = data.videos?.results || [];
+        const trailerObj = videos.find(v => v.site === 'YouTube' && v.type === 'Trailer') 
+          || videos.find(v => v.site === 'YouTube' && v.type === 'Teaser')
+          || videos.find(v => v.site === 'YouTube');
+        const trailerKey = trailerObj?.key || null;
+
         return {
           id,
           type,
           terabox,
           title: data.title || data.name || '—',
+          originalTitle: data.original_title || data.original_name || null,
+          tagline: data.tagline || null,
           poster: data.poster_path ? `${IMG}${data.poster_path}` : 'https://via.placeholder.com/160x240?text=?',
           backdrop: data.backdrop_path ? `${BACK}${data.backdrop_path}` : null,
           overview: data.overview || 'Sin descripción disponible.',
           year: (data.release_date || data.first_air_date || '').slice(0, 4) || '—',
+          releaseDateFull: data.release_date || data.first_air_date || null,
           rating: data.vote_average ? Math.round(data.vote_average * 10) / 10 : null,
+          voteCount: data.vote_count || 0,
           genres: (data.genres || []).map(g => g.name),
           runtime: data.runtime ? `${data.runtime} min` : (data.episode_run_time?.[0] ? `~${data.episode_run_time[0]} min/ep` : ''),
+          country: (data.production_countries || []).map(c => c.name || c.iso_3166_1).join(', ') || null,
+          status: data.status || null,
+          cast,
+          directors,
+          trailerKey,
           seasons: data.seasons || null
         };
       }
@@ -537,23 +669,23 @@ export default function Peliculas() {
       return;
     }
 
-    // If the item doesn't have seasons loaded yet (e.g. from search results of type TV show),
-    // we fetch full details to load the seasons array!
-    let fullItem = item;
-    if (item.type === 'tv' && !item.seasons) {
-      setIsLoading(true);
-      const fullDetails = await fetchItemDetails(item.id, item.type, item.terabox);
-      if (fullDetails) {
-        fullItem = { ...item, ...fullDetails };
-      }
-      setIsLoading(false);
-    }
-
-    setSelectedItem(fullItem);
+    setModalTab('player');
+    setServerLangFilter('all');
+    setSelectedItem(item);
     setIsPlaying(false);
     setSelectedSeason(1);
     setSelectedEpisode(1);
     setSelectedServer('vimeus'); // Vimeus is Spanish-first by default
+
+    // If the item doesn't have cast or full details loaded yet, fetch them!
+    if (!item.cast || (item.type === 'tv' && !item.seasons)) {
+      setIsLoading(true);
+      const fullDetails = await fetchItemDetails(item.id, item.type, item.terabox);
+      if (fullDetails) {
+        setSelectedItem(prev => (prev && prev.id === item.id ? { ...prev, ...fullDetails } : prev));
+      }
+      setIsLoading(false);
+    }
   };
 
   // Get total episodes in selected season
@@ -581,6 +713,8 @@ export default function Peliculas() {
     }
 
     const id = selectedItem.id;
+
+    // ── VIMEUS (Servidor oficial de películas y series - 100% Intacto) ──
     if (selectedServer === 'vimeus') {
       const vk = VIMEUS_VIEW_KEY ? `&view_key=${encodeURIComponent(VIMEUS_VIEW_KEY)}` : '';
       if (selectedItem.type === 'movie') {
@@ -590,18 +724,10 @@ export default function Peliculas() {
       return `https://vimeus.com/e/${kind}?tmdb=${id}&se=${selectedSeason}&ep=${selectedEpisode}${vk}${VIMEUS_PARAMS}`;
     }
 
-    if (selectedServer === 'vidsrc') {
-      if (selectedItem.type === 'movie') {
-        return `https://vidsrc-embed.ru/embed/movie/${id}?ds_lang=es`;
-      }
-      return `https://vidsrc-embed.ru/embed/tv/${id}/${selectedSeason}-${selectedEpisode}?ds_lang=es`;
-    }
-
-    if (selectedServer === '2embed') {
-      if (selectedItem.type === 'movie') {
-        return `https://www.2embed.cc/embed/${id}?lang=es`;
-      }
-      return `https://www.2embed.cc/embedtv/${id}&s=${selectedSeason}&e=${selectedEpisode}&lang=es`;
+    // ── NUEVOS SERVIDORES CLASIFICADOS POR IDIOMA (Reemplazo de VidSrc y 2Embed) ──
+    const foundServer = SERVERS.find(s => s.id === selectedServer);
+    if (foundServer && foundServer.getUrl) {
+      return foundServer.getUrl(id, selectedItem.type, selectedSeason, selectedEpisode);
     }
 
     return '';
@@ -686,6 +812,12 @@ export default function Peliculas() {
                       >
                         <div className="play-icon">▶</div>
                       </button>
+                      <span className="card-quality-badge">HD</span>
+                      <div className="card-lang-badges">
+                        <span className="badge-lang badge-lat">LAT</span>
+                        <span className="badge-lang badge-cast">CAST</span>
+                        <span className="badge-lang badge-sub">SUB</span>
+                      </div>
                       {item.year && <span className="card-badge">{item.year}</span>}
                     </div>
                     <div className="card-info">
@@ -856,6 +988,12 @@ export default function Peliculas() {
                           >
                             <div className="play-icon">▶</div>
                           </button>
+                          <span className="card-quality-badge">HD</span>
+                          <div className="card-lang-badges">
+                            <span className="badge-lang badge-lat">LAT</span>
+                            <span className="badge-lang badge-cast">CAST</span>
+                            <span className="badge-lang badge-sub">SUB</span>
+                          </div>
                         </div>
                         <div className="card-info" style={{ width: '100%', padding: '0.75rem 0.6rem 0.6rem' }}>
                           <h4 className="card-title" style={{ fontSize: '0.88rem', margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{item.title}</h4>
@@ -906,6 +1044,12 @@ export default function Peliculas() {
                         >
                           <div className="play-icon">▶</div>
                         </button>
+                        <span className="card-quality-badge">HD</span>
+                        <div className="card-lang-badges">
+                          <span className="badge-lang badge-lat">LAT</span>
+                          <span className="badge-lang badge-cast">CAST</span>
+                          <span className="badge-lang badge-sub">SUB</span>
+                        </div>
                         {item.year && <span className="card-badge">{item.year}</span>}
                       </div>
                       <div className="card-info">
@@ -1046,195 +1190,398 @@ export default function Peliculas() {
               )}
             </div>
 
-            {/* Server and Episode selectors if playing and item is TV Series */}
-            {isPlaying && selectedItem.type !== 'drama' && selectedItem.type !== 'latino-movie' && (
-              <div className="player-header">
-                <div className="player-title-info">
-                  <span className="pulse-dot"></span>
-                  <span>
-                    Reproduciendo: {selectedItem.title} 
-                    {selectedItem.type === 'tv' && ` - Temp. ${selectedSeason}, Ep. ${selectedEpisode}`}
-                  </span>
-                </div>
-                <div className="server-selector">
-                  <button 
-                    className={`server-btn ${selectedServer === 'vimeus' ? 'active' : ''}`}
-                    onClick={() => setSelectedServer('vimeus')}
-                  >
-                    Vimeus
-                  </button>
-                  <button 
-                    className={`server-btn ${selectedServer === 'vidsrc' ? 'active' : ''}`}
-                    onClick={() => setSelectedServer('vidsrc')}
-                  >
-                    VidSrc
-                  </button>
-                  <button 
-                    className={`server-btn ${selectedServer === '2embed' ? 'active' : ''}`}
-                    onClick={() => setSelectedServer('2embed')}
-                  >
-                    2Embed
-                  </button>
-                </div>
-              </div>
-            )}
+            {/* Modal Navigation Tabs (Dondever Style) */}
+            <div className="modal-tab-nav">
+              <button 
+                type="button" 
+                className={`modal-tab-btn ${modalTab === 'player' ? 'active' : ''}`}
+                onClick={() => setModalTab('player')}
+              >
+                🎬 Reproductor y Servidores
+              </button>
+              <button 
+                type="button" 
+                className={`modal-tab-btn ${modalTab === 'cast' ? 'active' : ''}`}
+                onClick={() => setModalTab('cast')}
+              >
+                👥 Reparto y Dirección {selectedItem.cast?.length ? `(${selectedItem.cast.length})` : ''}
+              </button>
+              {selectedItem.trailerKey && (
+                <button 
+                  type="button" 
+                  className={`modal-tab-btn ${modalTab === 'trailer' ? 'active' : ''}`}
+                  onClick={() => setModalTab('trailer')}
+                >
+                  🍿 Tráiler Oficial
+                </button>
+              )}
+              <button 
+                type="button" 
+                className={`modal-tab-btn ${modalTab === 'details' ? 'active' : ''}`}
+                onClick={() => setModalTab('details')}
+              >
+                📋 Ficha Técnica
+              </button>
+            </div>
 
-            {/* Latino Movie: server selector from doramasflix */}
-            {selectedItem.type === 'latino-movie' && latinoMovieLinks.length > 0 && (
-              <div className="player-header">
-                <div className="player-title-info">
-                  <span className="pulse-dot"></span>
-                  <span>🗣️ {selectedItem.title}</span>
-                </div>
-                <div className="server-selector">
-                  {latinoMovieLinks.map(srv => (
+            {/* TAB 1: REPRODUCTOR Y SERVIDORES */}
+            {modalTab === 'player' && (
+              <>
+                {/* Server Selector con filtro de Idioma */}
+                {selectedItem.type !== 'drama' && selectedItem.type !== 'latino-movie' && (
+                  <div className="player-header" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.6rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <div className="player-title-info">
+                        <span className="pulse-dot"></span>
+                        <span>
+                          {selectedItem.title} 
+                          {selectedItem.type === 'tv' && ` - Temp. ${selectedSeason}, Ep. ${selectedEpisode}`}
+                        </span>
+                      </div>
+                      {/* Filtro rápido de idioma del servidor */}
+                      <div className="server-lang-filter-bar" style={{ margin: 0, padding: '0.3rem 0.6rem' }}>
+                        <span className="server-lang-filter-title">Audio:</span>
+                        <button 
+                          type="button"
+                          className={`server-lang-btn ${serverLangFilter === 'all' ? 'active' : ''}`}
+                          onClick={() => setServerLangFilter('all')}
+                        >
+                          Todos
+                        </button>
+                        <button 
+                          type="button"
+                          className={`server-lang-btn ${serverLangFilter === 'latino' ? 'active' : ''}`}
+                          onClick={() => setServerLangFilter('latino')}
+                        >
+                          🇲🇽 Latino / ESP
+                        </button>
+                        <button 
+                          type="button"
+                          className={`server-lang-btn ${serverLangFilter === 'multi' ? 'active' : ''}`}
+                          onClick={() => setServerLangFilter('multi')}
+                        >
+                          🌐 Multi-Audio
+                        </button>
+                        <button 
+                          type="button"
+                          className={`server-lang-btn ${serverLangFilter === 'sub' ? 'active' : ''}`}
+                          onClick={() => setServerLangFilter('sub')}
+                        >
+                          💬 Sub / VO
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="server-selector" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
+                      {filteredServers.map(srv => (
+                        <button 
+                          key={srv.id}
+                          type="button"
+                          className={`server-btn ${selectedServer === srv.id ? 'active' : ''}`}
+                          onClick={() => { setSelectedServer(srv.id); setIsPlaying(true); }}
+                          title={srv.desc}
+                        >
+                          <span style={{ fontWeight: '700' }}>{srv.name}</span>
+                          <span className="server-btn-lang">{srv.lang}</span>
+                          {srv.badge && <span className="server-btn-badge">{srv.badge}</span>}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Latino Movie: server selector from doramasflix */}
+                {selectedItem.type === 'latino-movie' && latinoMovieLinks.length > 0 && (
+                  <div className="player-header">
+                    <div className="player-title-info">
+                      <span className="pulse-dot"></span>
+                      <span>🗣️ {selectedItem.title}</span>
+                    </div>
+                    <div className="server-selector">
+                      {latinoMovieLinks.map(srv => (
+                        <button
+                          key={srv.id}
+                          type="button"
+                          className={`server-btn ${activeLatinoServer?.id === srv.id ? 'active' : ''}`}
+                          onClick={() => { setActiveLatinoServer(srv); setIsPlaying(true); }}
+                        >
+                          {srv.name} <span className="server-btn-lang">{srv.lang}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Loading indicator for latino movie links */}
+                {selectedItem.type === 'latino-movie' && isLoading && (
+                  <div className="player-header" style={{ justifyContent: 'center', padding: '1rem' }}>
+                    <div className="player-loading-spinner" style={{ position: 'relative', margin: '0' }}></div>
+                    <span style={{ marginLeft: '1rem', color: 'var(--text-secondary)' }}>Cargando servidores...</span>
+                  </div>
+                )}
+
+                {/* No servers available for latino movie */}
+                {selectedItem.type === 'latino-movie' && !isLoading && latinoMovieLinks.length === 0 && (
+                  <div className="player-header" style={{ justifyContent: 'center', padding: '1rem' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>⚠️ No hay servidores disponibles para esta película.</span>
+                  </div>
+                )}
+
+                {/* Episodes grid selection for TV Series / Anime */}
+                {selectedItem.type === 'tv' && selectedItem.seasons && (
+                  <div className="episodes-section">
+                    <div className="episodes-header">
+                      <span className="episodes-title">Seleccionar Episodio</span>
+                      <select 
+                        className="season-select"
+                        value={selectedSeason}
+                        onChange={(e) => {
+                          setSelectedSeason(Number(e.target.value));
+                          setSelectedEpisode(1);
+                        }}
+                      >
+                        {selectedItem.seasons
+                          .filter(s => s.season_number > 0)
+                          .map(s => (
+                            <option key={s.season_number} value={s.season_number}>
+                              {s.name || `Temporada ${s.season_number}`} ({s.episode_count} eps)
+                            </option>
+                          ))
+                        }
+                      </select>
+                    </div>
+                    <div className="episodes-grid">
+                      {episodesInSelectedSeason.map(epNum => (
+                        <button
+                          key={epNum}
+                          className={`episode-btn ${selectedEpisode === epNum ? 'active' : ''}`}
+                          onClick={() => {
+                            setSelectedEpisode(epNum);
+                            setIsPlaying(true);
+                          }}
+                        >
+                          {epNum}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Modal details body info */}
+                <div className="modal-body">
+                  <div className="modal-meta">
+                    <span className="modal-genre">
+                      {selectedItem.type === 'tv' ? '📺 Serie' : selectedItem.type === 'drama' ? '🎭 Chino' : selectedItem.type === 'latino-movie' ? '🗣️ Latino' : '🎬 Película'}
+                    </span>
+                    {selectedItem.year && <span className="modal-lang">{selectedItem.year}</span>}
+                    {selectedItem.rating && <span className="modal-lang">⭐ {selectedItem.rating}</span>}
+                    {selectedItem.runtime && <span className="modal-lang">⏱️ {selectedItem.runtime}</span>}
+                  </div>
+                  <h2 className="modal-title">{selectedItem.title}</h2>
+                  {selectedItem.tagline && (
+                    <p style={{ fontStyle: 'italic', color: 'var(--text-secondary)', marginBottom: '0.6rem', fontSize: '0.95rem' }}>
+                      "{selectedItem.tagline}"
+                    </p>
+                  )}
+                  <p className="modal-summary">{selectedItem.overview}</p>
+
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', margin: '1.25rem 0' }}>
                     <button
-                      key={srv.id}
-                      className={`server-btn ${activeLatinoServer?.id === srv.id ? 'active' : ''}`}
-                      onClick={() => { setActiveLatinoServer(srv); setIsPlaying(true); }}
-                    >
-                      {srv.name} <span style={{ fontSize: '0.7rem', opacity: 0.7 }}>[{srv.lang}]</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Loading indicator for latino movie links */}
-            {selectedItem.type === 'latino-movie' && isLoading && (
-              <div className="player-header" style={{ justifyContent: 'center', padding: '1rem' }}>
-                <div className="player-loading-spinner" style={{ position: 'relative', margin: '0' }}></div>
-                <span style={{ marginLeft: '1rem', color: 'var(--text-secondary)' }}>Cargando servidores...</span>
-              </div>
-            )}
-
-            {/* No servers available for latino movie */}
-            {selectedItem.type === 'latino-movie' && !isLoading && latinoMovieLinks.length === 0 && (
-              <div className="player-header" style={{ justifyContent: 'center', padding: '1rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>⚠️ No hay servidores disponibles para esta película.</span>
-              </div>
-            )}
-
-            {/* Episodes grid selection for TV Series / Anime */}
-            {selectedItem.type === 'tv' && selectedItem.seasons && (
-              <div className="episodes-section">
-                <div className="episodes-header">
-                  <span className="episodes-title">Seleccionar Episodio</span>
-                  <select 
-                    className="season-select"
-                    value={selectedSeason}
-                    onChange={(e) => {
-                      setSelectedSeason(Number(e.target.value));
-                      setSelectedEpisode(1);
-                    }}
-                  >
-                    {selectedItem.seasons
-                      .filter(s => s.season_number > 0)
-                      .map(s => (
-                        <option key={s.season_number} value={s.season_number}>
-                          {s.name || `Temporada ${s.season_number}`} ({s.episode_count} eps)
-                        </option>
-                      ))
-                    }
-                  </select>
-                </div>
-                <div className="episodes-grid">
-                  {episodesInSelectedSeason.map(epNum => (
-                    <button
-                      key={epNum}
-                      className={`episode-btn ${selectedEpisode === epNum ? 'active' : ''}`}
-                      onClick={() => {
-                        setSelectedEpisode(epNum);
-                        setIsPlaying(true);
+                      type="button"
+                      className="btn-primary"
+                      style={{
+                        flex: 'none',
+                        padding: '0.75rem 1.5rem',
+                        fontSize: '0.95rem',
+                        background: isFavorite(selectedItem.id) ? 'rgba(239, 68, 68, 0.25)' : 'rgba(255, 255, 255, 0.08)',
+                        border: `1px solid ${isFavorite(selectedItem.id) ? '#ef4444' : 'rgba(255, 255, 255, 0.2)'}`,
+                        color: isFavorite(selectedItem.id) ? '#fca5a5' : '#fff',
+                        boxShadow: isFavorite(selectedItem.id) ? '0 0 15px rgba(239, 68, 68, 0.4)' : 'none'
+                      }}
+                      onClick={async () => {
+                        await toggleFavorite(selectedItem);
+                        setSelectedItem({ ...selectedItem });
                       }}
                     >
-                      {epNum}
+                      {isFavorite(selectedItem.id) ? '❤️ En Mi Lista' : '🤍 Agregar a Mi Lista'}
                     </button>
-                  ))}
+
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      style={{
+                        flex: 'none',
+                        padding: '0.75rem 1.5rem',
+                        fontSize: '0.95rem',
+                        background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                        border: 'none',
+                        color: '#ffffff',
+                        boxShadow: '0 4px 15px rgba(245, 158, 11, 0.45)'
+                      }}
+                      onClick={() => {
+                        const urlToCast = embedUrl || window.location.href;
+                        castWithWebVideoCaster(urlToCast, selectedItem.title);
+                      }}
+                    >
+                      📱 Transmitir a TV (Web Video Caster)
+                    </button>
+                  </div>
+                  
+                  {/* Actions box with Terabox downloads or info */}
+                  <div className="fallback-box">
+                    <div>
+                      <strong style={{ color: '#fff', display: 'block', marginBottom: '0.2rem' }}>
+                        {selectedItem.type === 'drama' ? 'Dramas Chinos FAST Stream' : 'Servidor de Descarga Rápida'}
+                      </strong>
+                      <span>
+                        {selectedItem.type === 'drama' 
+                          ? 'Este drama se transmite en vivo a través de servidores externos integrados.' 
+                          : 'Puedes descargar este contenido directamente en alta calidad a tu cuenta de Terabox.'}
+                      </span>
+                    </div>
+                    {selectedItem.terabox && selectedItem.terabox !== '#' && (
+                      <a 
+                        href={selectedItem.terabox}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-primary"
+                        style={{ flex: 'none', padding: '0.6rem 1.2rem', fontSize: '0.9rem', width: 'auto', alignSelf: 'center', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)' }}
+                      >
+                        📥 Descargar en Terabox
+                      </a>
+                    )}
+                  </div>
                 </div>
+              </>
+            )}
+
+            {/* TAB 2: REPARTO Y DIRECCIÓN (DONDEVER STYLE) */}
+            {modalTab === 'cast' && (
+              <div className="modal-cast-section">
+                {selectedItem.directors && selectedItem.directors.length > 0 && (
+                  <div className="directors-container">
+                    <h3 className="section-subtitle">🎬 Dirección</h3>
+                    <div className="directors-list">
+                      {selectedItem.directors.map(dir => (
+                        <div key={dir.id} className="director-item">
+                          <div className="cast-photo-wrapper">
+                            {dir.photo ? (
+                              <img src={dir.photo} alt={dir.name} className="cast-photo" />
+                            ) : (
+                              <div className="cast-photo-placeholder">🎬</div>
+                            )}
+                          </div>
+                          <div className="director-name">{dir.name}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <h3 className="section-subtitle">👥 Reparto Principal</h3>
+                {isLoading && !selectedItem.cast ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', padding: '2rem 0' }}>
+                    <div className="player-loading-spinner" style={{ position: 'relative', margin: 0 }}></div>
+                    <span style={{ color: 'var(--text-secondary)' }}>Cargando información del elenco...</span>
+                  </div>
+                ) : selectedItem.cast && selectedItem.cast.length > 0 ? (
+                  <div className="cast-grid">
+                    {selectedItem.cast.map(actor => (
+                      <div key={actor.id} className="cast-card">
+                        <div className="cast-photo-wrapper">
+                          {actor.photo ? (
+                            <img src={actor.photo} alt={actor.name} className="cast-photo" loading="lazy" />
+                          ) : (
+                            <div className="cast-photo-placeholder">👤</div>
+                          )}
+                        </div>
+                        <div className="cast-details">
+                          <span className="cast-name" title={actor.name}>{actor.name}</span>
+                          {actor.character && <span className="cast-character" title={actor.character}>{actor.character}</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="no-data-msg">No hay información de elenco disponible para este título.</p>
+                )}
               </div>
             )}
 
-            {/* Modal details body info */}
-            <div className="modal-body">
-              <div className="modal-meta">
-                <span className="modal-genre">
-                  {selectedItem.type === 'tv' ? '📺 Serie' : selectedItem.type === 'drama' ? '🎭 Chino' : selectedItem.type === 'latino-movie' ? '🗣️ Latino' : '🎬 Película'}
-                </span>
-                {selectedItem.year && <span className="modal-lang">{selectedItem.year}</span>}
-                {selectedItem.rating && <span className="modal-lang">⭐ {selectedItem.rating}</span>}
-                {selectedItem.runtime && <span className="modal-lang">⏱️ {selectedItem.runtime}</span>}
-              </div>
-              <h2 className="modal-title">{selectedItem.title}</h2>
-              <p className="modal-summary">{selectedItem.overview}</p>
-
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', margin: '1.25rem 0' }}>
-                <button
-                  type="button"
-                  className="btn-primary"
-                  style={{
-                    flex: 'none',
-                    padding: '0.75rem 1.5rem',
-                    fontSize: '0.95rem',
-                    background: isFavorite(selectedItem.id) ? 'rgba(239, 68, 68, 0.25)' : 'rgba(255, 255, 255, 0.08)',
-                    border: `1px solid ${isFavorite(selectedItem.id) ? '#ef4444' : 'rgba(255, 255, 255, 0.2)'}`,
-                    color: isFavorite(selectedItem.id) ? '#fca5a5' : '#fff',
-                    boxShadow: isFavorite(selectedItem.id) ? '0 0 15px rgba(239, 68, 68, 0.4)' : 'none'
-                  }}
-                  onClick={async () => {
-                    await toggleFavorite(selectedItem);
-                    setSelectedItem({ ...selectedItem });
-                  }}
-                >
-                  {isFavorite(selectedItem.id) ? '❤️ En Mi Lista' : '🤍 Agregar a Mi Lista'}
-                </button>
-
-                <button
-                  type="button"
-                  className="btn-primary"
-                  style={{
-                    flex: 'none',
-                    padding: '0.75rem 1.5rem',
-                    fontSize: '0.95rem',
-                    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                    border: 'none',
-                    color: '#ffffff',
-                    boxShadow: '0 4px 15px rgba(245, 158, 11, 0.45)'
-                  }}
-                  onClick={() => {
-                    const urlToCast = embedUrl || window.location.href;
-                    castWithWebVideoCaster(urlToCast, selectedItem.title);
-                  }}
-                >
-                  📱 Transmitir a TV (Web Video Caster)
-                </button>
-              </div>
-              
-              {/* Actions box with Terabox downloads or info */}
-              <div className="fallback-box">
-                <div>
-                  <strong style={{ color: '#fff', display: 'block', marginBottom: '0.2rem' }}>
-                    {selectedItem.type === 'drama' ? 'Dramas Chinos FAST Stream' : 'Servidor de Descarga Rápida'}
-                  </strong>
-                  <span>
-                    {selectedItem.type === 'drama' 
-                      ? 'Este drama se transmite en vivo a través de servidores externos integrados.' 
-                      : 'Puedes descargar este contenido directamente en alta calidad a tu cuenta de Terabox.'}
-                  </span>
-                </div>
-                {selectedItem.terabox && selectedItem.terabox !== '#' && (
-                  <a 
-                    href={selectedItem.terabox}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-primary"
-                    style={{ flex: 'none', padding: '0.6rem 1.2rem', fontSize: '0.9rem', width: 'auto', alignSelf: 'center', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)' }}
-                  >
-                    📥 Descargar en Terabox
-                  </a>
+            {/* TAB 3: TRÁILER OFICIAL (DONDEVER STYLE) */}
+            {modalTab === 'trailer' && (
+              <div className="modal-trailer-section">
+                {selectedItem.trailerKey ? (
+                  <div className="trailer-player-container">
+                    <iframe
+                      src={`https://www.youtube-nocookie.com/embed/${selectedItem.trailerKey}?autoplay=1`}
+                      title={`Tráiler de ${selectedItem.title}`}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="trailer-iframe"
+                    />
+                  </div>
+                ) : (
+                  <p className="no-data-msg">No hay tráiler oficial disponible en este momento.</p>
                 )}
               </div>
-            </div>
+            )}
+
+            {/* TAB 4: FICHA TÉCNICA Y DETALLES */}
+            {modalTab === 'details' && (
+              <div className="modal-details-section">
+                <div className="details-grid">
+                  {selectedItem.originalTitle && (
+                    <div className="detail-row">
+                      <span className="detail-label">Título Original</span>
+                      <span className="detail-value">{selectedItem.originalTitle}</span>
+                    </div>
+                  )}
+                  {selectedItem.tagline && (
+                    <div className="detail-row">
+                      <span className="detail-label">Lema</span>
+                      <span className="detail-value italic">"{selectedItem.tagline}"</span>
+                    </div>
+                  )}
+                  {selectedItem.releaseDateFull && (
+                    <div className="detail-row">
+                      <span className="detail-label">Fecha de Estreno</span>
+                      <span className="detail-value">{selectedItem.releaseDateFull}</span>
+                    </div>
+                  )}
+                  {selectedItem.runtime && (
+                    <div className="detail-row">
+                      <span className="detail-label">Duración</span>
+                      <span className="detail-value">{selectedItem.runtime}</span>
+                    </div>
+                  )}
+                  {selectedItem.country && (
+                    <div className="detail-row">
+                      <span className="detail-label">País de Origen</span>
+                      <span className="detail-value">{selectedItem.country}</span>
+                    </div>
+                  )}
+                  {selectedItem.genres && selectedItem.genres.length > 0 && (
+                    <div className="detail-row">
+                      <span className="detail-label">Géneros</span>
+                      <span className="detail-value">{selectedItem.genres.join(', ')}</span>
+                    </div>
+                  )}
+                  {selectedItem.rating && (
+                    <div className="detail-row">
+                      <span className="detail-label">Calificación TMDb</span>
+                      <span className="detail-value">⭐ {selectedItem.rating} / 10 {selectedItem.voteCount ? `(${selectedItem.voteCount} votos)` : ''}</span>
+                    </div>
+                  )}
+                  {selectedItem.status && (
+                    <div className="detail-row">
+                      <span className="detail-label">Estado</span>
+                      <span className="detail-value">{selectedItem.status}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
