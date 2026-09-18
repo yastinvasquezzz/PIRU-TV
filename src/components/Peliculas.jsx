@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import Hls from 'hls.js';
 import useDpadNavigation from '../hooks/useDpadNavigation';
 import { SkeletonGrid } from './SkeletonLoader';
 import { saveWatchProgress, toggleFavorite, isFavorite, getWatchHistory } from '../utils/storage';
@@ -16,7 +15,7 @@ const HDR  = { Authorization: `Bearer ${TMDB_KEY}` };
 const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
 const VIMEUS_PARAMS = '&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3';
 
-// ── Servidores 100% en Español (Vimeus Oficial Intacto + Dondever HLS / Uqload / Byse / Vidara) ──
+// ── Servidores 100% Funcionales (Vimeus Oficial Intacto + VidFast / VidLink / MultiEmbed / VidSrc / AutoEmbed) ──
 const SERVERS = [
   {
     id: 'vimeus',
@@ -24,44 +23,61 @@ const SERVERS = [
     lang: 'LAT / ESP',
     langGroup: 'latino',
     badge: '⭐ Oficial',
-    desc: 'Audio Latino y Castellano nativo (Oficial)',
+    desc: 'Audio Latino y Castellano nativo (Oficial Recomendado)',
     quality: 'HD'
   },
   {
-    id: 'dondever_hls',
-    name: 'HLS Directo',
-    lang: 'LAT / ESP',
+    id: 'vidfast',
+    name: 'VidFast',
+    lang: 'MULTI / ESP',
     langGroup: 'latino',
-    badge: '⚡ Nativo',
-    desc: 'Reproductor directo HLS (.m3u8) con Hls.js sin anuncios ni retrasos',
-    quality: '1080p',
-    isHls: true
+    badge: '⚡ Ultra Rápido',
+    desc: 'Servidor CDN de alta velocidad y reproducción inmediata',
+    quality: '1080p'
   },
   {
-    id: 'uqload',
-    name: 'Uqload',
-    lang: 'LAT / ESP',
+    id: 'vidlink',
+    name: 'VidLink Pro',
+    lang: 'MULTI / LAT',
     langGroup: 'latino',
-    badge: '🚀 Rápido',
-    desc: 'Servidor Uqload de alta velocidad en Español',
+    badge: '🌐 Multi-Audio',
+    desc: 'Reproductor con selector de audio Latino/Español en ajustes ⚙️',
+    quality: '1080p'
+  },
+  {
+    id: 'multiembed',
+    name: 'MultiEmbed',
+    lang: 'MULTI / ESP',
+    langGroup: 'latino',
+    badge: '🚀 Multi-Servidor',
+    desc: 'Agregador con menú interno de más de 10 servidores y streams',
     quality: 'HD'
   },
   {
-    id: 'byse',
-    name: 'Byse Player',
-    lang: 'LAT / ESP',
-    langGroup: 'latino',
-    badge: '🛡️ Estable',
-    desc: 'Servidor Byse con pistas de audio en Español',
-    quality: 'HD'
+    id: 'vidsrc_pm',
+    name: 'VidSrc PM',
+    lang: 'MULTI / SUB',
+    langGroup: 'multi',
+    badge: '🛡️ Estable HD',
+    desc: 'Servidor de alta disponibilidad 1080p con subtítulos y audio',
+    quality: '1080p'
   },
   {
-    id: 'vidara',
-    name: 'Vidara / StreamHG',
-    lang: 'LAT / ESP',
-    langGroup: 'latino',
+    id: 'autoembed',
+    name: 'AutoEmbed',
+    lang: 'MULTI / SUB',
+    langGroup: 'multi',
     badge: '🔄 Respaldo',
-    desc: 'Servidor alternativo en Español Latino y Castellano',
+    desc: 'Servidor alternativo de respaldo global',
+    quality: 'HD'
+  },
+  {
+    id: 'vidsrc_me',
+    name: 'VidSrc Me',
+    lang: 'MULTI / SUB',
+    langGroup: 'multi',
+    badge: '🔄 Clásico',
+    desc: 'Servidor clásico de respaldo garantizado',
     quality: 'HD'
   }
 ];
@@ -316,14 +332,6 @@ export default function Peliculas() {
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [selectedEpisode, setSelectedEpisode] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Video element ref for direct HLS stream playback
-  const videoRef = useRef(null);
-
-  // Resolved dynamic streams from Dondever (HLS directo, Uqload, Byse, Vidara)
-  const [resolvedStreams, setResolvedStreams] = useState({}); // { dondever_hls: url, uqload: url, byse: url, vidara: url }
-  const [isResolvingStream, setIsResolvingStream] = useState(false);
-  const [streamAudioLang, setStreamAudioLang] = useState('LAT'); // 'LAT' o 'CAST'
 
   // Doramasflix Latino Movies state
   const [latinoMovies, setLatinoMovies] = useState([]);
@@ -783,7 +791,6 @@ export default function Peliculas() {
     setSelectedSeason(1);
     setSelectedEpisode(1);
     setSelectedServer('vimeus'); // Vimeus is Spanish-first by default
-    setResolvedStreams({});
 
     // If the item doesn't have cast or full details loaded yet, fetch them!
     if (!item.cast || (item.type === 'tv' && !item.seasons)) {
@@ -795,129 +802,7 @@ export default function Peliculas() {
       setIsLoading(false);
     }
 
-    // Resolve Spanish Dondever streams (HLS Directo, Uqload, Byse, Vidara)
-    if (item.type === 'movie') {
-      resolveDondeverStreams(item.title, streamAudioLang);
-    }
   };
-
-  // Helper to resolve Dondever streams by title and audio language
-  const resolveDondeverStreams = async (title, langCode = 'LAT') => {
-    setIsResolvingStream(true);
-    try {
-      // 1. Search movie on dondever
-      const searchRes = await fetch(`https://dondever.net/?s=${encodeURIComponent(title)}`, {
-        headers: { 'User-Agent': 'Mozilla/5.0' }
-      });
-      if (!searchRes.ok) throw new Error('Search failed');
-      const searchHtml = await searchRes.text();
-      const match = searchHtml.match(/href="(https:\/\/dondever\.net\/movies\/[^"]+)"/);
-      if (!match) {
-        console.log('No movie on dondever for:', title);
-        return;
-      }
-      const movieUrl = match[1];
-
-      // 2. Fetch movie page to get sources payload
-      const pageRes = await fetch(movieUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-      const pageHtml = await pageRes.text();
-      const scriptMatch = pageHtml.match(/<script type="application\/json" data-nt-sources>([\s\S]*?)<\/script>/);
-      if (!scriptMatch) return;
-      const sourcesData = JSON.parse(scriptMatch[1]);
-      const postId = sourcesData.post;
-      const groups = sourcesData.groups || [];
-
-      // Find target audio group (LAT or CAST)
-      const targetGroup = groups.find(g => g.code === langCode) || groups[0];
-      if (!targetGroup) return;
-
-      const serversList = targetGroup.servers || [];
-      const newResolved = {};
-
-      // Resolve each server in target group
-      for (const srv of serversList) {
-        const srvName = (srv.name || '').toLowerCase();
-        // Server 1: Direct HLS or first iframe
-        if (srv.index === 0 || srvName === 'vidara') {
-          try {
-            const resHls = await fetch('https://dondever.net/wp-json/nt/v1/resolve', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Referer': movieUrl },
-              body: JSON.stringify({ post: postId, index: srv.index, fresco: 0 })
-            });
-            if (resHls.ok) {
-              const dataHls = await resHls.json();
-              if (dataHls.ok && dataHls.kind === 'hls' && dataHls.url) {
-                newResolved.dondever_hls = dataHls.url;
-              } else if (dataHls.iframe) {
-                newResolved.vidara = dataHls.iframe;
-              }
-            }
-          } catch (e) {
-            console.warn('Resolve index error:', e);
-          }
-        }
-
-        // Server Uqload / Byse / StreamHG iframe resolver
-        if (srv.index > 0) {
-          try {
-            const resMarco = await fetch(`https://dondever.net/wp-json/nt/v1/marco?post=${postId}&index=${srv.index}`, {
-              headers: { 'Referer': movieUrl }
-            });
-            if (resMarco.ok) {
-              const dataMarco = await resMarco.json();
-              if (dataMarco.ok && dataMarco.iframe) {
-                if (srvName.includes('uqload')) {
-                  newResolved.uqload = dataMarco.iframe;
-                } else if (srvName.includes('byse')) {
-                  newResolved.byse = dataMarco.iframe;
-                } else if (srvName.includes('streamhg') || srvName.includes('vidara')) {
-                  newResolved.vidara = dataMarco.iframe;
-                }
-              }
-            }
-          } catch (e) {
-            console.warn('Marco error:', e);
-          }
-        }
-      }
-
-      setResolvedStreams(prev => ({ ...prev, ...newResolved }));
-    } catch (e) {
-      console.warn('Dondever resolve error:', e);
-    } finally {
-      setIsResolvingStream(false);
-    }
-  };
-
-  // Attach Hls.js to video element when playing HLS direct stream
-  useEffect(() => {
-    if (!isPlaying) return;
-    const isHls = selectedServer === 'dondever_hls';
-    const streamUrl = resolvedStreams.dondever_hls;
-
-    if (isHls && streamUrl && videoRef.current) {
-      const video = videoRef.current;
-      if (Hls.isSupported()) {
-        const hls = new Hls({
-          enableWorker: true,
-          lowLatencyMode: true,
-        });
-        hls.loadSource(streamUrl);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          video.play().catch(e => console.warn('AutoPlay prevented:', e));
-        });
-        return () => {
-          hls.destroy();
-        };
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        // Native Safari / iOS / Smart TV HLS
-        video.src = streamUrl;
-        video.play().catch(e => console.warn('AutoPlay prevented:', e));
-      }
-    }
-  }, [isPlaying, selectedServer, resolvedStreams.dondever_hls]);
 
   // Get total episodes in selected season
   const episodesInSelectedSeason = useMemo(() => {
@@ -955,13 +840,56 @@ export default function Peliculas() {
       return `https://vimeus.com/e/${kind}?tmdb=${id}&se=${selectedSeason}&ep=${selectedEpisode}${vk}${VIMEUS_PARAMS}`;
     }
 
-    // ── SERVIDORES EN ESPAÑOL RESUELTOS DINÁMICAMENTE (Uqload, Byse, Vidara) ──
-    if (resolvedStreams[selectedServer]) {
-      return resolvedStreams[selectedServer];
+    // ── VIDFAST (Ultra Rápido 1080p CDN) ──
+    if (selectedServer === 'vidfast') {
+      if (selectedItem.type === 'movie') {
+        return `https://vidfast.pro/movie/${id}`;
+      }
+      return `https://vidfast.pro/tv/${id}/${selectedSeason}/${selectedEpisode}`;
+    }
+
+    // ── VIDLINK PRO (Multi-Audio con Español / Latino) ──
+    if (selectedServer === 'vidlink') {
+      if (selectedItem.type === 'movie') {
+        return `https://vidlink.pro/movie/${id}?multiLang=true`;
+      }
+      return `https://vidlink.pro/tv/${id}/${selectedSeason}/${selectedEpisode}?multiLang=true`;
+    }
+
+    // ── MULTIEMBED (Multi-Servidor con selector interno) ──
+    if (selectedServer === 'multiembed') {
+      if (selectedItem.type === 'movie') {
+        return `https://multiembed.mov/?video_id=${id}&tmdb=1`;
+      }
+      return `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${selectedSeason}&e=${selectedEpisode}`;
+    }
+
+    // ── VIDSRC PM (Estable HD 1080p) ──
+    if (selectedServer === 'vidsrc_pm') {
+      if (selectedItem.type === 'movie') {
+        return `https://vidsrc.pm/embed/movie/${id}`;
+      }
+      return `https://vidsrc.pm/embed/tv/${id}/${selectedSeason}/${selectedEpisode}`;
+    }
+
+    // ── AUTOEMBED (Respaldo) ──
+    if (selectedServer === 'autoembed') {
+      if (selectedItem.type === 'movie') {
+        return `https://autoembed.co/movie/tmdb/${id}`;
+      }
+      return `https://autoembed.co/tv/tmdb/${id}-${selectedSeason}-${selectedEpisode}`;
+    }
+
+    // ── VIDSRC ME (Clásico) ──
+    if (selectedServer === 'vidsrc_me') {
+      if (selectedItem.type === 'movie') {
+        return `https://vidsrc.me/embed/movie?tmdb=${id}`;
+      }
+      return `https://vidsrc.me/embed/tv?tmdb=${id}&season=${selectedSeason}&episode=${selectedEpisode}`;
     }
 
     return '';
-  }, [selectedItem, selectedServer, selectedSeason, selectedEpisode, activeLatinoServer, resolvedStreams]);
+  }, [selectedItem, selectedServer, selectedSeason, selectedEpisode, activeLatinoServer]);
 
   return (
     <div className="peliculas-container netflix-view">
@@ -1567,24 +1495,13 @@ export default function Peliculas() {
             {/* Video player section or Preview */}
             <div className="movie-player-container">
               {isPlaying ? (
-                selectedServer === 'dondever_hls' && resolvedStreams.dondever_hls ? (
-                  <video
-                    ref={videoRef}
-                    className="player-video"
-                    controls
-                    autoPlay
-                    playsInline
-                    style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, background: '#000' }}
-                  />
-                ) : (
-                  <iframe
-                    src={embedUrl}
-                    className="player-iframe"
-                    allowFullScreen
-                    allow="autoplay; encrypted-media"
-                    title={selectedItem.title}
-                  />
-                )
+                <iframe
+                  src={embedUrl}
+                  className="player-iframe"
+                  allowFullScreen
+                  allow="autoplay; encrypted-media; picture-in-picture"
+                  title={selectedItem.title}
+                />
               ) : (
                 <button 
                   type="button"
@@ -1661,65 +1578,31 @@ export default function Peliculas() {
                           {selectedItem.type === 'tv' && ` - Temp. ${selectedSeason}, Ep. ${selectedEpisode}`}
                         </span>
                       </div>
-                      {/* Selector de Audio y Calidad 100% Español */}
-                      <div className="server-lang-filter-bar" style={{ margin: 0, padding: '0.3rem 0.6rem' }}>
-                        <span className="server-lang-filter-title">Audio:</span>
-                        <button 
-                          type="button"
-                          className={`server-lang-btn ${streamAudioLang === 'LAT' ? 'active' : ''}`}
-                          onClick={() => {
-                            setStreamAudioLang('LAT');
-                            if (selectedItem?.type === 'movie') {
-                              resolveDondeverStreams(selectedItem.title, 'LAT');
-                            }
-                          }}
-                        >
-                          🇲🇽 Latino
-                        </button>
-                        <button 
-                          type="button"
-                          className={`server-lang-btn ${streamAudioLang === 'CAST' ? 'active' : ''}`}
-                          onClick={() => {
-                            setStreamAudioLang('CAST');
-                            if (selectedItem?.type === 'movie') {
-                              resolveDondeverStreams(selectedItem.title, 'CAST');
-                            }
-                          }}
-                        >
-                          🇪🇸 Castellano
-                        </button>
-                        {isResolvingStream && (
-                          <span style={{ fontSize: '0.75rem', color: '#fbbf24', marginLeft: '0.5rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                            <span className="pulse-dot"></span> Obteniendo streams...
-                          </span>
-                        )}
+                      {/* Informacion de Servidores y Audio */}
+                      <div className="server-lang-filter-bar" style={{ margin: 0, padding: '0.35rem 0.75rem', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
+                        <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                          💡 <span><strong>Tip:</strong> En <strong>Vimeus</strong> y <strong>VidLink</strong> puedes cambiar audio/idioma en ⚙️.</span>
+                        </span>
                       </div>
                     </div>
 
                     <div className="server-selector" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
-                      {SERVERS.map(srv => {
-                        const isAvailable = srv.id === 'vimeus' || !!resolvedStreams[srv.id];
-                        return (
-                          <button 
-                            key={srv.id}
-                            type="button"
-                            className={`server-btn ${selectedServer === srv.id ? 'active' : ''}`}
-                            onClick={() => { 
-                              setSelectedServer(srv.id); 
-                              setIsPlaying(true); 
-                            }}
-                            title={srv.desc}
-                            style={{ opacity: isAvailable ? 1 : 0.65 }}
-                          >
-                            <span style={{ fontWeight: '700' }}>{srv.name}</span>
-                            <span className="server-btn-lang">{srv.lang}</span>
-                            {srv.badge && <span className="server-btn-badge">{srv.badge}</span>}
-                            {srv.id === 'dondever_hls' && resolvedStreams.dondever_hls && (
-                              <span style={{ fontSize: '0.65rem', color: '#10b981', fontWeight: 'bold' }}>● Listo</span>
-                            )}
-                          </button>
-                        );
-                      })}
+                      {SERVERS.map(srv => (
+                        <button 
+                          key={srv.id}
+                          type="button"
+                          className={`server-btn ${selectedServer === srv.id ? 'active' : ''}`}
+                          onClick={() => { 
+                            setSelectedServer(srv.id); 
+                            setIsPlaying(true); 
+                          }}
+                          title={srv.desc}
+                        >
+                          <span style={{ fontWeight: '700' }}>{srv.name}</span>
+                          <span className="server-btn-lang">{srv.lang}</span>
+                          {srv.badge && <span className="server-btn-badge">{srv.badge}</span>}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 )}
