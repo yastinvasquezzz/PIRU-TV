@@ -1257,7 +1257,7 @@ export default function Peliculas() {
           </footer>
         </>
       ) : activeCategory === 'Search' ? (
-        <div className="search-results-section" style={{ padding: '5.5rem 3.5rem 3rem' }}>
+        <div className="search-results-section" style={{ padding: '7.5rem 3.5rem 3rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
             <button
               onClick={() => {
@@ -1361,7 +1361,7 @@ export default function Peliculas() {
         </div>
       ) : (
         // CATEGORY VIEW GRID
-        <div className="category-results" style={{ padding: '5.5rem 3.5rem 3rem' }}>
+        <div className="category-results" style={{ padding: '7.5rem 3.5rem 3rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
             <button
               onClick={() => {
