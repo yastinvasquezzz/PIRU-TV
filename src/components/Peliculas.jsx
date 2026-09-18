@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Hls from 'hls.js';
 import useDpadNavigation from '../hooks/useDpadNavigation';
 import { SkeletonGrid } from './SkeletonLoader';
-import { saveWatchProgress, toggleFavorite, isFavorite } from '../utils/storage';
+import { saveWatchProgress, toggleFavorite, isFavorite, getWatchHistory } from '../utils/storage';
 import { castWithWebVideoCaster } from '../utils/wvcCast';
 import catalogData from '../data/catalog.json';
 import dramasData from '../data/dramas.json';
@@ -145,6 +145,68 @@ const DISCOVER_MAP = {
   'Anime': '/discover/tv?with_genres=16&with_original_language=ja'
 };
 
+// Fallback Curated Continue Watching Items (Stitch Netflix Spec)
+const CURATED_CONTINUE = [
+  {
+    id: 634649,
+    title: 'Spider-Man: Brand New Day',
+    poster: 'https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg',
+    backdrop: 'https://image.tmdb.org/t/p/original/14QbnygCuTO0vl7CAFmPf1fgZfV.jpg',
+    type: 'movie',
+    progress: 75,
+    remaining: 'Quedan 32 min'
+  },
+  {
+    id: 61664,
+    title: 'Colony',
+    poster: 'https://image.tmdb.org/t/p/w500/2yvh1JzNf9FshZ1d86uBvU6a24v.jpg',
+    backdrop: 'https://image.tmdb.org/t/p/original/8Y43POKjjKDGI9MH89NW0NAAc8U.jpg',
+    type: 'tv',
+    progress: 50,
+    remaining: 'T1:E4'
+  },
+  {
+    id: 30984,
+    title: 'Bleach: Thousand-Year Blood War',
+    poster: 'https://image.tmdb.org/t/p/w500/2Eewgp7o5AU1xCjrXY9ehasBA7P.jpg',
+    backdrop: 'https://image.tmdb.org/t/p/original/mDFNs9a51m4nffD2kLgAOx8m8mB.jpg',
+    type: 'tv',
+    progress: 80,
+    remaining: 'E18'
+  },
+  {
+    id: 1184918,
+    title: 'The Mongoose',
+    poster: 'https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg',
+    backdrop: 'https://image.tmdb.org/t/p/original/m4TUa6Y3rU4YvK91A39bLp0j7Xg.jpg',
+    type: 'movie',
+    progress: 35,
+    remaining: 'Quedan 54 min'
+  },
+  {
+    id: 634649,
+    title: 'Spider-Man: No Way Home',
+    poster: 'https://image.tmdb.org/t/p/w500/uJYY4RAA1jhMbf3ZzQWuhpE86b.jpg',
+    backdrop: 'https://image.tmdb.org/t/p/original/iQFcwSGbZXMkeyKrxbPnwnRo5fl.jpg',
+    type: 'movie',
+    progress: 70,
+    remaining: 'Quedan 21 min'
+  }
+];
+
+const CATEGORY_DISPLAY_TITLES = {
+  'Acción': 'Acción trepidante',
+  'Animación': 'Anime y Animación destacada',
+  'Comedia': 'Comedias recomendadas',
+  'Ciencia Ficción': 'Ciencia ficción y Fantasía',
+  'Suspenso / Thriller': 'Thrillers de suspenso',
+  'Drama': 'Dramas y Emociones profundas',
+  'Marvel y DC': 'Universo Marvel & DC',
+  'Series': 'Series populares',
+  'Anime': 'Anime de temporada',
+  '🗣️ Películas Latino': 'Películas en Audio Latino'
+};
+
 // Hero and Top 5 items from cinroom1
 const HERO_REF = { id: 1273221, type: 'movie' }; // Mortal Kombat II
 const TOP5_REFS = [
@@ -160,6 +222,8 @@ export default function Peliculas() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [watchHistory, setWatchHistory] = useState(() => getWatchHistory());
   
   const [tmdbCache, setTmdbCache] = useState(() => {
     try {
@@ -179,6 +243,48 @@ export default function Peliculas() {
   });
   const [categoryPages, setCategoryPages] = useState({}); // Current loaded page for each category
   const [selectedItem, setSelectedItem] = useState(null);
+
+  // Combine real user watch history with curated items
+  const continueWatchingItems = useMemo(() => {
+    const list = [...watchHistory];
+    for (const c of CURATED_CONTINUE) {
+      if (list.length >= 6) break;
+      if (!list.some(item => String(item.id) === String(c.id))) {
+        list.push(c);
+      }
+    }
+    return list.slice(0, 6);
+  }, [watchHistory]);
+
+  // Listen to header events (Search, Home, Category)
+  useEffect(() => {
+    const handleReset = () => {
+      setActiveCategory('Home');
+      setSearchTerm('');
+      setSelectedItem(null);
+      setIsPlaying(false);
+    };
+    const handleSearch = () => {
+      setActiveCategory('Search');
+      setSelectedItem(null);
+      setIsPlaying(false);
+    };
+    const handleCategory = (e) => {
+      if (e.detail) {
+        setActiveCategory(e.detail);
+        setSelectedItem(null);
+        setIsPlaying(false);
+      }
+    };
+    window.addEventListener('reset-piru-home', handleReset);
+    window.addEventListener('open-piru-search', handleSearch);
+    window.addEventListener('open-piru-category', handleCategory);
+    return () => {
+      window.removeEventListener('reset-piru-home', handleReset);
+      window.removeEventListener('open-piru-search', handleSearch);
+      window.removeEventListener('open-piru-category', handleCategory);
+    };
+  }, []);
 
   // Persist caches to sessionStorage for 0ms instant category switches
   useEffect(() => {
@@ -335,7 +441,7 @@ export default function Peliculas() {
         const trendRes = await fetch(`${TMDB}/trending/movie/day?language=es-ES`, { headers: HDR });
         if (trendRes.ok) {
           const trendData = await trendRes.json();
-          const trendingMovies = (trendData.results || []).slice(0, 6);
+          const trendingMovies = (trendData.results || []).slice(0, 10);
           if (trendingMovies.length > 0) {
             const dynamicDetails = await Promise.all(
               trendingMovies.map(m => fetchItemDetails(m.id, 'movie'))
@@ -344,7 +450,7 @@ export default function Peliculas() {
             if (cleanDynamic.length > 0) {
               setHeroItem(cleanDynamic[0]);
               setHeroList(cleanDynamic);
-              setTop5Items(cleanDynamic.slice(0, 5));
+              setTop5Items(cleanDynamic.slice(0, 10));
               heroesLoaded = true;
             }
           }
@@ -634,6 +740,12 @@ export default function Peliculas() {
 
   // Open modal handler
   const handleOpenItem = async (item) => {
+    // Record watch progress
+    if (item && item.id) {
+      saveWatchProgress(item);
+      setWatchHistory(getWatchHistory());
+    }
+
     // Latino movie: load doramasflix links
     if (item.type === 'latino-movie') {
       setSelectedItem(item);
@@ -852,54 +964,342 @@ export default function Peliculas() {
   }, [selectedItem, selectedServer, selectedSeason, selectedEpisode, activeLatinoServer, resolvedStreams]);
 
   return (
-    <div className="peliculas-container">
-      <div className="section-header">
-        <h1 className="section-title">Películas y Series</h1>
-        <div className="controls-group">
-          <div className="search-container">
-            <span className="search-icon">🔍</span>
-            <input
-              type="text"
-              placeholder="Buscar cualquier peli o serie del mundo..."
-              className="search-input"
-              value={searchTerm}
-              onChange={(e) => {
-                setSelectedItem(null);
-                setIsPlaying(false);
-                setSearchTerm(e.target.value);
-                if (e.target.value.trim() !== '') {
-                  setActiveCategory('Search');
-                } else {
-                  setActiveCategory('Home');
-                }
-              }}
-            />
+    <div className="peliculas-container netflix-view">
+      {activeCategory === 'Home' ? (
+        <>
+          {/* Netflix Full-Bleed Hero Billboard */}
+          {heroItem && (
+            <section className="netflix-hero-billboard">
+              <div 
+                className="netflix-hero-bg"
+                style={{ backgroundImage: `url(${heroItem.backdrop || heroItem.poster})` }}
+              />
+              <div className="netflix-vignette-bottom" />
+              <div className="netflix-vignette-left" />
+              <div className="netflix-vignette-top" />
+
+              <div className="netflix-hero-content">
+                <div className="netflix-rank-badge">
+                  <div className="netflix-top10-tag">
+                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", fontSize: '15px' }}>
+                      local_fire_department
+                    </span>
+                    TOP 10
+                  </div>
+                  <span className="netflix-rank-text">N.º {heroIndex + 1} en películas hoy</span>
+                </div>
+
+                <h1 className="netflix-hero-title">{heroItem.title}</h1>
+
+                <div className="netflix-meta-row">
+                  <span className="netflix-match">
+                    {heroItem.rating ? `${Math.round(heroItem.rating * 10)}% de coincidencia` : '98% de coincidencia'}
+                  </span>
+                  <span>{heroItem.year || '2026'}</span>
+                  <span className="netflix-badge-age">16+</span>
+                  <span>{heroItem.runtime || '1 h 48 min'}</span>
+                  <span className="netflix-badge-tech">4K ULTRA HD</span>
+                  <span className="netflix-badge-tech">5.1</span>
+                </div>
+
+                <p className="netflix-hero-synopsis">{heroItem.overview}</p>
+
+                <div className="netflix-hero-actions">
+                  <button 
+                    className="btn-netflix-play" 
+                    onClick={() => {
+                      handleOpenItem(heroItem);
+                      setIsPlaying(true);
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", fontSize: '26px' }}>
+                      play_arrow
+                    </span>
+                    Reproducir
+                  </button>
+
+                  <button 
+                    className="btn-netflix-info" 
+                    onClick={() => {
+                      handleOpenItem(heroItem);
+                      setModalTab('details');
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>
+                      info
+                    </span>
+                    Más información
+                  </button>
+
+                  <button 
+                    className="btn-netflix-round" 
+                    title={isFavorite(heroItem.id) ? 'En Mi Lista' : 'Añadir a Mi Lista'}
+                    onClick={async () => {
+                      await toggleFavorite(heroItem);
+                      setHeroItem({ ...heroItem });
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '22px' }}>
+                      {isFavorite(heroItem.id) ? 'check' : 'add'}
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Billboard Controls: Sound & Maturity Rating */}
+              <div className="netflix-right-controls">
+                <button 
+                  className="btn-netflix-round" 
+                  style={{ width: '36px', height: '36px' }}
+                  onClick={() => setIsMuted(prev => !prev)}
+                  title={isMuted ? 'Activar audio' : 'Desactivar audio'}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    {isMuted ? 'volume_off' : 'volume_up'}
+                  </span>
+                </button>
+                <div className="netflix-maturity-tag">
+                  16+
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Netflix Content Rows Section */}
+          <div className="netflix-rows-container">
+            {/* Row 0: Continuar viendo para Ti (16:9 Landscape with Progress Bar) */}
+            {continueWatchingItems.length > 0 && (
+              <section className="netflix-row-section">
+                <div className="netflix-row-header">
+                  <h2 className="netflix-row-title">
+                    Continuar viendo
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#a3a3a3' }}>
+                      chevron_right
+                    </span>
+                  </h2>
+                </div>
+                <div className="netflix-continue-grid">
+                  {continueWatchingItems.map((item) => (
+                    <div 
+                      key={`continue-${item.id}`} 
+                      className="netflix-continue-card"
+                      onClick={() => handleOpenItem(item)}
+                    >
+                      <div className="netflix-continue-thumb">
+                        <img src={item.backdrop || item.poster} alt={item.title} />
+                        <div className="netflix-continue-overlay">
+                          <div className="netflix-center-play">
+                            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", fontSize: '24px' }}>
+                              play_arrow
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="netflix-progress-bar">
+                        <div className="netflix-progress-fill" style={{ width: `${item.progress || 65}%` }} />
+                      </div>
+                      <div className="netflix-continue-info">
+                        <span className="netflix-continue-title">{item.title}</span>
+                        <span className="netflix-continue-sub">
+                          {item.remaining || (item.type === 'tv' ? `T${selectedSeason}:E${selectedEpisode}` : 'Quedan 35 min')}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Row 1: Las 10 películas más populares hoy en PiruTV (Billboard 1..10) */}
+            {top5Items.length > 0 && (
+              <section className="netflix-row-section">
+                <div className="netflix-row-header">
+                  <h2 className="netflix-row-title">
+                    Las 10 películas más populares hoy en PiruTV
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#a3a3a3' }}>
+                      chevron_right
+                    </span>
+                  </h2>
+                </div>
+                <div className="netflix-top10-grid">
+                  {top5Items.map((item, index) => (
+                    <div 
+                      key={`top10-${item.type}-${item.id}`} 
+                      className="netflix-top10-item"
+                      onClick={() => handleOpenItem(item)}
+                    >
+                      <span className="netflix-top-num">{index + 1}</span>
+                      <div className="netflix-top-poster">
+                        <img src={item.poster} alt={item.title} />
+                        <div className="netflix-card-top10-badge">TOP 10</div>
+                        <div className="netflix-card-lang-strip">
+                          <span className="netflix-pill-lat">LAT</span>
+                          <span className="netflix-pill-cast">CAST</span>
+                          <span className="netflix-pill-sub">SUB</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Curated Category Content Rows */}
+            {Object.keys(catalogData).map((category) => {
+              const items = homeCategoriesData[category] || [];
+              if (items.length === 0) return null;
+              const displayTitle = CATEGORY_DISPLAY_TITLES[category] || category;
+              return (
+                <section key={category} className="netflix-row-section">
+                  <div className="netflix-row-header">
+                    <h2 
+                      className="netflix-row-title"
+                      onClick={() => {
+                        setSelectedItem(null);
+                        setIsPlaying(false);
+                        setActiveCategory(category);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                    >
+                      {displayTitle}
+                      <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#a3a3a3' }}>
+                        chevron_right
+                      </span>
+                    </h2>
+                    <button 
+                      className="netflix-explore-all"
+                      onClick={() => {
+                        setSelectedItem(null);
+                        setIsPlaying(false);
+                        setActiveCategory(category);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                    >
+                      Explorar todos
+                    </button>
+                  </div>
+                  <div className="netflix-category-scroll">
+                    {items.map((item) => (
+                      <button 
+                        type="button"
+                        key={`${item.type}-${item.id}`} 
+                        className="netflix-poster-card"
+                        onClick={() => handleOpenItem(item)}
+                      >
+                        <div className="netflix-poster-img-wrap">
+                          <img src={item.poster} alt={item.title} loading="lazy" />
+                          <div className="netflix-quality-tag">4K</div>
+                          <div className="netflix-card-lang-strip">
+                            <span className="netflix-pill-lat">LAT</span>
+                            <span className="netflix-pill-cast">CAST</span>
+                            <span className="netflix-pill-sub">SUB</span>
+                          </div>
+                        </div>
+                        <span className="netflix-poster-title">{item.title}</span>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
           </div>
-        </div>
-      </div>
 
-      {/* Categories badges */}
-      <div className="filters-wrapper">
-        {categories.map(cat => (
-          <button
-            key={cat}
-            className={`filter-badge ${activeCategory === cat ? 'active' : ''}`}
-            onClick={() => {
-              setSelectedItem(null);
-              setIsPlaying(false);
-              setActiveCategory(cat);
-              setSearchTerm('');
-            }}
-          >
-            {cat === 'Home' ? '🏠 Inicio' : cat}
-          </button>
-        ))}
-      </div>
+          {/* Netflix Footer */}
+          <footer className="netflix-footer">
+            <div className="netflix-footer-inner">
+              <div className="netflix-social-links">
+                <a href="#" title="Facebook"><span className="material-symbols-outlined">public</span></a>
+                <a href="#" title="Instagram"><span className="material-symbols-outlined">photo_camera</span></a>
+                <a href="#" title="Twitter / X"><span className="material-symbols-outlined">alternate_email</span></a>
+                <a href="#" title="YouTube"><span className="material-symbols-outlined">smart_display</span></a>
+              </div>
 
-      {/* Render based on mode (Search vs Category vs Home Dashboard) */}
-      {activeCategory === 'Search' ? (
-        <div className="search-results-section">
-          <h2 className="dashboard-section-title">Resultados globales en PIRU TV</h2>
+              <div className="netflix-footer-grid">
+                <div className="netflix-footer-col">
+                  <a href="#">Audio descriptivo</a>
+                  <a href="#">Relaciones con inversionistas</a>
+                  <a href="#">Avisos legales</a>
+                  <a href="#">Preferencias de cookies</a>
+                </div>
+                <div className="netflix-footer-col">
+                  <a href="#">Centro de ayuda</a>
+                  <a href="#">Empleo</a>
+                  <a href="#">Términos de uso</a>
+                  <a href="#">Información corporativa</a>
+                </div>
+                <div className="netflix-footer-col">
+                  <a href="#">Tarjetas de regalo</a>
+                  <a href="#">Tienda PiruTV</a>
+                  <a href="#">Privacidad</a>
+                  <a href="#">Contáctanos</a>
+                </div>
+                <div className="netflix-footer-col">
+                  <a href="#">Prensa de medios</a>
+                  <a href="#">Dispositivos compatibles</a>
+                  <a href="#">Prueba de velocidad</a>
+                  <a href="#">Garantía legal</a>
+                </div>
+              </div>
+
+              <div className="netflix-footer-bottom">
+                <div className="netflix-lang-btn">
+                  <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>language</span>
+                  <span>Español</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>expand_more</span>
+                </div>
+                <button className="netflix-service-code-btn">Código de servicio</button>
+              </div>
+
+              <p className="netflix-copyright">
+                © 1997-2026 PiruTV Streaming Entertainment Inc. Todos los derechos reservados.
+              </p>
+            </div>
+          </footer>
+        </>
+      ) : activeCategory === 'Search' ? (
+        <div className="search-results-section" style={{ padding: '5.5rem 3.5rem 3rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <button
+              onClick={() => {
+                setActiveCategory('Home');
+                setSearchTerm('');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              style={{
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                color: '#fff',
+                padding: '0.6rem 1.2rem',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: '700',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_back</span>
+              Volver al Inicio
+            </button>
+
+            <div className="search-container" style={{ margin: 0, maxWidth: '400px', width: '100%' }}>
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                placeholder="Buscar película o serie..."
+                className="search-input"
+                value={searchTerm}
+                autoFocus
+                onChange={(e) => {
+                  setSelectedItem(null);
+                  setIsPlaying(false);
+                  setSearchTerm(e.target.value);
+                }}
+              />
+            </div>
+          </div>
+
+          <h2 className="dashboard-section-title">Resultados de búsqueda</h2>
           {isSearching ? (
             <div className="empty-state">
               <div className="player-loading-spinner" style={{ position: 'relative', margin: '0 auto 1.5rem' }}></div>
@@ -952,181 +1352,75 @@ export default function Peliculas() {
               ) : (
                 <div className="empty-state">
                   <span className="empty-icon">🔍</span>
-                  <h3 className="empty-title">No se encontraron películas o series</h3>
+                  <h3 className="empty-title">No se encontraron resultados</h3>
                   <p>Prueba buscando otro título en español o inglés.</p>
                 </div>
               )}
             </div>
           )}
         </div>
-      ) : activeCategory === 'Home' ? (
-        // DASHBOARD HOME STATE (PREMIUM DIRECTORY)
-        <div className="dashboard-home">
-          {/* Hero Banner with Dynamic Auto-Rotation */}
-          {heroItem && (
-            <div 
-              className="hero-banner"
-              style={{ backgroundImage: `url(${heroItem.backdrop || heroItem.poster})` }}
-            >
-              <div className="hero-content">
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.6rem' }}>
-                  <span className="hero-tag">🔥 Trending #{heroIndex + 1}</span>
-                  {heroItem.rating && (
-                    <span className="hero-tag" style={{ background: 'rgba(255, 255, 255, 0.15)', border: '1px solid rgba(255, 255, 255, 0.2)' }}>
-                      ⭐ {heroItem.rating}
-                    </span>
-                  )}
-                  {heroItem.year && (
-                    <span className="hero-tag" style={{ background: 'rgba(255, 255, 255, 0.15)', border: '1px solid rgba(255, 255, 255, 0.2)' }}>
-                      {heroItem.year}
-                    </span>
-                  )}
-                </div>
-                <h2 className="hero-title">{heroItem.title}</h2>
-                <p className="hero-overview">{heroItem.overview}</p>
-                <div className="hero-buttons">
-                  <button className="btn-hero-play" onClick={() => handleOpenItem(heroItem)}>
-                    <span>▶ Ver ahora</span>
-                  </button>
-                  <button className="btn-hero-info" onClick={() => handleOpenItem(heroItem)}>
-                    <span>ℹ️ Más info</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Slide Dots Controls */}
-              {heroList.length > 1 && (
-                <div style={{
-                  position: 'absolute',
-                  bottom: '1.5rem',
-                  right: '2rem',
-                  zIndex: 10,
-                  display: 'flex',
-                  gap: '0.5rem',
-                  alignItems: 'center'
-                }}>
-                  {heroList.map((h, i) => (
-                    <button
-                      key={h.id || i}
-                      onClick={() => {
-                        setHeroIndex(i);
-                        setHeroItem(heroList[i]);
-                      }}
-                      style={{
-                        width: heroIndex === i ? '24px' : '10px',
-                        height: '10px',
-                        borderRadius: '5px',
-                        border: 'none',
-                        background: heroIndex === i ? '#e50914' : 'rgba(255, 255, 255, 0.4)',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease'
-                      }}
-                      title={h.title}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Top 5 Películas de Hoy (Giant Numbers) */}
-          {top5Items.length > 0 && (
-            <div className="dashboard-section">
-              <h2 className="dashboard-section-title">Top 5 Películas de Hoy</h2>
-              <div className="top5-row">
-                {top5Items.map((item, index) => (
-                  <button 
-                    type="button"
-                    key={`${item.type}-${item.id}`} 
-                    className="top5-card"
-                    onClick={() => handleOpenItem(item)}
-                    style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'inherit', cursor: 'pointer' }}
-                  >
-                    <div className="top5-number-container">{index + 1}</div>
-                    <div className="top5-poster-container">
-                      <img 
-                        src={item.poster} 
-                        alt={item.title} 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Category Horizontal Lists with Ver más → button */}
-          {Object.keys(catalogData).map((category) => {
-            const items = homeCategoriesData[category] || [];
-            if (items.length === 0) return null;
-            return (
-              <div key={category} className="dashboard-section">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                  <h2 className="dashboard-section-title" style={{ margin: 0, border: 'none' }}>
-                    {category}
-                  </h2>
-                  <button
-                    className="server-btn active"
-                    style={{ fontSize: '0.8rem', padding: '0.4rem 1rem', cursor: 'pointer' }}
-                    onClick={() => {
-                      setSelectedItem(null);
-                      setIsPlaying(false);
-                      setActiveCategory(category);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                  >
-                    Ver más →
-                  </button>
-                </div>
-                <div className="carousel-row">
-                  <div className="carousel-scroll">
-                    {items.map((item) => (
-                      <button 
-                        type="button"
-                        key={`${item.type}-${item.id}`} 
-                        className="carousel-item-card media-card"
-                        onClick={() => handleOpenItem(item)}
-                        style={{ textAlign: 'left', font: 'inherit', color: 'inherit', padding: 0 }}
-                      >
-                        <div className="card-thumbnail-wrapper" style={{ aspectRatio: '2/3', width: '100%' }}>
-                          <img 
-                            src={item.poster} 
-                            alt={item.title} 
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          />
-                          <button
-                            type="button"
-                            className="play-hover-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleOpenItem(item);
-                            }}
-                            style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer' }}
-                          >
-                            <div className="play-icon">▶</div>
-                          </button>
-                          <span className="card-quality-badge">HD</span>
-                          <div className="card-lang-badges">
-                            <span className="badge-lang badge-lat">LAT</span>
-                            <span className="badge-lang badge-cast">CAST</span>
-                            <span className="badge-lang badge-sub">SUB</span>
-                          </div>
-                        </div>
-                        <div className="card-info" style={{ width: '100%', padding: '0.75rem 0.6rem 0.6rem' }}>
-                          <h4 className="card-title" style={{ fontSize: '0.88rem', margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{item.title}</h4>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
       ) : (
         // CATEGORY VIEW GRID
-        <div className="category-results">
+        <div className="category-results" style={{ padding: '5.5rem 3.5rem 3rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <button
+              onClick={() => {
+                setActiveCategory('Home');
+                setSearchTerm('');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              style={{
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                color: '#fff',
+                padding: '0.6rem 1.2rem',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: '700',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_back</span>
+              Volver al Inicio
+            </button>
+
+            <div className="search-container" style={{ margin: 0, maxWidth: '350px', width: '100%' }}>
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                placeholder="Buscar en esta categoría..."
+                className="search-input"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSelectedItem(null);
+                  setIsPlaying(false);
+                  setSearchTerm(e.target.value);
+                  if (e.target.value.trim() !== '') {
+                    setActiveCategory('Search');
+                  }
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="filters-wrapper" style={{ marginBottom: '2rem' }}>
+            {categories.map(cat => (
+              <button
+                key={cat}
+                className={`filter-badge ${activeCategory === cat ? 'active' : ''}`}
+                onClick={() => {
+                  setSelectedItem(null);
+                  setIsPlaying(false);
+                  setActiveCategory(cat);
+                  setSearchTerm('');
+                }}
+              >
+                {cat === 'Home' ? '🏠 Inicio' : cat}
+              </button>
+            ))}
+          </div>
           {isLoading && currentItems.length === 0 ? (
             <SkeletonGrid count={12} />
           ) : (

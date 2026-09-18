@@ -17,6 +17,15 @@ function App() {
   const [isWelcomeOpen, setIsWelcomeOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [avatar, setAvatar] = useState(getSelectedAvatar());
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 25);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     // Keep avatar synced
@@ -56,78 +65,128 @@ function App() {
   });
 
   return (
-    <div className="app-container">
-      <header className="app-header">
-        <div className="brand">
-          <div className="brand-logo">
-            <span>PIRU</span>TV
+    <div className="app-container netflix-theme">
+      <header className={`netflix-header ${isScrolled ? 'scrolled' : ''}`}>
+        <div className="netflix-header-inner">
+          <div className="netflix-header-left">
+            <a 
+              className="netflix-logo" 
+              onClick={() => {
+                setActiveTab('peliculas');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              style={{ cursor: 'pointer' }}
+            >
+              <span className="logo-red">PIRU</span>
+              <span className="logo-white">TV</span>
+            </a>
+
+            <nav className="netflix-nav">
+              <button 
+                className={`netflix-nav-link ${activeTab === 'peliculas' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('peliculas');
+                  window.dispatchEvent(new CustomEvent('reset-piru-home'));
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              >
+                Inicio
+              </button>
+              <button 
+                className={`netflix-nav-link ${activeTab === 'kdramas' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('kdramas');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              >
+                Series
+              </button>
+              <button 
+                className={`netflix-nav-link ${activeTab === 'peliculas' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('peliculas');
+                  window.dispatchEvent(new CustomEvent('reset-piru-home'));
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              >
+                Películas
+              </button>
+              <button 
+                className={`netflix-nav-link ${activeTab === 'tv-libre' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('tv-libre');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              >
+                TV Libre
+              </button>
+              <button 
+                className={`netflix-nav-link ${activeTab === 'animes' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('animes');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              >
+                Animes
+              </button>
+              <button 
+                className={`netflix-nav-link ${activeTab === 'mi-lista' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('mi-lista');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              >
+                Mi lista
+              </button>
+            </nav>
           </div>
-        </div>
 
-        <nav className="app-nav">
-          <button 
-            className={`nav-tab ${activeTab === 'peliculas' ? 'active' : ''}`}
-            onClick={() => setActiveTab('peliculas')}
-            tabIndex={0}
-          >
-            🎬 Pelis
-          </button>
-          <button 
-            className={`nav-tab ${activeTab === 'tv-libre' ? 'active' : ''}`}
-            onClick={() => setActiveTab('tv-libre')}
-            tabIndex={0}
-          >
-            📺 TV Libre
-          </button>
-          <button 
-            className={`nav-tab ${activeTab === 'kdramas' ? 'active' : ''}`}
-            onClick={() => setActiveTab('kdramas')}
-            tabIndex={0}
-          >
-            🌸 Kdramas
-          </button>
-          <button 
-            className={`nav-tab ${activeTab === 'animes' ? 'active' : ''}`}
-            onClick={() => setActiveTab('animes')}
-            tabIndex={0}
-          >
-            🔥 Animes
-          </button>
-          <button 
-            className={`nav-tab ${activeTab === 'mi-lista' ? 'active' : ''}`}
-            onClick={() => setActiveTab('mi-lista')}
-            tabIndex={0}
-          >
-            ❤️ Mi Lista
-          </button>
-        </nav>
+          <div className="netflix-header-right">
+            <button 
+              className="netflix-icon-btn" 
+              title="Buscar"
+              onClick={() => {
+                setActiveTab('peliculas');
+                window.dispatchEvent(new CustomEvent('open-piru-search'));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            >
+              <span className="material-symbols-outlined">search</span>
+            </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <button
-            onClick={() => setActiveTab('mi-cuenta')}
-            style={{
-              background: user ? 'rgba(34, 197, 94, 0.15)' : 'rgba(255, 255, 255, 0.08)',
-              border: `1px solid ${user ? '#22c55e' : 'var(--glass-border)'}`,
-              color: user ? '#86efac' : 'var(--text-primary)',
-              fontFamily: 'var(--font-title)',
-              fontSize: '0.88rem',
-              fontWeight: 700,
-              padding: '0.5rem 1rem',
-              borderRadius: '20px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              transition: 'var(--transition-fast)'
-            }}
-          >
-            <span>{user ? avatar.emoji : '🔐'}</span>
-            <span>{user ? (user.email.split('@')[0]) : 'Mi Cuenta'}</span>
-          </button>
+            <button 
+              className="netflix-kids-link"
+              onClick={() => {
+                setActiveTab('peliculas');
+                window.dispatchEvent(new CustomEvent('open-piru-category', { detail: 'Animación' }));
+              }}
+            >
+              Niños
+            </button>
+
+            <button className="netflix-icon-btn" title="Notificaciones">
+              <span className="material-symbols-outlined">notifications</span>
+              <span className="netflix-notif-dot"></span>
+            </button>
+
+            <div 
+              className="netflix-profile-btn" 
+              onClick={() => {
+                setActiveTab('mi-cuenta');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              title={user ? user.email : 'Mi Cuenta'}
+            >
+              <div className="netflix-avatar-box">
+                {user ? avatar.emoji : <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>face</span>}
+              </div>
+              <span className="material-symbols-outlined" style={{ fontSize: '18px', color: '#a3a3a3' }}>arrow_drop_down</span>
+            </div>
+          </div>
         </div>
       </header>
 
-      <main className="app-content">
+      <main className={`app-content ${activeTab === 'peliculas' ? 'netflix-full-bleed' : ''}`}>
         <Suspense fallback={
           <div style={{ padding: '2rem 1rem' }}>
             <SkeletonGrid count={12} />
