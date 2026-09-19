@@ -1459,11 +1459,11 @@ export default function Peliculas() {
                   type="button"
                   className="player-placeholder-btn" 
                   style={{ 
-                    backgroundImage: `linear-gradient(to top, rgba(15,15,28,0.95), rgba(15,15,28,0.4)), url(${selectedItem.poster})`,
+                    backgroundImage: `linear-gradient(to top, rgba(11, 12, 22, 0.95) 0%, rgba(11, 12, 22, 0.45) 50%, rgba(11, 12, 22, 0.75) 100%), url(${selectedItem.backdrop || selectedItem.poster})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center 30%',
                     flexDirection: 'column', 
-                    gap: '1rem',
+                    gap: '0.85rem',
                     cursor: 'pointer',
                     border: 'none',
                     display: 'flex',
@@ -1474,29 +1474,33 @@ export default function Peliculas() {
                   }}
                   onClick={() => setIsPlaying(true)}
                 >
-                  <div className="play-icon" style={{ transform: 'scale(1.4)', background: '#fff', color: '#000' }}>▶</div>
-                  <strong style={{ color: '#fff', fontSize: '1.25rem', textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
+                  <div className="player-play-circle">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#000" style={{ marginLeft: '3px' }}>
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                  <strong className="player-play-text">
                     Haga clic para reproducir
                   </strong>
                 </button>
               )}
             </div>
 
-            {/* Modal Navigation Tabs (Dondever Style) */}
+            {/* Modal Navigation Tabs */}
             <div className="modal-tab-nav">
               <button 
                 type="button" 
                 className={`modal-tab-btn ${modalTab === 'player' ? 'active' : ''}`}
                 onClick={() => setModalTab('player')}
               >
-                🎬 Reproductor y Servidores
+                <span>📺</span> Reproductor y Servidores
               </button>
               <button 
                 type="button" 
                 className={`modal-tab-btn ${modalTab === 'cast' ? 'active' : ''}`}
                 onClick={() => setModalTab('cast')}
               >
-                👥 Reparto y Dirección {selectedItem.cast?.length ? `(${selectedItem.cast.length})` : ''}
+                <span>👥</span> Reparto y Dirección {selectedItem.cast?.length ? `(${selectedItem.cast.length})` : ''}
               </button>
               {selectedItem.trailerKey && (
                 <button 
@@ -1504,7 +1508,7 @@ export default function Peliculas() {
                   className={`modal-tab-btn ${modalTab === 'trailer' ? 'active' : ''}`}
                   onClick={() => setModalTab('trailer')}
                 >
-                  🍿 Tráiler Oficial
+                  <span>✨</span> Tráiler Oficial
                 </button>
               )}
               <button 
@@ -1512,47 +1516,46 @@ export default function Peliculas() {
                 className={`modal-tab-btn ${modalTab === 'details' ? 'active' : ''}`}
                 onClick={() => setModalTab('details')}
               >
-                📋 Ficha Técnica
+                <span>📄</span> Ficha Técnica
               </button>
             </div>
 
             {/* TAB 1: REPRODUCTOR Y SERVIDORES */}
             {modalTab === 'player' && (
-              <>
+              <div className="modal-tab-body">
                 {/* Server Selector con filtro de Idioma */}
                 {selectedItem.type !== 'drama' && selectedItem.type !== 'latino-movie' && (
-                  <div className="player-header" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.6rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div className="player-servers-block">
+                    <div className="player-subbar">
                       <div className="player-title-info">
-                        <span className="pulse-dot"></span>
-                        <span>
+                        <span className="bullet-dot">•</span>
+                        <span className="player-title-text">
                           {selectedItem.title} 
                           {selectedItem.type === 'tv' && ` - Temp. ${selectedSeason}, Ep. ${selectedEpisode}`}
                         </span>
                       </div>
                       {/* Informacion de Servidores y Audio */}
-                      <div className="server-lang-filter-bar" style={{ margin: 0, padding: '0.35rem 0.75rem', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
-                        <span style={{ fontSize: '0.75rem', color: '#10b981', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                          🇲🇽 <span><strong>Audio Latino:</strong> Vimeus y UnLimPlay reproducen directamente en Español Latino.</span>
-                        </span>
+                      <div className="latino-notice-pill">
+                        <span>🇲🇽</span>
+                        <span><strong>Audio Latino:</strong> Vimeus y UnLimPlay reproducen silenciosamente en Español Latino.</span>
                       </div>
                     </div>
 
-                    <div className="server-selector" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div className="server-selector-row">
                       {SERVERS.map(srv => (
                         <button 
                           key={srv.id}
                           type="button"
-                          className={`server-btn ${selectedServer === srv.id ? 'active' : ''}`}
+                          className={`server-pill-btn ${selectedServer === srv.id ? 'active' : ''}`}
                           onClick={() => { 
                             setSelectedServer(srv.id); 
                             setIsPlaying(true); 
                           }}
                           title={srv.desc}
                         >
-                          <span style={{ fontWeight: '700' }}>{srv.name}</span>
-                          <span className="server-btn-lang">{srv.lang}</span>
-                          {srv.badge && <span className="server-btn-badge">{srv.badge}</span>}
+                          <span className="server-pill-name">{srv.name}</span>
+                          <span className="server-pill-lang">{srv.lang}</span>
+                          {srv.badge && <span className="server-pill-badge">{srv.badge}</span>}
                         </button>
                       ))}
                     </div>
@@ -1561,20 +1564,23 @@ export default function Peliculas() {
 
                 {/* Latino Movie: server selector from doramasflix */}
                 {selectedItem.type === 'latino-movie' && latinoMovieLinks.length > 0 && (
-                  <div className="player-header">
-                    <div className="player-title-info">
-                      <span className="pulse-dot"></span>
-                      <span>🗣️ {selectedItem.title}</span>
+                  <div className="player-servers-block">
+                    <div className="player-subbar">
+                      <div className="player-title-info">
+                        <span className="bullet-dot">•</span>
+                        <span className="player-title-text">🗣️ {selectedItem.title}</span>
+                      </div>
                     </div>
-                    <div className="server-selector">
+                    <div className="server-selector-row">
                       {latinoMovieLinks.map(srv => (
                         <button
                           key={srv.id}
                           type="button"
-                          className={`server-btn ${activeLatinoServer?.id === srv.id ? 'active' : ''}`}
+                          className={`server-pill-btn ${activeLatinoServer?.id === srv.id ? 'active' : ''}`}
                           onClick={() => { setActiveLatinoServer(srv); setIsPlaying(true); }}
                         >
-                          {srv.name} <span className="server-btn-lang">{srv.lang}</span>
+                          <span className="server-pill-name">{srv.name}</span>
+                          <span className="server-pill-lang">{srv.lang}</span>
                         </button>
                       ))}
                     </div>
@@ -1596,13 +1602,13 @@ export default function Peliculas() {
                   </div>
                 )}
 
-                {/* Episodes grid selection for TV Series / Anime */}
+                {/* Episodes grid selection ONLY FOR TV SERIES / ANIME */}
                 {selectedItem.type === 'tv' && selectedItem.seasons && (
-                  <div className="episodes-section">
-                    <div className="episodes-header">
-                      <span className="episodes-title">Seleccionar Episodio</span>
+                  <div className="episodes-container">
+                    <div className="episodes-top-row">
+                      <span className="episodes-heading">Seleccionar Episodio</span>
                       <select 
-                        className="season-select"
+                        className="season-dropdown"
                         value={selectedSeason}
                         onChange={(e) => {
                           setSelectedSeason(Number(e.target.value));
@@ -1619,11 +1625,11 @@ export default function Peliculas() {
                         }
                       </select>
                     </div>
-                    <div className="episodes-grid">
+                    <div className="episodes-bubbles-row">
                       {episodesInSelectedSeason.map(epNum => (
                         <button
                           key={epNum}
-                          className={`episode-btn ${selectedEpisode === epNum ? 'active' : ''}`}
+                          className={`episode-bubble-btn ${selectedEpisode === epNum ? 'active' : ''}`}
                           onClick={() => {
                             setSelectedEpisode(epNum);
                             setIsPlaying(true);
@@ -1636,37 +1642,35 @@ export default function Peliculas() {
                   </div>
                 )}
 
-                {/* Modal details body info */}
-                <div className="modal-body">
-                  <div className="modal-meta">
-                    <span className="modal-genre">
-                      {selectedItem.type === 'tv' ? '📺 Serie' : selectedItem.type === 'drama' ? '🎭 Chino' : selectedItem.type === 'latino-movie' ? '🗣️ Latino' : '🎬 Película'}
-                    </span>
-                    {selectedItem.year && <span className="modal-lang">{selectedItem.year}</span>}
-                    {selectedItem.rating && <span className="modal-lang">⭐ {selectedItem.rating}</span>}
-                    {selectedItem.runtime && <span className="modal-lang">⏱️ {selectedItem.runtime}</span>}
+                {/* Content details body info (Title, Badges, Tagline, Overview, Actions, Terabox) */}
+                <div className="modal-info-section">
+                  <div className="modal-badges-row">
+                    {selectedItem.type === 'tv' ? (
+                      <span className="modal-badge-type tv">📺 SERIE</span>
+                    ) : selectedItem.type === 'drama' ? (
+                      <span className="modal-badge-type drama">🎭 CHINO</span>
+                    ) : selectedItem.type === 'latino-movie' ? (
+                      <span className="modal-badge-type movie">🎬 PELÍCULA LATINO</span>
+                    ) : (
+                      <span className="modal-badge-type movie">🎬 PELÍCULA</span>
+                    )}
+                    {selectedItem.year && <span className="modal-badge-meta">{selectedItem.year}</span>}
+                    {selectedItem.rating && <span className="modal-badge-meta">⭐ {selectedItem.rating}</span>}
+                    {selectedItem.runtime && <span className="modal-badge-meta">⏱️ {selectedItem.runtime}</span>}
                   </div>
-                  <h2 className="modal-title">{selectedItem.title}</h2>
+
+                  <h2 className="modal-main-title">{selectedItem.title}</h2>
                   {selectedItem.tagline && (
-                    <p style={{ fontStyle: 'italic', color: 'var(--text-secondary)', marginBottom: '0.6rem', fontSize: '0.95rem' }}>
+                    <p className="modal-tagline">
                       "{selectedItem.tagline}"
                     </p>
                   )}
-                  <p className="modal-summary">{selectedItem.overview}</p>
+                  <p className="modal-overview-text">{selectedItem.overview}</p>
 
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', margin: '1.25rem 0' }}>
+                  <div className="modal-actions-row">
                     <button
                       type="button"
-                      className="btn-primary"
-                      style={{
-                        flex: 'none',
-                        padding: '0.75rem 1.5rem',
-                        fontSize: '0.95rem',
-                        background: isFavorite(selectedItem.id) ? 'rgba(239, 68, 68, 0.25)' : 'rgba(255, 255, 255, 0.08)',
-                        border: `1px solid ${isFavorite(selectedItem.id) ? '#ef4444' : 'rgba(255, 255, 255, 0.2)'}`,
-                        color: isFavorite(selectedItem.id) ? '#fca5a5' : '#fff',
-                        boxShadow: isFavorite(selectedItem.id) ? '0 0 15px rgba(239, 68, 68, 0.4)' : 'none'
-                      }}
+                      className="btn-modal-list"
                       onClick={async () => {
                         await toggleFavorite(selectedItem);
                         setSelectedItem({ ...selectedItem });
@@ -1677,16 +1681,7 @@ export default function Peliculas() {
 
                     <button
                       type="button"
-                      className="btn-primary"
-                      style={{
-                        flex: 'none',
-                        padding: '0.75rem 1.5rem',
-                        fontSize: '0.95rem',
-                        background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                        border: 'none',
-                        color: '#ffffff',
-                        boxShadow: '0 4px 15px rgba(245, 158, 11, 0.45)'
-                      }}
+                      className="btn-modal-cast"
                       onClick={() => {
                         const urlToCast = embedUrl || window.location.href;
                         castWithWebVideoCaster(urlToCast, selectedItem.title);
@@ -1697,12 +1692,12 @@ export default function Peliculas() {
                   </div>
                   
                   {/* Actions box with Terabox downloads or info */}
-                  <div className="fallback-box">
-                    <div>
-                      <strong style={{ color: '#fff', display: 'block', marginBottom: '0.2rem' }}>
+                  <div className="modal-download-box">
+                    <div className="modal-download-content">
+                      <strong className="modal-download-title">
                         {selectedItem.type === 'drama' ? 'Dramas Chinos FAST Stream' : 'Servidor de Descarga Rápida'}
                       </strong>
-                      <span>
+                      <span className="modal-download-sub">
                         {selectedItem.type === 'drama' 
                           ? 'Este drama se transmite en vivo a través de servidores externos integrados.' 
                           : 'Puedes descargar este contenido directamente en alta calidad a tu cuenta de Terabox.'}
@@ -1713,15 +1708,14 @@ export default function Peliculas() {
                         href={selectedItem.terabox}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn-primary"
-                        style={{ flex: 'none', padding: '0.6rem 1.2rem', fontSize: '0.9rem', width: 'auto', alignSelf: 'center', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)' }}
+                        className="btn-terabox-download"
                       >
                         📥 Descargar en Terabox
                       </a>
                     )}
                   </div>
                 </div>
-              </>
+              </div>
             )}
 
             {/* TAB 2: REPARTO Y DIRECCIÓN (DONDEVER STYLE) */}
