@@ -45,13 +45,13 @@ const SERVERS = [
     quality: 'HD'
   },
   {
-    id: 'vidfast',
-    name: 'VidFast 4K',
-    lang: '🇺🇸 EN / 4K',
-    langGroup: 'multi',
-    badge: '⚡ 4K Calidad',
-    desc: 'Máxima calidad 4K Ultra HD (Audio original en inglés)',
-    quality: '4K'
+    id: 'cinesrc',
+    name: 'CineSrc',
+    lang: 'MULTI / ESP',
+    langGroup: 'latino',
+    badge: '⚡ Rápido',
+    desc: 'Servidor CineSrc de alta velocidad con interfaz moderna y soporte multi-idioma',
+    quality: '1080p'
   }
 ];
 
@@ -832,12 +832,12 @@ export default function Peliculas() {
       return `https://vimeus.com/e/${kind}?tmdb=${id}&se=${selectedSeason}&ep=${selectedEpisode}${vk}${params}`;
     }
 
-    // ── 4. VIDFAST 4K (Máxima calidad 4K Ultra HD - Audio Original) ──
-    if (selectedServer === 'vidfast') {
+    // ── 4. CINESRC (Streaming Rápido Multi-Idioma / HD) ──
+    if (selectedServer === 'cinesrc') {
       if (selectedItem.type === 'movie') {
-        return `https://vidfast.pro/movie/${id}`;
+        return `https://cinesrc.st/embed/movie/${id}?color=%23e50914`;
       }
-      return `https://vidfast.pro/tv/${id}/${selectedSeason}/${selectedEpisode}`;
+      return `https://cinesrc.st/embed/tv/${id}?s=${selectedSeason}&e=${selectedEpisode}&color=%23e50914`;
     }
 
     return '';
