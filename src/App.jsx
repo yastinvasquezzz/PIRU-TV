@@ -99,7 +99,7 @@ function App() {
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
               >
-                Series
+                Kdramas
               </button>
               <button 
                 className={`netflix-nav-link ${activeTab === 'peliculas' ? 'active' : ''}`}
