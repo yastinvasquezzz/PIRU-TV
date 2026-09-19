@@ -175,7 +175,32 @@ const SERVER_NAMES = {
   "64b19a4035461c5d64ef5b84": "Filemoon",
   "64b18fdc35461c5d64ef5b59": "Streamwish",
   "65c6b7f9149d4675d1547a5c": "VidHide",
-  "61707703fa461256758155c5": "Mega"
+  "61707703fa461256758155c5": "Mega",
+  "69c690a20bef0992e5c91fa1": "PrimeLoad"
+};
+
+const LANG_NAMES = {
+  "38": "Latino 🗣️",
+  "13109": "Coreano 🇰🇷",
+  "13110": "Japonés 🇯🇵",
+  "13111": "Chino 🇨🇳",
+  "13112": "Japonés/Tailandés 🇯🇵🇹🇭",
+  "13113": "Taiwanés 🇹🇼",
+  "36": "Inglés 🇬🇧"
+};
+
+const PROXY_WORKER = 'https://pirutv-proxy.skillful-part.workers.dev';
+
+const getPlayerUrl = (embed) => {
+  if (!embed) return '';
+  if (embed.includes('primeload.co')) {
+    if (import.meta.env.DEV) {
+      return embed.replace('https://primeload.co', '/primeload-proxy');
+    } else {
+      return embed.replace('https://primeload.co', PROXY_WORKER);
+    }
+  }
+  return embed;
 };
 
 const getHostName = (url, server_ref) => {
@@ -453,7 +478,7 @@ export default function Kdramas() {
   }, [searchTerm, searchResults, activeCategory, homeLatinoDoramas, gridItems]);
 
   // Handle open drama modal and load seasons & episodes
-  const handleOpenDrama = async (drama) => {
+  const handleOpenDrama = async (drama, autoPlay = true) => {
     setIsDetailsLoading(true);
     setSelectedDrama(drama);
     setSeasonsList([]);
@@ -464,7 +489,7 @@ export default function Kdramas() {
     setServersList([]);
     setActiveServer(null);
     setActivePlayerUrl('');
-    setIsPlaying(false);
+    setIsPlaying(autoPlay);
     setModalTab('player');
 
     saveWatchProgress({
@@ -524,6 +549,7 @@ export default function Kdramas() {
     setServersList([]);
     setActiveServer(null);
     setActivePlayerUrl('');
+    setIsPlaying(true);
 
     try {
       const res = await queryFlix(DETAIL_DORAMA_EXTRA_QUERY, {
@@ -559,6 +585,7 @@ export default function Kdramas() {
     setServersList([]);
     setActiveServer(null);
     setActivePlayerUrl('');
+    setIsPlaying(true);
 
     const epObj = episodesData.find(e => e.episode_number === epNum);
     if (epObj) {
@@ -589,31 +616,80 @@ export default function Kdramas() {
     }
   };
 
+  const handleServerClick = (server) => {
+    setActiveServer(server);
+    if (server && server.embed) {
+      setActivePlayerUrl(getPlayerUrl(server.embed));
+      setIsPlaying(true);
+    }
+  };
+
   // Format streaming servers from episode links
   useEffect(() => {
     if (allEpisodeLinks && allEpisodeLinks.length > 0) {
-      const servers = allEpisodeLinks
-        .filter(l => l.embed && l.is_active !== false)
-        .map(l => ({
-          hash: l._id,
-          name: getHostName(l.embed, l.server_ref),
-          embed: l.embed,
-          lang: String(l.lang) === '38' ? 'LAT' : 'SUB'
-        }));
+      const isSubCategory = activeCategory === '💬 Doramas Sub Español';
+
+      const validLinks = allEpisodeLinks.filter(l => (l.embed || l.link) && l.is_active !== false);
+
+      const isLatino = (l) => String(l.lang) === '38' || l.language_code === 'es';
+
+      // Sort: if Sub category, prefer sub first; otherwise prefer Latino first
+      const sortedLinks = [...validLinks].sort((a, b) => {
+        const aLat = isLatino(a);
+        const bLat = isLatino(b);
+        if (isSubCategory) {
+          if (!aLat && bLat) return -1;
+          if (aLat && !bLat) return 1;
+        } else {
+          if (aLat && !bLat) return -1;
+          if (!aLat && bLat) return 1;
+        }
+        return 0;
+      });
+
+      const servers = sortedLinks.map(l => {
+        const rawUrl = l.embed || l.link;
+        const lat = isLatino(l);
+        return {
+          hash: l._id || rawUrl,
+          name: getHostName(rawUrl, l.server_ref),
+          embed: rawUrl,
+          lang: l.lang,
+          isLat: lat,
+          langLabel: lat ? '🇲🇽 LAT' : '💬 SUB'
+        };
+      });
 
       setServersList(servers);
       if (servers.length > 0) {
-        // Prioritize Latino server if available
-        const latinoServer = servers.find(s => s.lang === 'LAT') || servers[0];
-        setActiveServer(latinoServer);
-        setActivePlayerUrl(latinoServer.embed);
+        setActiveServer(servers[0]);
+        setActivePlayerUrl(getPlayerUrl(servers[0].embed));
+      } else {
+        setActiveServer(null);
+        setActivePlayerUrl('');
       }
     } else {
       setServersList([]);
       setActiveServer(null);
       setActivePlayerUrl('');
     }
-  }, [allEpisodeLinks]);
+  }, [allEpisodeLinks, activeCategory]);
+
+  // Persist watch progress on active server url
+  useEffect(() => {
+    if (selectedDrama && activePlayerUrl) {
+      saveWatchProgress({
+        id: selectedDrama.id,
+        title: selectedDrama.title,
+        poster: selectedDrama.poster,
+        backdrop: selectedDrama.backdrop,
+        type: 'kdrama',
+        season: activeSeason,
+        episode: activeEpisode
+      });
+      setWatchHistory(getWatchHistory());
+    }
+  }, [selectedDrama, activePlayerUrl, activeSeason, activeEpisode]);
 
   // Pagination helper
   const getPaginationList = (curr, total) => {
@@ -1200,14 +1276,35 @@ export default function Kdramas() {
 
             {/* Video Player Container */}
             <div className="movie-player-container">
-              {isPlaying && activePlayerUrl ? (
-                <iframe
-                  src={activePlayerUrl}
-                  className="player-iframe"
-                  title={`${selectedDrama.title} - ${activeEpisode}`}
-                  allowFullScreen
-                  allow="autoplay; encrypted-media; picture-in-picture"
-                />
+              {isPlaying ? (
+                activePlayerUrl ? (
+                  <iframe
+                    src={activePlayerUrl}
+                    className="player-iframe"
+                    title={`${selectedDrama.title} - ${activeEpisode}`}
+                    allowFullScreen
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                  />
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '380px', background: '#0a0a0f', color: '#fff', gap: '1rem', padding: '2rem' }}>
+                    {isDetailsLoading ? (
+                      <>
+                        <div className="pulse-dot" style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#e50914', boxShadow: '0 0 25px rgba(229, 9, 20, 0.8)' }} />
+                        <span style={{ fontSize: '1rem', fontWeight: 700, color: '#f1f5f9' }}>
+                          Cargando servidor y enlaces de reproducción...
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span style={{ fontSize: '2.5rem' }}>⚠️</span>
+                        <strong style={{ fontSize: '1.05rem', color: '#f87171' }}>No se pudo conectar con el servidor</strong>
+                        <span style={{ fontSize: '0.85rem', color: '#94a3b8', textAlign: 'center', maxWidth: '400px' }}>
+                          Intenta seleccionando otra opción en los servidores disponibles o cambia de episodio.
+                        </span>
+                      </>
+                    )}
+                  </div>
+                )
               ) : (
                 <button
                   type="button"
@@ -1283,22 +1380,18 @@ export default function Kdramas() {
                     {serversList.length > 0 ? (
                       serversList.map((srv, idx) => (
                         <button
-                          key={`srv-${idx}`}
+                          key={`srv-${idx}-${srv.hash}`}
                           type="button"
                           className={`server-pill-btn ${activeServer?.hash === srv.hash ? 'active' : ''}`}
-                          onClick={() => {
-                            setActiveServer(srv);
-                            setActivePlayerUrl(srv.embed);
-                            setIsPlaying(true);
-                          }}
+                          onClick={() => handleServerClick(srv)}
                         >
                           <span className="server-pill-name">{srv.name}</span>
-                          <span className="server-pill-lang">{srv.lang === 'LAT' ? '🇲🇽 LAT' : '💬 SUB'}</span>
+                          <span className="server-pill-lang">{srv.langLabel}</span>
                         </button>
                       ))
                     ) : (
                       <div style={{ color: '#a3a3a3', fontSize: '0.85rem', padding: '0.4rem 0' }}>
-                        {isDetailsLoading ? 'Cargando servidores...' : 'Cargando enlaces del reproductor...'}
+                        {isDetailsLoading ? 'Cargando servidores...' : 'No hay servidores disponibles para este episodio.'}
                       </div>
                     )}
                   </div>
