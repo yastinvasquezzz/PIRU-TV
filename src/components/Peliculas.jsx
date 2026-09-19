@@ -231,6 +231,7 @@ export default function Peliculas() {
     }
   });
   const [categoryPages, setCategoryPages] = useState({}); // Current loaded page for each category
+  const [categoryTotalPages, setCategoryTotalPages] = useState({}); // Total pages for each category
   const [selectedItem, setSelectedItem] = useState(null);
 
   // Combine real user watch history with curated items
@@ -599,10 +600,10 @@ export default function Peliculas() {
       }
 
       // 2. Fetch TMDB discover page results for this category if needed
-      const loadedDiscover = discoverCache[activeCategory] || [];
-      const requiredLength = activePage * 20;
+      const cacheKey = `${activeCategory}_page_${activePage}`;
+      const cachedResults = discoverCache[cacheKey];
 
-      if (loadedDiscover.length < requiredLength && DISCOVER_MAP[activeCategory]) {
+      if (!cachedResults && DISCOVER_MAP[activeCategory]) {
         try {
           const type = activeCategory === 'Series' || activeCategory === 'Anime' ? 'tv' : 'movie';
           const discoverPath = DISCOVER_MAP[activeCategory];
@@ -610,6 +611,12 @@ export default function Peliculas() {
           const res = await fetch(`${TMDB}${discoverPath}&language=es-ES&sort_by=popularity.desc&page=${activePage}`, { headers: HDR });
           if (res.ok) {
             const data = await res.json();
+            if (data.total_pages) {
+              setCategoryTotalPages(prev => ({
+                ...prev,
+                [activeCategory]: Math.min(data.total_pages, 500)
+              }));
+            }
             const results = (data.results || []).map(x => ({
               id: x.id,
               type: type,
@@ -622,15 +629,10 @@ export default function Peliculas() {
               terabox: null
             }));
 
-            setDiscoverCache(prev => {
-              const existing = prev[activeCategory] || [];
-              const existingIds = new Set(existing.map(e => e.id));
-              const filteredNew = results.filter(r => !existingIds.has(r.id));
-              return {
-                ...prev,
-                [activeCategory]: [...existing, ...filteredNew]
-              };
-            });
+            setDiscoverCache(prev => ({
+              ...prev,
+              [cacheKey]: results
+            }));
           }
         } catch (e) {
           console.error('TMDB Discover error:', e);
@@ -706,17 +708,20 @@ export default function Peliculas() {
     }
 
     const activePage = categoryPages[activeCategory] || 1;
-    const curatedRefs = catalogData[activeCategory] || [];
-    const curated = curatedRefs.map(item => tmdbCache[`${item.type}-${item.id}`]).filter(Boolean);
+    const cacheKey = `${activeCategory}_page_${activePage}`;
+    const pageItems = Array.isArray(discoverCache[cacheKey])
+      ? discoverCache[cacheKey]
+      : (activePage === 1 && Array.isArray(discoverCache[activeCategory]) ? discoverCache[activeCategory].slice(0, 20) : []);
 
-    const discovered = discoverCache[activeCategory] || [];
-    const curatedIds = new Set(curated.map(c => c.id));
-    const filteredDiscovered = discovered.filter(d => !curatedIds.has(d.id));
+    if (activePage === 1) {
+      const curatedRefs = catalogData[activeCategory] || [];
+      const curated = curatedRefs.map(item => tmdbCache[`${item.type}-${item.id}`]).filter(Boolean);
+      const curatedIds = new Set(curated.map(c => c.id));
+      const filteredDiscovered = pageItems.filter(d => !curatedIds.has(d.id));
+      return [...curated, ...filteredDiscovered];
+    }
 
-    const allCombined = [...curated, ...filteredDiscovered];
-    const itemsPerPage = 16;
-    const startIndex = (activePage - 1) * itemsPerPage;
-    return allCombined.slice(startIndex, startIndex + itemsPerPage);
+    return pageItems;
   }, [activeCategory, tmdbCache, discoverCache, latinoMovies, categoryPages]);
 
   // Open modal handler
@@ -1364,73 +1369,146 @@ export default function Peliculas() {
                   </div>
                 )}
               </div>
-              {activeCategory !== 'Dramas Chinos' && (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', margin: '3rem 0 1rem' }}>
-                  {[1, 2, 3, 4, 5].map(pageNum => (
+              {activeCategory !== 'Dramas Chinos' && (() => {
+                const isLatino = activeCategory === LATINO_MOVIES_CAT;
+                const currentPage = isLatino ? latinoMoviePage : (categoryPages[activeCategory] || 1);
+                const totalPages = isLatino ? (latinoMovieTotalPages || 50) : (categoryTotalPages[activeCategory] || 50);
+
+                const getPaginationList = (curr, total) => {
+                  if (total <= 7) {
+                    return Array.from({ length: total }, (_, i) => i + 1);
+                  }
+                  if (curr <= 3) {
+                    return [1, 2, 3, 4, 5, '...', total];
+                  }
+                  if (curr >= total - 2) {
+                    return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+                  }
+                  return [1, '...', curr - 1, curr, curr + 1, '...', total];
+                };
+
+                const pagesToRender = getPaginationList(currentPage, totalPages);
+
+                const goToPage = (newPage) => {
+                  if (newPage < 1 || newPage > totalPages || newPage === currentPage || isLoading) return;
+                  setSelectedItem(null);
+                  setIsPlaying(false);
+                  if (isLatino) {
+                    setLatinoMoviePage(newPage);
+                  } else {
+                    setCategoryPages(prev => ({
+                      ...prev,
+                      [activeCategory]: newPage
+                    }));
+                  }
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+
+                return (
+                  <div className="pagination-bar" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: '0.45rem', margin: '3rem 0 2rem' }}>
+                    {/* Botón Anterior / Regresar */}
                     <button
-                      key={pageNum}
-                      onClick={() => {
-                        setSelectedItem(null);
-                        setIsPlaying(false);
-                        if (activeCategory === LATINO_MOVIES_CAT) {
-                          setLatinoMoviePage(pageNum);
-                        } else {
-                          setCategoryPages(prev => ({
-                            ...prev,
-                            [activeCategory]: pageNum
-                          }));
-                        }
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
-                      disabled={isLoading}
+                      type="button"
+                      onClick={() => goToPage(currentPage - 1)}
+                      disabled={currentPage <= 1 || isLoading}
                       style={{
-                        background: (activeCategory === LATINO_MOVIES_CAT ? latinoMoviePage : (categoryPages[activeCategory] || 1)) === pageNum
-                          ? 'linear-gradient(135deg, #e50914, #9333ea)'
-                          : 'rgba(255, 255, 255, 0.05)',
+                        background: currentPage > 1 ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)',
                         border: '1px solid var(--border-color)',
-                        color: '#fff',
-                        padding: '0.6rem 1.1rem',
+                        color: currentPage > 1 ? '#fff' : 'rgba(255, 255, 255, 0.25)',
+                        padding: '0.6rem 1.25rem',
                         borderRadius: '10px',
-                        cursor: isLoading ? 'not-allowed' : 'pointer',
-                        fontSize: '0.95rem',
+                        cursor: currentPage > 1 && !isLoading ? 'pointer' : 'not-allowed',
+                        fontSize: '0.9rem',
                         fontWeight: '700',
-                        boxShadow: (activeCategory === LATINO_MOVIES_CAT ? latinoMoviePage : (categoryPages[activeCategory] || 1)) === pageNum ? '0 4px 15px rgba(229, 9, 20, 0.4)' : 'none',
-                        transition: 'all 0.2s ease'
+                        opacity: currentPage > 1 ? 1 : 0.4,
+                        transition: 'all 0.2s ease',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px'
                       }}
+                      title="Página Anterior"
                     >
-                      {pageNum}
+                      ← Anterior
                     </button>
-                  ))}
-                  <button
-                    onClick={() => {
-                      setSelectedItem(null);
-                      setIsPlaying(false);
-                      if (activeCategory === LATINO_MOVIES_CAT) {
-                        setLatinoMoviePage(prev => prev + 1);
-                      } else {
-                        setCategoryPages(prev => ({
-                          ...prev,
-                          [activeCategory]: (prev[activeCategory] || 1) + 1
-                        }));
+
+                    {/* Botones de Páginas Dinámicas */}
+                    {pagesToRender.map((p, idx) => {
+                      if (p === '...') {
+                        return (
+                          <span 
+                            key={`dots-${idx}`} 
+                            style={{ 
+                              color: 'rgba(255, 255, 255, 0.4)', 
+                              padding: '0 0.35rem', 
+                              fontSize: '1rem',
+                              fontWeight: '700',
+                              userSelect: 'none'
+                            }}
+                          >
+                            ...
+                          </span>
+                        );
                       }
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                    disabled={isLoading}
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.08)',
-                      border: '1px solid var(--border-color)',
-                      color: '#fff',
-                      padding: '0.6rem 1.25rem',
-                      borderRadius: '10px',
-                      cursor: 'pointer',
-                      fontSize: '0.95rem',
-                      fontWeight: '700'
-                    }}
-                  >
-                    Siguiente →
-                  </button>
-                </div>
-              )}
+
+                      const isActive = p === currentPage;
+                      return (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => goToPage(p)}
+                          disabled={isLoading}
+                          style={{
+                            background: isActive
+                              ? 'linear-gradient(135deg, #e50914, #9333ea)'
+                              : 'rgba(255, 255, 255, 0.05)',
+                            border: isActive ? '1px solid rgba(255, 255, 255, 0.3)' : '1px solid var(--border-color)',
+                            color: '#fff',
+                            minWidth: '42px',
+                            height: '42px',
+                            padding: '0 0.75rem',
+                            borderRadius: '10px',
+                            cursor: isLoading ? 'not-allowed' : 'pointer',
+                            fontSize: '0.95rem',
+                            fontWeight: '700',
+                            boxShadow: isActive ? '0 4px 15px rgba(229, 9, 20, 0.45)' : 'none',
+                            transition: 'all 0.2s ease',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                        >
+                          {p}
+                        </button>
+                      );
+                    })}
+
+                    {/* Botón Siguiente */}
+                    <button
+                      type="button"
+                      onClick={() => goToPage(currentPage + 1)}
+                      disabled={currentPage >= totalPages || isLoading}
+                      style={{
+                        background: currentPage < totalPages ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)',
+                        border: '1px solid var(--border-color)',
+                        color: currentPage < totalPages ? '#fff' : 'rgba(255, 255, 255, 0.25)',
+                        padding: '0.6rem 1.25rem',
+                        borderRadius: '10px',
+                        cursor: currentPage < totalPages && !isLoading ? 'pointer' : 'not-allowed',
+                        fontSize: '0.9rem',
+                        fontWeight: '700',
+                        opacity: currentPage < totalPages ? 1 : 0.4,
+                        transition: 'all 0.2s ease',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                      title="Página Siguiente"
+                    >
+                      Siguiente →
+                    </button>
+                  </div>
+                );
+              })()}
             </>
           )}
         </div>
