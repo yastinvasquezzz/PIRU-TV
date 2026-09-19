@@ -15,70 +15,43 @@ const HDR  = { Authorization: `Bearer ${TMDB_KEY}` };
 const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
 const VIMEUS_PARAMS = '&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3';
 
-// ── Servidores 100% Funcionales (Vimeus Oficial Intacto + VidFast / VidLink / MultiEmbed / VidSrc / AutoEmbed) ──
+// ── Servidores 100% Latino (Vimeus Oficial + UnLimPlay Multi-Latino + Vimeus Respaldo + VidFast 4K) ──
 const SERVERS = [
   {
     id: 'vimeus',
     name: 'Vimeus',
-    lang: 'LAT / ESP',
+    lang: '🇲🇽 LATINO',
     langGroup: 'latino',
     badge: '⭐ Oficial',
-    desc: 'Audio Latino y Castellano nativo (Oficial Recomendado)',
+    desc: 'Audio Latino nativo oficial de alta fidelidad (Recomendado)',
+    quality: 'HD'
+  },
+  {
+    id: 'unlimplay',
+    name: 'UnLimPlay',
+    lang: '🇲🇽 LATINO',
+    langGroup: 'latino',
+    badge: '💎 Multi-Latino',
+    desc: 'Servidor con múltiples fuentes en audio Latino (Directo, Streamwish, Filelions, Voe)',
+    quality: '1080p'
+  },
+  {
+    id: 'vimeus_sala2',
+    name: 'Vimeus Sala 2',
+    lang: '🇲🇽 LATINO',
+    langGroup: 'latino',
+    badge: '🔄 Respaldo',
+    desc: 'Servidor alternativo de Vimeus en Audio Latino',
     quality: 'HD'
   },
   {
     id: 'vidfast',
-    name: 'VidFast',
-    lang: 'MULTI / ESP',
-    langGroup: 'latino',
-    badge: '⚡ Ultra Rápido',
-    desc: 'Servidor CDN de alta velocidad y reproducción inmediata',
-    quality: '1080p'
-  },
-  {
-    id: 'vidlink',
-    name: 'VidLink Pro',
-    lang: 'MULTI / LAT',
-    langGroup: 'latino',
-    badge: '🌐 Multi-Audio',
-    desc: 'Reproductor con selector de audio Latino/Español en ajustes ⚙️',
-    quality: '1080p'
-  },
-  {
-    id: 'multiembed',
-    name: 'MultiEmbed',
-    lang: 'MULTI / ESP',
-    langGroup: 'latino',
-    badge: '🚀 Multi-Servidor',
-    desc: 'Agregador con menú interno de más de 10 servidores y streams',
-    quality: 'HD'
-  },
-  {
-    id: 'vidsrc_pm',
-    name: 'VidSrc PM',
-    lang: 'MULTI / SUB',
+    name: 'VidFast 4K',
+    lang: '🇺🇸 EN / 4K',
     langGroup: 'multi',
-    badge: '🛡️ Estable HD',
-    desc: 'Servidor de alta disponibilidad 1080p con subtítulos y audio',
-    quality: '1080p'
-  },
-  {
-    id: 'autoembed',
-    name: 'AutoEmbed',
-    lang: 'MULTI / SUB',
-    langGroup: 'multi',
-    badge: '🔄 Respaldo',
-    desc: 'Servidor alternativo de respaldo global',
-    quality: 'HD'
-  },
-  {
-    id: 'vidsrc_me',
-    name: 'VidSrc Me',
-    lang: 'MULTI / SUB',
-    langGroup: 'multi',
-    badge: '🔄 Clásico',
-    desc: 'Servidor clásico de respaldo garantizado',
-    quality: 'HD'
+    badge: '⚡ 4K Calidad',
+    desc: 'Máxima calidad 4K Ultra HD (Audio original en inglés)',
+    quality: '4K'
   }
 ];
 
@@ -830,7 +803,7 @@ export default function Peliculas() {
 
     const id = selectedItem.id;
 
-    // ── VIMEUS (Servidor oficial de películas y series - 100% Intacto) ──
+    // ── 1. VIMEUS OFICIAL (Audio Latino / Castellano - 100% Intacto) ──
     if (selectedServer === 'vimeus') {
       const vk = VIMEUS_VIEW_KEY ? `&view_key=${encodeURIComponent(VIMEUS_VIEW_KEY)}` : '';
       if (selectedItem.type === 'movie') {
@@ -840,52 +813,31 @@ export default function Peliculas() {
       return `https://vimeus.com/e/${kind}?tmdb=${id}&se=${selectedSeason}&ep=${selectedEpisode}${vk}${VIMEUS_PARAMS}`;
     }
 
-    // ── VIDFAST (Ultra Rápido 1080p CDN) ──
+    // ── 2. UNLIMPLAY (Multi-Servidor exclusivo en Audio Latino) ──
+    if (selectedServer === 'unlimplay') {
+      if (selectedItem.type === 'movie') {
+        return `https://unlimplay.com/f/embed/movie/${id}`;
+      }
+      return `https://unlimplay.com/f/embed/tv/${id}/${selectedSeason}/${selectedEpisode}`;
+    }
+
+    // ── 3. VIMEUS SALA 2 (Respaldo en Audio Latino) ──
+    if (selectedServer === 'vimeus_sala2') {
+      const vk = VIMEUS_VIEW_KEY ? `&view_key=${encodeURIComponent(VIMEUS_VIEW_KEY)}` : '';
+      const params = '&title=PIRU_TV&theme=dark&font=v2&overlay=v3&selector=v2&playUI=v2&epanel=v2';
+      if (selectedItem.type === 'movie') {
+        return `https://vimeus.com/e/movie?tmdb=${id}${vk}${params}`;
+      }
+      const kind = selectedItem.category === 'Anime' ? 'anime' : 'serie';
+      return `https://vimeus.com/e/${kind}?tmdb=${id}&se=${selectedSeason}&ep=${selectedEpisode}${vk}${params}`;
+    }
+
+    // ── 4. VIDFAST 4K (Máxima calidad 4K Ultra HD - Audio Original) ──
     if (selectedServer === 'vidfast') {
       if (selectedItem.type === 'movie') {
         return `https://vidfast.pro/movie/${id}`;
       }
       return `https://vidfast.pro/tv/${id}/${selectedSeason}/${selectedEpisode}`;
-    }
-
-    // ── VIDLINK PRO (Multi-Audio con Español / Latino) ──
-    if (selectedServer === 'vidlink') {
-      if (selectedItem.type === 'movie') {
-        return `https://vidlink.pro/movie/${id}?multiLang=true`;
-      }
-      return `https://vidlink.pro/tv/${id}/${selectedSeason}/${selectedEpisode}?multiLang=true`;
-    }
-
-    // ── MULTIEMBED (Multi-Servidor con selector interno) ──
-    if (selectedServer === 'multiembed') {
-      if (selectedItem.type === 'movie') {
-        return `https://multiembed.mov/?video_id=${id}&tmdb=1`;
-      }
-      return `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${selectedSeason}&e=${selectedEpisode}`;
-    }
-
-    // ── VIDSRC PM (Estable HD 1080p) ──
-    if (selectedServer === 'vidsrc_pm') {
-      if (selectedItem.type === 'movie') {
-        return `https://vidsrc.pm/embed/movie/${id}`;
-      }
-      return `https://vidsrc.pm/embed/tv/${id}/${selectedSeason}/${selectedEpisode}`;
-    }
-
-    // ── AUTOEMBED (Respaldo) ──
-    if (selectedServer === 'autoembed') {
-      if (selectedItem.type === 'movie') {
-        return `https://autoembed.co/movie/tmdb/${id}`;
-      }
-      return `https://autoembed.co/tv/tmdb/${id}-${selectedSeason}-${selectedEpisode}`;
-    }
-
-    // ── VIDSRC ME (Clásico) ──
-    if (selectedServer === 'vidsrc_me') {
-      if (selectedItem.type === 'movie') {
-        return `https://vidsrc.me/embed/movie?tmdb=${id}`;
-      }
-      return `https://vidsrc.me/embed/tv?tmdb=${id}&season=${selectedSeason}&episode=${selectedEpisode}`;
     }
 
     return '';
@@ -1580,8 +1532,8 @@ export default function Peliculas() {
                       </div>
                       {/* Informacion de Servidores y Audio */}
                       <div className="server-lang-filter-bar" style={{ margin: 0, padding: '0.35rem 0.75rem', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
-                        <span style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                          💡 <span><strong>Tip:</strong> En <strong>Vimeus</strong> y <strong>VidLink</strong> puedes cambiar audio/idioma en ⚙️.</span>
+                        <span style={{ fontSize: '0.75rem', color: '#10b981', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                          🇲🇽 <span><strong>Audio Latino:</strong> Vimeus y UnLimPlay reproducen directamente en Español Latino.</span>
                         </span>
                       </div>
                     </div>
