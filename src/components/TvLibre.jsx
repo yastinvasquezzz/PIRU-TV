@@ -1,551 +1,1189 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import Hls from 'hls.js';
 import useDpadNavigation from '../hooks/useDpadNavigation';
 import { saveWatchProgress, toggleFavorite, isFavorite } from '../utils/storage';
 import { castWithWebVideoCaster } from '../utils/wvcCast';
-import localSportsData from '../data/sports_events.json';
+import localChannelsData from '../data/iptv_spa.json';
 
-const SPORTS_CATEGORIES = [
-  '🔥 TODOS',
-  '⚽ FOOTBALL',
-  '⚾ BASEBALL',
-  '🥊 BOXING',
-  '🏀 BASKETBALL',
-  '🎾 TENNIS',
-  '🚴 CYCLING',
-  '🏎️ MOTOR',
-  '🥋 MMA / UFC'
+const CATEGORIES = [
+  { id: 'all', label: '🔥 Todos' },
+  { id: 'movies', label: '🎬 Películas y Series' },
+  { id: 'sports', label: '⚽ Deportes' },
+  { id: 'entertainment', label: '🎭 Entretenimiento' },
+  { id: 'news', label: '📰 Noticias' },
+  { id: 'music', label: '🎵 Música' },
+  { id: 'kids', label: '👶 Infantil' },
+  { id: 'culture', label: '📚 Cultura y Docs' },
+  { id: 'religious', label: '⛪ Religión' },
+  { id: 'general', label: '🌐 General' },
+  { id: 'favs', label: '❤️ Mis Favoritos' }
 ];
 
+const COUNTRIES = [
+  { code: 'all', label: '🌐 Todos los países' },
+  { code: 'mx', label: '🇲🇽 México' },
+  { code: 'es', label: '🇪🇸 España' },
+  { code: 'ar', label: '🇦🇷 Argentina' },
+  { code: 'co', label: '🇨🇴 Colombia' },
+  { code: 'cl', label: '🇨🇱 Chile' },
+  { code: 'pe', label: '🇵🇪 Perú' },
+  { code: 'do', label: '🇩🇴 Rep. Dominicana' },
+  { code: 'ec', label: '🇪🇨 Ecuador' },
+  { code: 've', label: '🇻🇪 Venezuela' },
+  { code: 'gt', label: '🇬🇹 Guatemala' },
+  { code: 'cr', label: '🇨🇷 Costa Rica' },
+  { code: 'hn', label: '🇭🇳 Honduras' },
+  { code: 'bo', label: '🇧🇴 Bolivia' },
+  { code: 'py', label: '🇵🇾 Paraguay' },
+  { code: 'pa', label: '🇵🇦 Panamá' },
+  { code: 'sv', label: '🇸🇻 El Salvador' },
+  { code: 'uy', label: '🇺🇾 Uruguay' },
+  { code: 'us', label: '🇺🇸 EE.UU. (Hispano)' },
+  { code: 'pr', label: '🇵🇷 Puerto Rico' },
+  { code: 'cu', label: '🇨🇺 Cuba' }
+];
+
+const PAGE_SIZE = 32;
+const M3U_URL = 'https://iptv-org.github.io/iptv/languages/spa.m3u';
+
 export default function TvLibre() {
-  const [events, setEvents] = useState(localSportsData);
-  const [activeCategory, setActiveCategory] = useState('🔥 TODOS');
+  const [channels, setChannels] = useState(localChannelsData || []);
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [selectedCountry, setSelectedCountry] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [selectedServerIndex, setSelectedServerIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [playbackMode, setPlaybackMode] = useState('live1'); // 'live1' (manual), 'live2' (auto)
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedChannel, setSelectedChannel] = useState(null);
+  const [isLoadingLiveM3U, setIsLoadingLiveM3U] = useState(false);
+  const [playerError, setPlayerError] = useState(null);
+  const [playerLoading, setPlayerLoading] = useState(false);
+  const [favMap, setFavMap] = useState({});
 
-  // Fetch live sports agenda from streamx-hd.com on mount
+  const videoRef = useRef(null);
+  const hlsRef = useRef(null);
+  const playerContainerRef = useRef(null);
+
+  // Sync favorites on mount
   useEffect(() => {
-    async function fetchLiveAgenda() {
+    const map = {};
+    (channels || []).forEach(ch => {
+      const key = ch.id || ch.url;
+      if (isFavorite(key)) {
+        map[key] = true;
+      }
+    });
+    setFavMap(map);
+  }, [channels]);
+
+  // Fetch updated live M3U in the background
+  useEffect(() => {
+    let isCancelled = false;
+    async function fetchLiveM3U() {
       try {
-        const res = await fetch(`https://streamx-hd.com/eventos.json?nocache=${Date.now()}`);
-        if (res.ok) {
-          const raw = await res.json();
-          const parsed = [];
+        setIsLoadingLiveM3U(true);
+        const res = await fetch(M3U_URL);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        if (isCancelled) return;
 
-          if (raw.sports && Array.isArray(raw.sports)) {
-            raw.sports.forEach(sport => {
-              const sportName = sport.name || 'Football';
-              const sportIcon = sport.icon || '⚽';
+        const lines = text.split(/\r?\n/);
+        const parsed = [];
+        let current = null;
 
-              if (sport.leagues && Array.isArray(sport.leagues)) {
-                sport.leagues.forEach(league => {
-                  const leagueName = league.name || 'Liga';
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
 
-                  if (league.events && Array.isArray(league.events)) {
-                    league.events.forEach(ev => {
-                      const home = ev.homeTeam || ev.title || 'Equipo A';
-                      const away = ev.awayTeam || '';
-                      const homeLogo = ev.homeLogo || '';
-                      const awayLogo = ev.awayLogo || '';
+          if (line.startsWith('#EXTINF:')) {
+            const tvgId = (line.match(/tvg-id="([^"]*)"/i) || [])[1] || '';
+            const tvgName = (line.match(/tvg-name="([^"]*)"/i) || [])[1] || '';
+            const tvgLogo = (line.match(/tvg-logo="([^"]*)"/i) || [])[1] || '';
+            const groupTitle = (line.match(/group-title="([^"]*)"/i) || [])[1] || 'General';
+            const commaIdx = line.lastIndexOf(',');
+            const rawName = commaIdx !== -1 ? line.substring(commaIdx + 1).trim() : (tvgName || 'Canal');
 
-                      const servers = (ev.servers || []).map(s => {
-                        let streamParam = 'claro1';
-                        if (s.url) {
-                          const match = s.url.match(/stream=([^&]+)/);
-                          if (match) streamParam = match[1];
-                        }
-                        return {
-                          name: s.name || 'Servidor HD',
-                          stream: streamParam,
-                          live1Url: `https://streamx-hd.com/live1.php?stream=${streamParam}`,
-                          live2Url: `https://streamx-hd.com/live2.php?stream=${streamParam}`
-                        };
-                      });
+            let country = 'es';
+            if (tvgId) {
+              const m = tvgId.match(/\.([a-z]{2})@/i);
+              if (m) country = m[1].toLowerCase();
+            }
 
-                      if (servers.length === 0) {
-                        servers.push({
-                          name: 'Servidor Principal',
-                          stream: 'claro1',
-                          live1Url: 'https://streamx-hd.com/live1.php?stream=claro1',
-                          live2Url: 'https://streamx-hd.com/live2.php?stream=claro1'
-                        });
-                      }
+            let quality = 'HD';
+            if (/\b(1080p|fhd|1080)\b/i.test(rawName)) quality = '1080p';
+            else if (/\b(720p|hd)\b/i.test(rawName)) quality = '720p';
+            else if (/\b(4k|uhd)\b/i.test(rawName)) quality = '4K';
+            else if (/\b(sd|480p|360p)\b/i.test(rawName)) quality = 'SD';
 
-                      const isLive = ev.status?.toUpperCase() === 'EN VIVO' || !ev.status;
+            const cleanName = rawName.replace(/\[.*?\]|\(.*?\)/g, '').trim() || rawName;
 
-                      parsed.push({
-                        id: `hd-${parsed.length + 1}`,
-                        title: ev.title || `${home} vs ${away}`,
-                        homeTeam: home,
-                        awayTeam: away,
-                        homeLogo: homeLogo,
-                        awayLogo: awayLogo,
-                        league: leagueName,
-                        category: sportName.toUpperCase(),
-                        icon: sportIcon,
-                        time: ev.time ? ev.time.split(' ')[1] || ev.time : '04:45',
-                        date: ev.time ? ev.time.split(' ')[0] || 'Hoy' : 'Hoy',
-                        isLive: isLive,
-                        status: isLive ? '🔴 EN VIVO' : '🕒 PRONTO',
-                        servers: servers
-                      });
-                    });
-                  }
-                });
-              }
-            });
-          }
-
-          if (parsed.length > 0) {
-            setEvents(parsed);
+            current = {
+              id: tvgId || `chan_${parsed.length}`,
+              name: cleanName,
+              rawName: rawName,
+              logo: tvgLogo,
+              group: groupTitle,
+              country: country,
+              quality: quality
+            };
+          } else if (!line.startsWith('#')) {
+            if (current) {
+              current.url = line;
+              parsed.push(current);
+              current = null;
+            }
           }
         }
-      } catch (e) {
-        console.log('Using cached streamx-hd dataset:', e.message);
+
+        if (parsed.length > 500 && !isCancelled) {
+          setChannels(parsed);
+        }
+      } catch (err) {
+        console.warn('IPTV M3U live fetch error (using local bundle):', err);
+      } finally {
+        if (!isCancelled) setIsLoadingLiveM3U(false);
       }
     }
 
-    fetchLiveAgenda();
+    fetchLiveM3U();
+    return () => { isCancelled = true; };
   }, []);
 
-  // Filter events by category and search
-  const filteredEvents = useMemo(() => {
-    return events.filter(e => {
-      let matchCat = true;
-      if (activeCategory !== '🔥 TODOS') {
-        const catClean = activeCategory.replace(/[^A-Z]/g, '').trim();
-        matchCat = e.category.includes(catClean) || activeCategory.toLowerCase().includes(e.category.toLowerCase());
+  // Filter channels
+  const filteredChannels = useMemo(() => {
+    return channels.filter(ch => {
+      // Favorites filter
+      if (activeCategory === 'favs') {
+        const isFav = favMap[ch.id || ch.url];
+        if (!isFav) return false;
+      } else if (activeCategory === 'movies') {
+        const g = (ch.group || '').toLowerCase();
+        if (!g.includes('movie') && !g.includes('series') && !g.includes('cine') && !g.includes('film')) return false;
+      } else if (activeCategory === 'sports') {
+        const g = (ch.group || '').toLowerCase();
+        if (!g.includes('sport') && !g.includes('deporte')) return false;
+      } else if (activeCategory === 'entertainment') {
+        const g = (ch.group || '').toLowerCase();
+        if (!g.includes('entertain') && !g.includes('variedades') && !g.includes('show')) return false;
+      } else if (activeCategory === 'news') {
+        const g = (ch.group || '').toLowerCase();
+        if (!g.includes('news') && !g.includes('noticia')) return false;
+      } else if (activeCategory === 'music') {
+        const g = (ch.group || '').toLowerCase();
+        if (!g.includes('music') && !g.includes('música')) return false;
+      } else if (activeCategory === 'kids') {
+        const g = (ch.group || '').toLowerCase();
+        if (!g.includes('kid') && !g.includes('infantil') && !g.includes('animac') && !g.includes('toon')) return false;
+      } else if (activeCategory === 'culture') {
+        const g = (ch.group || '').toLowerCase();
+        if (!g.includes('doc') && !g.includes('culture') && !g.includes('educat') && !g.includes('cultura')) return false;
+      } else if (activeCategory === 'religious') {
+        const g = (ch.group || '').toLowerCase();
+        if (!g.includes('religio') && !g.includes('iglesia') && !g.includes('cristian')) return false;
+      } else if (activeCategory === 'general') {
+        const g = (ch.group || '').toLowerCase();
+        if (!g.includes('general') && !g.includes('public') && !g.includes('legislative') && !g.includes('undefined')) return false;
       }
 
-      const matchSearch = !searchTerm.trim() ||
-        e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        e.homeTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        e.awayTeam.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        e.league.toLowerCase().includes(searchTerm.toLowerCase());
+      // Country filter
+      if (selectedCountry !== 'all') {
+        if (ch.country !== selectedCountry) return false;
+      }
 
-      return matchCat && matchSearch;
+      // Search term
+      if (searchTerm.trim()) {
+        const term = searchTerm.toLowerCase().trim();
+        const n = (ch.name || '').toLowerCase();
+        const rn = (ch.rawName || '').toLowerCase();
+        const g = (ch.group || '').toLowerCase();
+        if (!n.includes(term) && !rn.includes(term) && !g.includes(term)) return false;
+      }
+
+      return true;
     });
-  }, [events, activeCategory, searchTerm]);
+  }, [channels, activeCategory, selectedCountry, searchTerm, favMap]);
 
-  // Featured live event for top Hero banner
-  const featuredLiveEvent = useMemo(() => {
-    return events.find(e => e.isLive) || events[0];
-  }, [events]);
+  // Total pages
+  const totalPages = Math.max(1, Math.ceil(filteredChannels.length / PAGE_SIZE));
 
-  const handleOpenEvent = (eventItem, serverIdx = 0) => {
-    setSelectedEvent(eventItem);
-    setSelectedServerIndex(serverIdx);
-    setIsPlaying(true);
+  // Reset to page 1 on filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCategory, selectedCountry, searchTerm]);
+
+  // Paginated slice
+  const paginatedChannels = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filteredChannels.slice(start, start + PAGE_SIZE);
+  }, [filteredChannels, currentPage]);
+
+  // Handle channel selection & HLS initialization
+  const handleSelectChannel = (channel) => {
+    setSelectedChannel(channel);
+    setPlayerError(null);
+    setPlayerLoading(true);
+
+    // Save to watch history
     saveWatchProgress({
-      id: eventItem.id,
-      titulo: eventItem.title,
-      portada: eventItem.homeLogo || 'https://cdn-icons-png.flaticon.com/512/747/747965.png',
-      type: 'live_sports'
+      id: channel.id || channel.url,
+      title: channel.name,
+      poster_path: channel.logo,
+      type: 'iptv',
+      group: channel.group,
+      url: channel.url
     });
+
+    // Smooth scroll to player on mobile / desktop
+    setTimeout(() => {
+      if (playerContainerRef.current) {
+        playerContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
   };
 
-  // Embed Stream URL
-  const embedUrl = useMemo(() => {
-    if (!selectedEvent || !selectedEvent.servers || selectedEvent.servers.length === 0) return '';
-    const activeServer = selectedEvent.servers[selectedServerIndex] || selectedEvent.servers[0];
-    const streamParam = activeServer.stream || 'claro1';
+  // Setup Hls.js or native player
+  useEffect(() => {
+    if (!selectedChannel || !selectedChannel.url) return;
 
-    if (playbackMode === 'live2') {
-      return `https://streamx-hd.com/live2.php?stream=${streamParam}`;
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Destroy existing instance
+    if (hlsRef.current) {
+      hlsRef.current.destroy();
+      hlsRef.current = null;
     }
-    return `https://streamx-hd.com/live1.php?stream=${streamParam}`;
-  }, [selectedEvent, selectedServerIndex, playbackMode]);
 
+    setPlayerError(null);
+    setPlayerLoading(true);
+
+    const streamUrl = selectedChannel.url;
+
+    if (Hls.isSupported()) {
+      const hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: true,
+        backBufferLength: 60,
+        manifestLoadingTimeOut: 15000,
+        manifestLoadingMaxRetry: 3,
+        levelLoadingTimeOut: 15000,
+        levelLoadingMaxRetry: 3
+      });
+
+      hlsRef.current = hls;
+
+      hls.loadSource(streamUrl);
+      hls.attachMedia(video);
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        setPlayerLoading(false);
+        video.play().catch(e => {
+          console.log('Autoplay prevented or paused:', e);
+        });
+      });
+
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        console.warn('Hls error:', data.type, data.details, data.fatal);
+        if (data.fatal) {
+          switch (data.type) {
+            case Hls.ErrorTypes.NETWORK_ERROR:
+              console.log('Fatal network error encountered, attempting recovery...');
+              hls.startLoad();
+              break;
+            case Hls.ErrorTypes.MEDIA_ERROR:
+              console.log('Fatal media error encountered, recovering...');
+              hls.recoverMediaError();
+              break;
+            default:
+              setPlayerLoading(false);
+              setPlayerError('Este canal no responde en este momento o tiene bloqueo de región. Puedes intentar el siguiente canal o abrir con Web Video Caster / VLC.');
+              hls.destroy();
+              break;
+          }
+        }
+      });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      // Native Safari / iOS / Smart TV HLS support
+      video.src = streamUrl;
+      video.addEventListener('loadedmetadata', () => {
+        setPlayerLoading(false);
+        video.play().catch(e => console.log('Autoplay prevented:', e));
+      });
+      video.addEventListener('error', () => {
+        setPlayerLoading(false);
+        setPlayerError('Error al reproducir el canal nativo. Intenta con otro canal o transmite mediante Web Video Caster.');
+      });
+    } else {
+      setPlayerLoading(false);
+      setPlayerError('Tu navegador no soporta reproducción directa de streams HLS (.m3u8).');
+    }
+
+    return () => {
+      if (hlsRef.current) {
+        hlsRef.current.destroy();
+        hlsRef.current = null;
+      }
+    };
+  }, [selectedChannel]);
+
+  // Zapping: Next / Previous channel
+  const handlePrevChannel = () => {
+    if (!selectedChannel) return;
+    const idx = filteredChannels.findIndex(c => (c.id === selectedChannel.id && c.url === selectedChannel.url));
+    if (idx > 0) {
+      handleSelectChannel(filteredChannels[idx - 1]);
+    } else if (filteredChannels.length > 0) {
+      handleSelectChannel(filteredChannels[filteredChannels.length - 1]);
+    }
+  };
+
+  const handleNextChannel = () => {
+    if (!selectedChannel) return;
+    const idx = filteredChannels.findIndex(c => (c.id === selectedChannel.id && c.url === selectedChannel.url));
+    if (idx !== -1 && idx < filteredChannels.length - 1) {
+      handleSelectChannel(filteredChannels[idx + 1]);
+    } else if (filteredChannels.length > 0) {
+      handleSelectChannel(filteredChannels[0]);
+    }
+  };
+
+  // Toggle favorite
+  const handleToggleFav = async (channel, e) => {
+    if (e) e.stopPropagation();
+    const key = channel.id || channel.url;
+    const isNowFav = await toggleFavorite({
+      id: key,
+      title: channel.name,
+      name: channel.name,
+      poster_path: channel.logo,
+      logo: channel.logo,
+      type: 'iptv',
+      group: channel.group,
+      url: channel.url,
+      country: channel.country,
+      quality: channel.quality
+    });
+    setFavMap(prev => ({ ...prev, [key]: isNowFav }));
+  };
+
+  // Fullscreen toggle
+  const handleToggleFullscreen = () => {
+    if (!playerContainerRef.current) return;
+    if (!document.fullscreenElement) {
+      playerContainerRef.current.requestFullscreen().catch(err => {
+        console.error('Error attempting to enable fullscreen:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  // Smart TV Remote Back Button / Escape
   useDpadNavigation({
     onBack: () => {
-      if (isPlaying) {
-        setIsPlaying(false);
+      if (selectedChannel) {
+        setSelectedChannel(null);
       }
     }
   });
 
   return (
-    <div className="sports-hub-container" style={{ padding: '0.5rem 0 3rem' }}>
+    <div className="tvlibre-container" style={{ minHeight: '100vh', padding: '1.5rem', background: '#0a0a0f', color: '#f3f4f6' }}>
       
-      {/* Header section with search */}
-      <div className="category-header" style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <h1 className="section-title" style={{ margin: 0, fontSize: '1.75rem', color: '#ffffff', letterSpacing: '-0.5px' }}>
-            ⚽ PIRU-TV DEPORTES EN VIVO (streamx-hd.com)
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', marginTop: '0.3rem' }}>
-            Centro de eventos deportivos con escudos de equipos, señales HD y reproductores iframe integrados
-          </p>
+      {/* Header Banner */}
+      <div style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: '1rem',
+        marginBottom: '1.5rem',
+        padding: '1.25rem 1.5rem',
+        background: 'linear-gradient(135deg, rgba(30, 27, 75, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%)',
+        borderRadius: '16px',
+        border: '1px solid rgba(139, 92, 246, 0.25)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{
+            width: '48px',
+            height: '48px',
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.5rem',
+            boxShadow: '0 4px 15px rgba(236, 72, 153, 0.4)'
+          }}>
+            📺
+          </div>
+          <div>
+            <h1 style={{ margin: 0, fontSize: '1.6rem', fontWeight: '800', letterSpacing: '-0.5px' }}>
+              TV Libre <span style={{ fontSize: '0.85rem', color: '#ec4899', fontWeight: '600', marginLeft: '6px', padding: '2px 8px', background: 'rgba(236,72,153,0.15)', borderRadius: '6px', border: '1px solid rgba(236,72,153,0.3)' }}>IPTV EN ESPAÑOL</span>
+            </h1>
+            <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>
+              Más de 2,200 canales en vivo en español • Transmisión oficial IPTV HLS sin interrupciones
+            </p>
+          </div>
         </div>
 
-        <div className="search-container" style={{ width: '340px' }}>
-          <span className="search-icon">🔍</span>
-          <input
-            type="text"
-            placeholder="Buscar partido, equipo o liga (ej. Tottenham, Dortmund)..."
-            className="search-input"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '0.8rem',
+            padding: '6px 12px',
+            borderRadius: '20px',
+            background: 'rgba(16, 185, 129, 0.15)',
+            border: '1px solid rgba(16, 185, 129, 0.3)',
+            color: '#34d399',
+            fontWeight: '600'
+          }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }}></span>
+            {channels.length} Canales Disponibles
+          </span>
+
+          {isLoadingLiveM3U && (
+            <span style={{ fontSize: '0.75rem', color: '#a78bfa', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              🔄 Actualizando lista...
+            </span>
+          )}
         </div>
       </div>
 
-      {/* Category Pills Bar */}
-      <div className="filters-wrapper" style={{ margin: '0 0 1.75rem 0', display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
-        {SPORTS_CATEGORIES.map(cat => (
-          <button
-            key={cat}
-            type="button"
-            className={`filter-badge ${activeCategory === cat ? 'active' : ''}`}
-            onClick={() => setActiveCategory(cat)}
-            style={{
-              background: activeCategory === cat ? 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)' : 'rgba(255,255,255,0.06)',
-              borderColor: activeCategory === cat ? '#e50914' : 'rgba(255,255,255,0.1)',
-              color: '#fff',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* Featured Live Event Banner with Team Logos */}
-      {!searchTerm.trim() && featuredLiveEvent && (
+      {/* Embedded Player Section (When channel is selected) */}
+      {selectedChannel && (
         <div 
-          className="hero-banner"
+          ref={playerContainerRef}
           style={{
-            position: 'relative',
-            minHeight: '340px',
-            borderRadius: '24px',
+            marginBottom: '2rem',
+            background: 'rgba(15, 15, 25, 0.95)',
+            borderRadius: '20px',
             overflow: 'hidden',
-            marginBottom: '2.5rem',
-            background: 'linear-gradient(135deg, #0e1117 0%, #161b22 100%)',
-            boxShadow: '0 25px 50px rgba(0,0,0,0.85)',
-            border: '1px solid rgba(239, 68, 68, 0.4)',
+            border: '1px solid rgba(139, 92, 246, 0.35)',
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
+            position: 'relative',
+            backdropFilter: 'blur(10px)'
+          }}
+        >
+          {/* Player Header Bar */}
+          <div style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '2.5rem 3.5rem',
+            padding: '12px 18px',
+            background: 'rgba(20, 20, 35, 0.8)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
             flexWrap: 'wrap',
-            gap: '2rem'
-          }}
-        >
-          {/* Left Text & Details */}
-          <div style={{ maxWidth: '560px', zIndex: 5 }}>
-            <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '0.8rem', alignItems: 'center', flexWrap: 'wrap' }}>
-              <span style={{ background: '#ef4444', color: '#ffffff', fontSize: '0.75rem', fontWeight: 900, padding: '4px 12px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px', boxShadow: '0 0 15px rgba(239, 68, 68, 0.6)' }}>
-                <span className="pulse-dot" style={{ background: '#fff' }} /> 🔴 EN VIVO AHORA
-              </span>
-              <span style={{ background: 'rgba(255,255,255,0.12)', color: '#86efac', fontSize: '0.72rem', fontWeight: 700, padding: '4px 10px', borderRadius: '8px' }}>
-                {featuredLiveEvent.league} • {featuredLiveEvent.time}
-              </span>
+            gap: '0.5rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              {selectedChannel.logo ? (
+                <img 
+                  src={selectedChannel.logo} 
+                  alt={selectedChannel.name}
+                  style={{ width: '36px', height: '36px', objectFit: 'contain', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', padding: '2px' }}
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+              ) : (
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                  📺
+                </div>
+              )}
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {selectedChannel.name}
+                  <span style={{
+                    fontSize: '0.7rem',
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    background: '#ef4444',
+                    color: '#fff',
+                    fontWeight: '800'
+                  }}>
+                    LIVE
+                  </span>
+                </h2>
+                <div style={{ fontSize: '0.78rem', color: '#94a3b8', display: 'flex', gap: '10px', marginTop: '2px' }}>
+                  <span>🏷️ {selectedChannel.group}</span>
+                  <span>🌍 {selectedChannel.country.toUpperCase()}</span>
+                  <span>⚡ {selectedChannel.quality}</span>
+                </div>
+              </div>
             </div>
 
-            <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: '#ffffff', margin: '0 0 0.8rem 0', lineHeight: 1.15, textShadow: '0 4px 20px rgba(0,0,0,0.9)' }}>
-              {featuredLiveEvent.title}
-            </h2>
+            {/* Quick Action Controls */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <button
+                onClick={handlePrevChannel}
+                title="Canal anterior"
+                style={{
+                  padding: '6px 12px',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '8px',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontSize: '0.85rem'
+                }}
+              >
+                ⏮ Anterior
+              </button>
 
-            <p style={{ fontSize: '0.92rem', color: '#cbd5e1', lineHeight: '1.6', margin: '0 0 1.5rem 0' }}>
-              Servidores disponibles: <strong style={{ color: '#f87171' }}>{featuredLiveEvent.servers.map(s => s.name).join(' • ')}</strong>. Disfruta de la transmisión deportiva en vivo en alta definición.
-            </p>
+              <button
+                onClick={handleNextChannel}
+                title="Canal siguiente"
+                style={{
+                  padding: '6px 12px',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '8px',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontSize: '0.85rem'
+                }}
+              >
+                Siguiente ⏭
+              </button>
 
-            <button
-              type="button"
-              className="btn-primary"
-              style={{
-                padding: '0.85rem 1.8rem',
-                fontSize: '1rem',
-                fontWeight: 900,
-                background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)',
-                border: 'none',
-                color: '#ffffff',
-                borderRadius: '12px',
-                boxShadow: '0 6px 25px rgba(229, 9, 20, 0.55)',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.6rem'
-              }}
-              onClick={() => handleOpenEvent(featuredLiveEvent, 0)}
-            >
-              <span>▶</span> VER TRANSMISIÓN EN VIVO
-            </button>
+              <button
+                onClick={() => handleToggleFav(selectedChannel)}
+                title="Marcar como favorito"
+                style={{
+                  padding: '6px 12px',
+                  background: favMap[selectedChannel.id || selectedChannel.url] ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255, 255, 255, 0.08)',
+                  border: favMap[selectedChannel.id || selectedChannel.url] ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '8px',
+                  color: favMap[selectedChannel.id || selectedChannel.url] ? '#f87171' : '#fff',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem'
+                }}
+              >
+                {favMap[selectedChannel.id || selectedChannel.url] ? '❤️ Guardado' : '🤍 Favorito'}
+              </button>
+
+              <button
+                onClick={() => castWithWebVideoCaster(selectedChannel.url, selectedChannel.name)}
+                title="Transmitir con Web Video Caster a Smart TV"
+                style={{
+                  padding: '6px 12px',
+                  background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(139, 92, 246, 0.25))',
+                  border: '1px solid rgba(236, 72, 153, 0.5)',
+                  borderRadius: '8px',
+                  color: '#f472b6',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: '600'
+                }}
+              >
+                📡 Transmitir (WVC)
+              </button>
+
+              <button
+                onClick={handleToggleFullscreen}
+                title="Pantalla completa"
+                style={{
+                  padding: '6px 10px',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '8px',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem'
+                }}
+              >
+                ⛶
+              </button>
+
+              <button
+                onClick={() => setSelectedChannel(null)}
+                title="Cerrar reproductor"
+                style={{
+                  padding: '6px 10px',
+                  background: 'rgba(239, 68, 68, 0.2)',
+                  border: '1px solid rgba(239, 68, 68, 0.4)',
+                  borderRadius: '8px',
+                  color: '#fca5a5',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '0.85rem'
+                }}
+              >
+                ✕
+              </button>
+            </div>
           </div>
 
-          {/* Right Team Logos VS Display */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', background: 'rgba(0,0,0,0.3)', padding: '1.5rem 2.5rem', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <div style={{ textAlign: 'center', width: '110px' }}>
-              <img
-                src={featuredLiveEvent.homeLogo || 'https://cdn-icons-png.flaticon.com/512/747/747965.png'}
-                alt={featuredLiveEvent.homeTeam}
-                style={{ width: '80px', height: '80px', objectFit: 'contain', filter: 'drop-shadow(0 5px 15px rgba(0,0,0,0.8))' }}
-                onError={(e) => { e.target.src = 'https://cdn-icons-png.flaticon.com/512/747/747965.png'; }}
-              />
-              <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#fff', display: 'block', marginTop: '0.5rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {featuredLiveEvent.homeTeam}
-              </span>
-            </div>
+          {/* Video Container */}
+          <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <video
+              ref={videoRef}
+              controls
+              autoPlay
+              playsInline
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            />
 
-            <span style={{ fontSize: '1.5rem', fontWeight: 900, color: '#ef4444', textShadow: '0 0 10px rgba(239,68,68,0.8)' }}>
-              VS
-            </span>
+            {/* Spinner Overlay */}
+            {playerLoading && !playerError && (
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'rgba(0, 0, 0, 0.7)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '12px',
+                zIndex: 10
+              }}>
+                <div style={{
+                  width: '45px',
+                  height: '45px',
+                  borderRadius: '50%',
+                  border: '4px solid rgba(255,255,255,0.15)',
+                  borderTopColor: '#ec4899',
+                  animation: 'spin 1s linear infinite'
+                }} />
+                <span style={{ color: '#e2e8f0', fontSize: '0.9rem', fontWeight: '500' }}>
+                  Conectando a {selectedChannel.name}...
+                </span>
+              </div>
+            )}
 
-            <div style={{ textAlign: 'center', width: '110px' }}>
-              <img
-                src={featuredLiveEvent.awayLogo || 'https://cdn-icons-png.flaticon.com/512/747/747965.png'}
-                alt={featuredLiveEvent.awayTeam}
-                style={{ width: '80px', height: '80px', objectFit: 'contain', filter: 'drop-shadow(0 5px 15px rgba(0,0,0,0.8))' }}
-                onError={(e) => { e.target.src = 'https://cdn-icons-png.flaticon.com/512/747/747965.png'; }}
-              />
-              <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#fff', display: 'block', marginTop: '0.5rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {featuredLiveEvent.awayTeam || 'Rival'}
-              </span>
-            </div>
+            {/* Error Overlay */}
+            {playerError && (
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'rgba(15, 10, 20, 0.9)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '2rem',
+                textAlign: 'center',
+                zIndex: 11
+              }}>
+                <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>⚠️</div>
+                <h3 style={{ margin: '0 0 8px 0', fontSize: '1.2rem', color: '#f87171' }}>
+                  Señal temporalmente no disponible
+                </h3>
+                <p style={{ margin: '0 0 1.5rem 0', maxWidth: '500px', fontSize: '0.85rem', color: '#cbd5e1' }}>
+                  {playerError}
+                </p>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                  <button
+                    onClick={() => handleSelectChannel(selectedChannel)}
+                    style={{
+                      padding: '8px 16px',
+                      background: '#ec4899',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontWeight: '600',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    🔄 Reintentar
+                  </button>
+                  <button
+                    onClick={handleNextChannel}
+                    style={{
+                      padding: '8px 16px',
+                      background: 'rgba(255, 255, 255, 0.15)',
+                      color: '#fff',
+                      border: '1px solid rgba(255, 255, 255, 0.25)',
+                      borderRadius: '8px',
+                      fontWeight: '600',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Siguiente canal ⏭
+                  </button>
+                  <button
+                    onClick={() => castWithWebVideoCaster(selectedChannel.url, selectedChannel.name)}
+                    style={{
+                      padding: '8px 16px',
+                      background: 'rgba(139, 92, 246, 0.3)',
+                      border: '1px solid #8b5cf6',
+                      color: '#c4b5fd',
+                      borderRadius: '8px',
+                      fontWeight: '600',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    📡 Abrir en WVC / VLC
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
 
-      {/* Main Grid Events Cards with VS Layout & Team Logos */}
-      <div className="section-header" style={{ marginBottom: '1.25rem' }}>
-        <h2 className="section-title" style={{ fontSize: '1.3rem', color: '#ffffff', margin: 0 }}>
-          ⚽ Agenda de Transmisiones ({filteredEvents.length} Eventos)
-        </h2>
-      </div>
-
-      <div className="media-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
-        {filteredEvents.length > 0 ? (
-          filteredEvents.map(eventItem => (
-            <div
-              key={eventItem.id}
-              className="media-card"
-              onClick={() => handleOpenEvent(eventItem, 0)}
+      {/* Filter and Search Bar */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1rem',
+        marginBottom: '1.5rem',
+        background: 'rgba(20, 20, 35, 0.6)',
+        padding: '1.25rem',
+        borderRadius: '16px',
+        border: '1px solid rgba(255, 255, 255, 0.08)'
+      }}>
+        {/* Top Controls: Search + Country Select */}
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ flex: '1 1 300px', position: 'relative' }}>
+            <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>
+              🔍
+            </span>
+            <input
+              type="text"
+              placeholder="Buscar canal por nombre o temática..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               style={{
-                position: 'relative',
-                textAlign: 'left',
+                width: '100%',
+                boxSizing: 'border-box',
+                padding: '12px 14px 12px 42px',
+                background: 'rgba(10, 10, 20, 0.8)',
+                border: '1px solid rgba(139, 92, 246, 0.3)',
+                borderRadius: '10px',
+                color: '#fff',
+                fontSize: '0.95rem',
+                outline: 'none'
+              }}
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: '#94a3b8',
+                  cursor: 'pointer',
+                  fontSize: '1rem'
+                }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          {/* Country Selector */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <label style={{ fontSize: '0.85rem', color: '#94a3b8', whiteSpace: 'nowrap' }}>
+              País:
+            </label>
+            <select
+              value={selectedCountry}
+              onChange={(e) => setSelectedCountry(e.target.value)}
+              style={{
+                padding: '10px 14px',
+                background: 'rgba(10, 10, 20, 0.85)',
+                border: '1px solid rgba(139, 92, 246, 0.3)',
+                borderRadius: '10px',
+                color: '#fff',
+                fontSize: '0.9rem',
                 cursor: 'pointer',
-                background: 'rgba(20, 20, 32, 0.7)',
-                borderRadius: '20px',
-                border: `1px solid ${eventItem.isLive ? 'rgba(239, 68, 68, 0.45)' : 'rgba(255,255,255,0.08)'}`,
-                padding: '1.25rem',
-                transition: 'transform 0.25s ease, border-color 0.25s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1rem',
-                boxShadow: eventItem.isLive ? '0 6px 25px rgba(239, 68, 68, 0.2)' : 'none'
+                outline: 'none'
               }}
             >
-              {/* Event Top Pills */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                  <span style={{ background: 'rgba(59, 130, 246, 0.2)', border: '1px solid rgba(59, 130, 246, 0.4)', color: '#60a5fa', fontSize: '0.68rem', fontWeight: 800, padding: '2px 8px', borderRadius: '6px' }}>
-                    {eventItem.league}
-                  </span>
-                  <span style={{ fontSize: '0.72rem', color: '#cbd5e1', fontWeight: 700 }}>
-                    ⏰ {eventItem.time}
-                  </span>
-                </div>
-
-                <span style={{
-                  background: eventItem.isLive ? '#ef4444' : 'rgba(255,255,255,0.1)',
-                  color: '#ffffff',
-                  fontSize: '0.68rem',
-                  fontWeight: 900,
-                  padding: '3px 8px',
-                  borderRadius: '6px',
-                  boxShadow: eventItem.isLive ? '0 0 10px rgba(239, 68, 68, 0.5)' : 'none'
-                }}>
-                  {eventItem.isLive ? '🔴 EN VIVO' : 'PRONTO'}
-                </span>
-              </div>
-
-              {/* Team Logos VS Layout (Matching streamx-hd.com Reference) */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', padding: '0.5rem 0' }}>
-                {/* Home Team */}
-                <div style={{ textAlign: 'center', width: '90px' }}>
-                  <img
-                    src={eventItem.homeLogo || 'https://cdn-icons-png.flaticon.com/512/747/747965.png'}
-                    alt={eventItem.homeTeam}
-                    style={{ width: '56px', height: '56px', objectFit: 'contain' }}
-                    onError={(e) => { e.target.src = 'https://cdn-icons-png.flaticon.com/512/747/747965.png'; }}
-                  />
-                  <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#fff', display: 'block', marginTop: '0.4rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {eventItem.homeTeam}
-                  </span>
-                </div>
-
-                <span style={{ fontSize: '1.2rem', fontWeight: 900, color: '#ef4444' }}>VS</span>
-
-                {/* Away Team */}
-                <div style={{ textAlign: 'center', width: '90px' }}>
-                  <img
-                    src={eventItem.awayLogo || 'https://cdn-icons-png.flaticon.com/512/747/747965.png'}
-                    alt={eventItem.awayTeam}
-                    style={{ width: '56px', height: '56px', objectFit: 'contain' }}
-                    onError={(e) => { e.target.src = 'https://cdn-icons-png.flaticon.com/512/747/747965.png'; }}
-                  />
-                  <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#fff', display: 'block', marginTop: '0.4rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {eventItem.awayTeam || 'Rival'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Available Servers Chips */}
-              <div style={{ paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-                <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 700, display: 'block', marginBottom: '0.4rem' }}>
-                  SERVIDORES DISPONIBLES:
-                </span>
-                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-                  {eventItem.servers.map((s, idx) => (
-                    <button
-                      key={s.name + idx}
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOpenEvent(eventItem, idx);
-                      }}
-                      style={{
-                        background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
-                        border: 'none',
-                        color: '#fff',
-                        fontSize: '0.72rem',
-                        fontWeight: 800,
-                        padding: '4px 10px',
-                        borderRadius: '6px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      {s.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-            </div>
-          ))
-        ) : (
-          <div className="empty-state" style={{ gridColumn: '1 / -1', padding: '4rem 2rem', textAlign: 'center' }}>
-            <span className="empty-icon">⚽</span>
-            <h3 className="empty-title">No se encontraron eventos deportivos</h3>
-            <p>Prueba buscando con otro término de búsqueda.</p>
+              {COUNTRIES.map(c => (
+                <option key={c.code} value={c.code} style={{ background: '#111827', color: '#fff' }}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
           </div>
+        </div>
+
+        {/* Category Pills */}
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          overflowX: 'auto',
+          paddingBottom: '4px',
+          scrollbarWidth: 'thin'
+        }}>
+          {CATEGORIES.map(cat => {
+            const isActive = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  background: isActive ? 'linear-gradient(135deg, #ec4899, #8b5cf6)' : 'rgba(255, 255, 255, 0.05)',
+                  border: isActive ? '1px solid rgba(236, 72, 153, 0.6)' : '1px solid rgba(255, 255, 255, 0.1)',
+                  color: isActive ? '#fff' : '#cbd5e1',
+                  fontWeight: isActive ? '700' : '500',
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s ease',
+                  boxShadow: isActive ? '0 4px 15px rgba(236, 72, 153, 0.35)' : 'none'
+                }}
+              >
+                {cat.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Channel Count & Current Results info */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', padding: '0 4px' }}>
+        <span style={{ fontSize: '0.9rem', color: '#94a3b8' }}>
+          Mostrando <strong style={{ color: '#fff' }}>{filteredChannels.length}</strong> canales
+          {activeCategory !== 'all' && ` en ${CATEGORIES.find(c => c.id === activeCategory)?.label}`}
+          {selectedCountry !== 'all' && ` (${COUNTRIES.find(c => c.code === selectedCountry)?.label})`}
+        </span>
+
+        {totalPages > 1 && (
+          <span style={{ fontSize: '0.85rem', color: '#a78bfa' }}>
+            Página <strong>{currentPage}</strong> de <strong>{totalPages}</strong>
+          </span>
         )}
       </div>
 
-      {/* Video Streaming Modal Player */}
-      {selectedEvent && isPlaying && (
-        <div className="modal-overlay" onClick={() => setIsPlaying(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '960px' }}>
-            <button className="modal-close-btn" onClick={() => setIsPlaying(false)}>✕</button>
+      {/* Channel Grid */}
+      {paginatedChannels.length === 0 ? (
+        <div style={{
+          textAlign: 'center',
+          padding: '4rem 2rem',
+          background: 'rgba(20, 20, 35, 0.4)',
+          borderRadius: '16px',
+          border: '1px dashed rgba(255, 255, 255, 0.15)'
+        }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📺</div>
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '1.2rem', color: '#fff' }}>No se encontraron canales</h3>
+          <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.9rem' }}>
+            Intenta cambiar el país, la categoría o borrar el término de búsqueda.
+          </p>
+          <button
+            onClick={() => { setActiveCategory('all'); setSelectedCountry('all'); setSearchTerm(''); }}
+            style={{
+              marginTop: '1rem',
+              padding: '8px 16px',
+              background: '#ec4899',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '600'
+            }}
+          >
+            Ver todos los canales
+          </button>
+        </div>
+      ) : (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+          gap: '1.25rem',
+          marginBottom: '2rem'
+        }}>
+          {paginatedChannels.map((channel, index) => {
+            const isSelected = selectedChannel && (selectedChannel.id === channel.id && selectedChannel.url === channel.url);
+            const isFav = favMap[channel.id || channel.url];
 
-            {/* Movie Player Container with EXACT Peliculas.jsx CSS classes */}
-            <div className="movie-player-container">
-              <iframe
-                src={embedUrl}
-                className="player-iframe"
-                title={selectedEvent.title}
-                allowFullScreen
-                allow="autoplay; encrypted-media"
-              />
-            </div>
+            return (
+              <div
+                key={channel.id ? `${channel.id}_${index}` : `chan_${index}`}
+                onClick={() => handleSelectChannel(channel)}
+                style={{
+                  background: isSelected 
+                    ? 'linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(139, 92, 246, 0.25))' 
+                    : 'rgba(25, 25, 40, 0.7)',
+                  borderRadius: '14px',
+                  padding: '1rem',
+                  border: isSelected ? '2px solid #ec4899' : '1px solid rgba(255, 255, 255, 0.08)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: '0.75rem',
+                  transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                  boxShadow: isSelected ? '0 8px 25px rgba(236, 72, 153, 0.3)' : '0 4px 12px rgba(0, 0, 0, 0.2)',
+                  position: 'relative'
+                }}
+              >
+                {/* Top badges: Country, Quality & Favorite */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                    <span style={{
+                      fontSize: '0.72rem',
+                      fontWeight: '700',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      color: '#e2e8f0',
+                      textTransform: 'uppercase'
+                    }}>
+                      {channel.country}
+                    </span>
+                    <span style={{
+                      fontSize: '0.72rem',
+                      fontWeight: '700',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      background: channel.quality === '1080p' || channel.quality === '4K' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(59, 130, 246, 0.2)',
+                      color: channel.quality === '1080p' || channel.quality === '4K' ? '#34d399' : '#60a5fa'
+                    }}>
+                      {channel.quality}
+                    </span>
+                  </div>
 
-            {/* Server Selector Bar when Playing */}
-            <div className="player-header">
-              <div className="player-title-info">
-                <span className="pulse-dot" style={{ background: '#ef4444' }}></span>
-                <span>
-                  TRANSMISIÓN: {selectedEvent.title} ({selectedEvent.servers[selectedServerIndex]?.name || 'Servidor HD'})
-                </span>
-              </div>
-              <div className="server-selector" style={{ flexWrap: 'wrap', gap: '0.4rem' }}>
-                {selectedEvent.servers.map((s, idx) => (
-                  <button 
-                    key={s.name + idx}
-                    className={`server-btn ${selectedServerIndex === idx ? 'active' : ''}`}
-                    onClick={() => setSelectedServerIndex(idx)}
+                  <button
+                    onClick={(e) => handleToggleFav(channel, e)}
+                    title={isFav ? 'Quitar de favoritos' : 'Añadir a favoritos'}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      fontSize: '1.1rem',
+                      cursor: 'pointer',
+                      padding: '2px',
+                      color: isFav ? '#ef4444' : '#94a3b8'
+                    }}
                   >
-                    {s.name}
+                    {isFav ? '❤️' : '🤍'}
                   </button>
-                ))}
-                <button 
-                  className={`server-btn ${playbackMode === 'live1' ? 'active' : ''}`}
-                  onClick={() => setPlaybackMode('live1')}
-                  style={{ background: playbackMode === 'live1' ? '#e50914' : 'rgba(255,255,255,0.1)' }}
-                >
-                  Live1 (Manual)
-                </button>
-                <button 
-                  className={`server-btn ${playbackMode === 'live2' ? 'active' : ''}`}
-                  onClick={() => setPlaybackMode('live2')}
-                  style={{ background: playbackMode === 'live2' ? '#e50914' : 'rgba(255,255,255,0.1)' }}
-                >
-                  Live2 (Auto)
-                </button>
+                </div>
+
+                {/* Channel Logo and Name */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{
+                    width: '52px',
+                    height: '52px',
+                    borderRadius: '10px',
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '4px',
+                    flexShrink: 0,
+                    border: '1px solid rgba(255, 255, 255, 0.05)'
+                  }}>
+                    {channel.logo ? (
+                      <img
+                        src={channel.logo}
+                        alt={channel.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                        loading="lazy"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          if (e.target.parentElement) e.target.parentElement.innerHTML = '📺';
+                        }}
+                      />
+                    ) : (
+                      <span style={{ fontSize: '1.5rem' }}>📺</span>
+                    )}
+                  </div>
+
+                  <div style={{ overflow: 'hidden', flex: 1 }}>
+                    <h3 style={{
+                      margin: '0 0 4px 0',
+                      fontSize: '0.95rem',
+                      fontWeight: '700',
+                      color: '#fff',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {channel.name}
+                    </h3>
+                    <p style={{
+                      margin: 0,
+                      fontSize: '0.75rem',
+                      color: '#94a3b8',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {channel.group || 'General'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Bottom Action Footer */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingTop: '8px',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.05)'
+                }}>
+                  <span style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    fontSize: '0.72rem',
+                    color: '#10b981',
+                    fontWeight: '600'
+                  }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }}></span>
+                    En Vivo
+                  </span>
+
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        castWithWebVideoCaster(channel.url, channel.name);
+                      }}
+                      title="Transmitir a TV con Web Video Caster"
+                      style={{
+                        padding: '4px 8px',
+                        background: 'rgba(236, 72, 153, 0.15)',
+                        border: '1px solid rgba(236, 72, 153, 0.3)',
+                        borderRadius: '6px',
+                        color: '#f472b6',
+                        fontSize: '0.72rem',
+                        fontWeight: '600',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      📡 WVC
+                    </button>
+                    <button
+                      style={{
+                        padding: '4px 10px',
+                        background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+                        border: 'none',
+                        borderRadius: '6px',
+                        color: '#fff',
+                        fontSize: '0.72rem',
+                        fontWeight: '700',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Ver ▶
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            {/* Modal Body & Action Buttons */}
-            <div className="modal-body">
-              <div className="modal-meta">
-                <span className="modal-genre" style={{ background: 'rgba(239, 68, 68, 0.25)', color: '#f87171', borderColor: 'rgba(239, 68, 68, 0.4)' }}>
-                  🔴 EN VIVO • {selectedEvent.league}
-                </span>
-                <span className="modal-lang">⏰ Hora: {selectedEvent.time}</span>
-                <span className="modal-lang">⚽ {selectedEvent.category}</span>
-              </div>
-              <h2 className="modal-title">{selectedEvent.title}</h2>
-              <p className="modal-summary">
-                Transmisión deportiva en vivo HD integrada de streamx-hd.com. Disfruta del encuentro entre {selectedEvent.homeTeam} vs {selectedEvent.awayTeam || 'su rival'}.
-              </p>
-
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', margin: '1.25rem 0' }}>
-                <button
-                  type="button"
-                  className="btn-primary"
-                  style={{
-                    flex: 'none',
-                    padding: '0.75rem 1.5rem',
-                    fontSize: '0.95rem',
-                    background: isFavorite(selectedEvent.id) ? 'rgba(239, 68, 68, 0.25)' : 'rgba(255, 255, 255, 0.08)',
-                    border: `1px solid ${isFavorite(selectedEvent.id) ? '#ef4444' : 'rgba(255, 255, 255, 0.2)'}`,
-                    color: isFavorite(selectedEvent.id) ? '#fca5a5' : '#fff'
-                  }}
-                  onClick={async () => {
-                    await toggleFavorite(selectedEvent);
-                    setSelectedEvent({ ...selectedEvent });
-                  }}
-                >
-                  {isFavorite(selectedEvent.id) ? '❤️ En Mi Lista' : '🤍 Agregar a Mi Lista'}
-                </button>
-
-                <button
-                  type="button"
-                  className="btn-primary"
-                  style={{
-                    flex: 'none',
-                    padding: '0.75rem 1.5rem',
-                    fontSize: '0.95rem',
-                    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                    border: 'none',
-                    color: '#ffffff',
-                    boxShadow: '0 4px 15px rgba(245, 158, 11, 0.45)'
-                  }}
-                  onClick={() => {
-                    castWithWebVideoCaster(embedUrl, selectedEvent.title);
-                  }}
-                >
-                  📱 Transmitir a TV (Web Video Caster)
-                </button>
-              </div>
-
-            </div>
-
-          </div>
+            );
+          })}
         </div>
       )}
 
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '8px',
+          marginTop: '2rem',
+          marginBottom: '3rem',
+          flexWrap: 'wrap'
+        }}>
+          <button
+            onClick={() => {
+              setCurrentPage(1);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            disabled={currentPage === 1}
+            style={{
+              padding: '8px 12px',
+              borderRadius: '8px',
+              background: currentPage === 1 ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: currentPage === 1 ? '#4b5563' : '#fff',
+              cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+              fontSize: '0.85rem'
+            }}
+          >
+            ⏮ Primera
+          </button>
+
+          <button
+            onClick={() => {
+              setCurrentPage(p => Math.max(1, p - 1));
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            disabled={currentPage === 1}
+            style={{
+              padding: '8px 14px',
+              borderRadius: '8px',
+              background: currentPage === 1 ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: currentPage === 1 ? '#4b5563' : '#fff',
+              cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+              fontSize: '0.85rem',
+              fontWeight: '600'
+            }}
+          >
+            ← Anterior
+          </button>
+
+          {/* Page Indicator */}
+          <span style={{
+            padding: '8px 16px',
+            background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(139, 92, 246, 0.2))',
+            borderRadius: '8px',
+            border: '1px solid rgba(139, 92, 246, 0.4)',
+            color: '#fff',
+            fontSize: '0.85rem',
+            fontWeight: '700'
+          }}>
+            {currentPage} / {totalPages}
+          </span>
+
+          <button
+            onClick={() => {
+              setCurrentPage(p => Math.min(totalPages, p + 1));
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            disabled={currentPage === totalPages}
+            style={{
+              padding: '8px 14px',
+              borderRadius: '8px',
+              background: currentPage === totalPages ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: currentPage === totalPages ? '#4b5563' : '#fff',
+              cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+              fontSize: '0.85rem',
+              fontWeight: '600'
+            }}
+          >
+            Siguiente →
+          </button>
+
+          <button
+            onClick={() => {
+              setCurrentPage(totalPages);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            disabled={currentPage === totalPages}
+            style={{
+              padding: '8px 12px',
+              borderRadius: '8px',
+              background: currentPage === totalPages ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: currentPage === totalPages ? '#4b5563' : '#fff',
+              cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+              fontSize: '0.85rem'
+            }}
+          >
+            Última ⏭
+          </button>
+        </div>
+      )}
     </div>
   );
 }
