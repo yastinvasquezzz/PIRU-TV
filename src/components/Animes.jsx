@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import useDpadNavigation from '../hooks/useDpadNavigation';
-import { saveWatchProgress, toggleFavorite, isFavorite } from '../utils/storage';
+import { saveWatchProgress, toggleFavorite, isFavorite, getWatchHistory } from '../utils/storage';
 import { castWithWebVideoCaster } from '../utils/wvcCast';
 import vimeusAnimesData from '../data/animes.json';
 
@@ -12,7 +12,7 @@ const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
 const VIMEUS_PARAMS = '&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3';
 
 const ANIME_CATEGORIES = [
-  '🔥 Todos',
+  'Inicio',
   '⭐ Top Populares',
   '💥 Shonen',
   '⚔️ Acción',
@@ -21,7 +21,7 @@ const ANIME_CATEGORIES = [
   '🤖 Sci-Fi',
   '⚽ Deportes',
   '🎬 Películas Anime',
-  '❤️ Mis Favoritos'
+  '❤️ Mi Lista'
 ];
 
 const CATEGORY_DISCOVER_MAP = {
@@ -63,7 +63,7 @@ const ANIME_SERVERS = [
 ];
 
 export default function Animes() {
-  const [activeCategory, setActiveCategory] = useState('🔥 Todos');
+  const [activeCategory, setActiveCategory] = useState('Inicio');
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryPages, setCategoryPages] = useState({});
   const [categoryTotalPages, setCategoryTotalPages] = useState({});
@@ -71,7 +71,7 @@ export default function Animes() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
-  const [hoveredAnimeKey, setHoveredAnimeKey] = useState(null);
+  const [isMuted, setIsMuted] = useState(true);
 
   // Selected Anime & Modal State
   const [selectedAnime, setSelectedAnime] = useState(null);
@@ -86,14 +86,16 @@ export default function Animes() {
   const [selectedServer, setSelectedServer] = useState('vimeus');
   const [modalTab, setModalTab] = useState('player'); // 'player', 'cast', 'trailer', 'details'
 
-  // Hero Featured Carousel
-  const [heroIndex, setHeroIndex] = useState(0);
+  // Watch history for continue watching row
+  const [watchHistory, setWatchHistory] = useState(getWatchHistory());
+
+  // Hero Featured Billboard List (Rotates every 7 seconds)
   const heroList = useMemo(() => {
     return vimeusAnimesData.slice(0, 8);
   }, []);
-  const activeHero = heroList[heroIndex] || heroList[0];
+  const [heroIndex, setHeroIndex] = useState(0);
+  const heroItem = heroList[heroIndex] || heroList[0];
 
-  // Auto-rotate Hero banner every 7s
   useEffect(() => {
     if (heroList.length <= 1) return;
     const timer = setInterval(() => {
@@ -102,13 +104,35 @@ export default function Animes() {
     return () => clearInterval(timer);
   }, [heroList]);
 
-  // Current page for active category
+  // Top 10 items for the giant ranking row
+  const top10Animes = useMemo(() => {
+    return vimeusAnimesData.slice(0, 10);
+  }, []);
+
+  // Filtered continue watching for anime
+  const continueWatchingAnimes = useMemo(() => {
+    return (watchHistory || []).filter(item => item.type === 'anime' || item.type === 'vimeus-anime').slice(0, 10);
+  }, [watchHistory]);
+
+  // Curated rows for Netflix Home view
+  const homeRows = useMemo(() => {
+    return [
+      { id: '💥 Shonen', title: '💥 Tendencias Shonen y Aventuras', items: vimeusAnimesData.filter((_, i) => i % 2 === 0).slice(0, 18) },
+      { id: '⚔️ Acción', title: '⚔️ Acción y Batallas Sobrenaturales', items: vimeusAnimesData.filter((_, i) => i % 3 === 0).slice(0, 18) },
+      { id: '🔮 Fantasía / Isekai', title: '🔮 Fantasía, Magia e Isekai', items: vimeusAnimesData.filter((_, i) => i % 4 === 0).slice(0, 18) },
+      { id: '🏫 Romance / Escolar', title: '🏫 Romance, Juventud y Comedia', items: vimeusAnimesData.filter((_, i) => i % 5 === 0).slice(0, 18) },
+      { id: '🎬 Películas Anime', title: '🎬 Películas de Anime Aclamadas', items: vimeusAnimesData.filter((_, i) => i % 7 === 0).slice(0, 18) },
+      { id: '🤖 Sci-Fi', title: '🤖 Ciencia Ficción, Cyberpunk y Mecha', items: vimeusAnimesData.filter((_, i) => i % 6 === 0).slice(0, 18) },
+      { id: '⚽ Deportes', title: '⚽ Deportes, Pasión y Superación', items: vimeusAnimesData.filter((_, i) => i % 8 === 0).slice(0, 18) }
+    ];
+  }, []);
+
+  // Fetch TMDB discover content when in a category grid view
   const currentPage = categoryPages[activeCategory] || 1;
   const totalPages = categoryTotalPages[activeCategory] || 50;
 
-  // Fetch TMDB discover content when active category changes or page changes
   useEffect(() => {
-    if (searchTerm.trim() || activeCategory === '❤️ Mis Favoritos') {
+    if (activeCategory === 'Inicio' || activeCategory === '❤️ Mi Lista' || searchTerm.trim()) {
       return;
     }
 
@@ -116,15 +140,7 @@ export default function Animes() {
     const pageToLoad = categoryPages[activeCategory] || 1;
     const cacheKey = `${activeCategory}_page_${pageToLoad}`;
 
-    // If already in cache, skip fetch
-    if (animeCache[cacheKey]) {
-      return;
-    }
-
-    // For '🔥 Todos', page 1 uses local bundle
-    if (activeCategory === '🔥 Todos' && pageToLoad === 1) {
-      return;
-    }
+    if (animeCache[cacheKey]) return;
 
     const fetchAnimes = async () => {
       setIsLoading(true);
@@ -184,7 +200,6 @@ export default function Animes() {
     const delayTimer = setTimeout(async () => {
       try {
         const query = encodeURIComponent(searchTerm.trim());
-        // Search both TV and movies
         const [resTv, resMovie] = await Promise.all([
           fetch(`${TMDB}/search/tv?query=${query}&language=es-ES`, { headers: HDR }),
           fetch(`${TMDB}/search/movie?query=${query}&language=es-ES`, { headers: HDR })
@@ -193,13 +208,11 @@ export default function Animes() {
         const tvData = resTv.ok ? await resTv.json() : { results: [] };
         const movieData = resMovie.ok ? await resMovie.json() : { results: [] };
 
-        // Filter for animation or Japanese origin
         const combined = [
           ...(tvData.results || []).map(x => ({ ...x, media_type: 'tv' })),
           ...(movieData.results || []).map(x => ({ ...x, media_type: 'movie' }))
         ];
 
-        // Format search items
         const formatted = combined
           .filter(x => (x.genre_ids && x.genre_ids.includes(16)) || x.original_language === 'ja' || (x.origin_country && x.origin_country.includes('JP')))
           .map(x => ({
@@ -215,12 +228,10 @@ export default function Animes() {
             type: x.media_type
           }));
 
-        // Also check local animes matching search
         const localMatches = vimeusAnimesData
           .filter(a => a.title.toLowerCase().includes(searchTerm.toLowerCase().trim()))
           .map(a => ({ ...a, type: 'tv' }));
 
-        // Deduplicate
         const seen = new Set();
         const merged = [];
         [...localMatches, ...formatted].forEach(item => {
@@ -242,29 +253,15 @@ export default function Animes() {
     return () => clearTimeout(delayTimer);
   }, [searchTerm]);
 
-  // Current items for category
-  const currentAnimes = useMemo(() => {
-    if (searchTerm.trim()) {
-      return searchResults;
-    }
-
-    if (activeCategory === '❤️ Mis Favoritos') {
+  // Current items for active category grid view
+  const currentGridAnimes = useMemo(() => {
+    if (searchTerm.trim()) return searchResults;
+    if (activeCategory === '❤️ Mi Lista') {
       return vimeusAnimesData.filter(a => isFavorite(a.id || a.tmdb_id));
     }
-
     const pageToLoad = categoryPages[activeCategory] || 1;
     const cacheKey = `${activeCategory}_page_${pageToLoad}`;
-
-    if (animeCache[cacheKey]) {
-      return animeCache[cacheKey];
-    }
-
-    // Default '🔥 Todos' Page 1: use high-quality local bundle
-    if (activeCategory === '🔥 Todos' && pageToLoad === 1) {
-      return vimeusAnimesData.slice(0, 32);
-    }
-
-    // Fallback while loading
+    if (animeCache[cacheKey]) return animeCache[cacheKey];
     return vimeusAnimesData.slice(0, 24);
   }, [activeCategory, categoryPages, searchTerm, searchResults, animeCache]);
 
@@ -284,8 +281,10 @@ export default function Animes() {
       id: anime.id || anime.tmdb_id,
       title: anime.title || anime.name,
       poster: anime.poster,
-      type: anime.type || 'anime'
+      backdrop: anime.backdrop,
+      type: 'anime'
     });
+    setWatchHistory(getWatchHistory());
 
     const isMovie = anime.type === 'movie';
     const mediaType = isMovie ? 'movie' : 'tv';
@@ -457,7 +456,7 @@ export default function Animes() {
       ...prev,
       [activeCategory]: newPage
     }));
-    window.scrollTo({ top: 480, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   useDpadNavigation({
@@ -470,33 +469,73 @@ export default function Animes() {
   });
 
   return (
-    <div className="animes-container" style={{ padding: '0.5rem 0 3rem' }}>
+    <div className="peliculas-container netflix-view" style={{ minHeight: '100vh', background: '#141414', color: '#fff' }}>
       
-      {/* Header section with search */}
-      <div className="category-header" style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <h1 className="section-title" style={{ margin: 0, fontSize: '1.75rem', color: '#ffffff', letterSpacing: '-0.5px' }}>
-            🔥 PIRU-TV ANIME HUB (Más de 5,000 Animes y Películas)
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', marginTop: '0.3rem' }}>
-            Catálogos completos con todas las temporadas y episodios ordenados en Full HD con audio Latino y Japonés
-          </p>
+      {/* Netflix Subnav & Category Pills */}
+      <div style={{
+        padding: '1.25rem 3.5rem 0.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '1rem',
+        position: 'relative',
+        zIndex: 30
+      }}>
+        {/* Category Tabs Bar */}
+        <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none' }}>
+          {ANIME_CATEGORIES.map(cat => (
+            <button
+              key={cat}
+              type="button"
+              className={`filter-badge ${activeCategory === cat && !searchTerm ? 'active' : ''}`}
+              onClick={() => {
+                setActiveCategory(cat);
+                setSearchTerm('');
+              }}
+              style={{
+                padding: '7px 16px',
+                borderRadius: '20px',
+                background: (activeCategory === cat && !searchTerm) ? '#e50914' : 'rgba(255, 255, 255, 0.08)',
+                border: (activeCategory === cat && !searchTerm) ? '1px solid #e50914' : '1px solid rgba(255, 255, 255, 0.12)',
+                color: '#fff',
+                fontWeight: (activeCategory === cat && !searchTerm) ? '800' : '600',
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s ease',
+                boxShadow: (activeCategory === cat && !searchTerm) ? '0 0 16px rgba(229, 9, 20, 0.6)' : 'none'
+              }}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
 
-        <div className="search-container" style={{ width: '360px', position: 'relative' }}>
-          <span className="search-icon" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }}>🔍</span>
+        {/* Search Bar */}
+        <div style={{ width: '320px', position: 'relative' }}>
+          <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }}>🔍</span>
           <input
             type="text"
-            placeholder="Buscar anime (ej. SPY x FAMILY, One Piece, Kimetsu)..."
-            className="search-input"
+            placeholder="Buscar anime por nombre..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: '100%', boxSizing: 'border-box', padding: '10px 38px 10px 38px', borderRadius: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff' }}
+            style={{
+              width: '100%',
+              boxSizing: 'border-box',
+              padding: '9px 36px 9px 36px',
+              borderRadius: '6px',
+              background: 'rgba(0, 0, 0, 0.75)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              color: '#fff',
+              fontSize: '0.88rem',
+              outline: 'none'
+            }}
           />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
-              style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1rem' }}
+              style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1rem' }}
             >
               ✕
             </button>
@@ -504,383 +543,393 @@ export default function Animes() {
         </div>
       </div>
 
-      {/* Category Pills Bar */}
-      <div className="filters-wrapper" style={{ margin: '0 0 1.75rem 0', display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
-        {ANIME_CATEGORIES.map(cat => (
-          <button
-            key={cat}
-            type="button"
-            className={`filter-badge ${activeCategory === cat && !searchTerm ? 'active' : ''}`}
-            onClick={() => {
-              setActiveCategory(cat);
-              setSearchTerm('');
-            }}
-            style={{
-              padding: '8px 16px',
-              borderRadius: '20px',
-              background: (activeCategory === cat && !searchTerm) ? 'linear-gradient(135deg, #e50914, #b91c1c)' : 'rgba(255, 255, 255, 0.05)',
-              border: (activeCategory === cat && !searchTerm) ? '1px solid #ef4444' : '1px solid rgba(255, 255, 255, 0.1)',
-              color: '#fff',
-              fontWeight: (activeCategory === cat && !searchTerm) ? '700' : '500',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              transition: 'all 0.2s ease',
-              boxShadow: (activeCategory === cat && !searchTerm) ? '0 4px 15px rgba(229, 9, 20, 0.35)' : 'none'
-            }}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
+      {/* NETFLIX HOME VIEW */}
+      {activeCategory === 'Inicio' && !searchTerm ? (
+        <>
+          {/* Netflix Full-Bleed Hero Billboard */}
+          {heroItem && (
+            <section className="netflix-hero-billboard">
+              <div 
+                className="netflix-hero-bg"
+                style={{ backgroundImage: `url(${heroItem.backdrop || heroItem.poster})` }}
+              />
+              <div className="netflix-vignette-bottom" />
+              <div className="netflix-vignette-left" />
+              <div className="netflix-vignette-top" />
 
-      {/* Hero Featured Billboard (Only visible when not searching) */}
-      {!searchTerm && activeHero && (
-        <div style={{
-          position: 'relative',
-          borderRadius: '20px',
-          overflow: 'hidden',
-          marginBottom: '2.5rem',
-          aspectRatio: '21/9',
-          minHeight: '340px',
-          maxHeight: '440px',
-          display: 'flex',
-          alignItems: 'flex-end',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
-          border: '1px solid rgba(255,255,255,0.1)'
-        }}>
-          <img
-            src={activeHero.backdrop || activeHero.poster}
-            alt={activeHero.title}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'center 25%',
-              transition: 'all 0.7s ease'
-            }}
-          />
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'linear-gradient(to right, rgba(5, 5, 10, 0.95) 0%, rgba(5, 5, 10, 0.7) 45%, rgba(5, 5, 10, 0.1) 100%), linear-gradient(to top, rgba(5, 5, 10, 0.95) 0%, transparent 60%)'
-          }} />
+              <div className="netflix-hero-content">
+                <div className="netflix-rank-badge">
+                  <div className="netflix-top10-tag">
+                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", fontSize: '15px' }}>
+                      local_fire_department
+                    </span>
+                    TOP 10
+                  </div>
+                  <span className="netflix-rank-text">N.º {heroIndex + 1} en anime hoy</span>
+                </div>
 
-          {/* Hero Content */}
-          <div style={{ position: 'relative', zIndex: 2, padding: '2.5rem', maxWidth: '640px' }}>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
-              <span style={{ background: '#10b981', color: '#fff', fontSize: '0.72rem', fontWeight: 800, padding: '3px 8px', borderRadius: '4px' }}>
-                🟢 En emisión
-              </span>
-              <span style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444', color: '#fca5a5', fontSize: '0.72rem', fontWeight: 800, padding: '3px 8px', borderRadius: '4px' }}>
-                Top Popular #{heroIndex + 1}
-              </span>
-              <span style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', fontSize: '0.72rem', fontWeight: 700, padding: '3px 8px', borderRadius: '4px' }}>
-                FULL HD • Audio Latino & Jap
-              </span>
+                <h1 className="netflix-hero-title">{heroItem.title}</h1>
+
+                <div className="netflix-meta-row">
+                  <span className="netflix-match">98% de coincidencia</span>
+                  <span>2026</span>
+                  <span className="netflix-badge-age">16+</span>
+                  <span>FULL HD</span>
+                  <span className="netflix-badge-tech">5.1</span>
+                  <span className="netflix-badge-tech">Doblaje Latino</span>
+                </div>
+
+                <p className="netflix-hero-synopsis">
+                  {heroItem.overview || `Disfruta de ${heroItem.title} completo en alta definición con todas sus temporadas oficiales y episodios ordenados en español latino.`}
+                </p>
+
+                <div className="netflix-hero-actions">
+                  <button 
+                    className="btn-netflix-play" 
+                    onClick={() => {
+                      handleOpenAnime(heroItem);
+                      setIsPlaying(true);
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", fontSize: '26px' }}>
+                      play_arrow
+                    </span>
+                    Reproducir
+                  </button>
+
+                  <button 
+                    className="btn-netflix-info" 
+                    onClick={() => {
+                      handleOpenAnime(heroItem);
+                      setModalTab('player');
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>
+                      info
+                    </span>
+                    Más información
+                  </button>
+
+                  <button 
+                    className="btn-netflix-round" 
+                    title={isFavorite(heroItem.id || heroItem.tmdb_id) ? 'En Mi Lista' : 'Añadir a Mi Lista'}
+                    onClick={async () => {
+                      await toggleFavorite(heroItem);
+                      setSelectedAnime(prev => (prev ? { ...prev } : null));
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '22px' }}>
+                      {isFavorite(heroItem.id || heroItem.tmdb_id) ? 'check' : 'add'}
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Billboard Controls */}
+              <div className="netflix-right-controls">
+                <button 
+                  className="btn-netflix-round" 
+                  style={{ width: '36px', height: '36px' }}
+                  onClick={() => setIsMuted(prev => !prev)}
+                  title={isMuted ? 'Activar audio' : 'Desactivar audio'}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    {isMuted ? 'volume_off' : 'volume_up'}
+                  </span>
+                </button>
+                <div className="netflix-maturity-tag">
+                  16+
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Netflix Rows Section */}
+          <div className="netflix-rows-container">
+            
+            {/* Row 0: Continuar Viendo Anime */}
+            {continueWatchingAnimes.length > 0 && (
+              <section className="netflix-row-section">
+                <div className="netflix-row-header">
+                  <h2 className="netflix-row-title">
+                    Continuar viendo
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#a3a3a3' }}>
+                      chevron_right
+                    </span>
+                  </h2>
+                </div>
+                <div className="netflix-continue-grid">
+                  {continueWatchingAnimes.map((item) => (
+                    <div 
+                      key={`continue-${item.id}`} 
+                      className="netflix-continue-card"
+                      onClick={() => handleOpenAnime(item)}
+                    >
+                      <div className="netflix-continue-thumb">
+                        <img src={item.backdrop || item.poster} alt={item.title} />
+                        <div className="netflix-continue-overlay">
+                          <div className="netflix-center-play">
+                            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", fontSize: '24px' }}>
+                              play_arrow
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="netflix-progress-bar">
+                        <div className="netflix-progress-fill" style={{ width: '70%' }} />
+                      </div>
+                      <div className="netflix-continue-info">
+                        <span className="netflix-continue-title">{item.title}</span>
+                        <span className="netflix-continue-sub">Continuar</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Row 1: Top 10 Animes más populares hoy en PiruTV (Billboard 1..10) */}
+            {top10Animes.length > 0 && (
+              <section className="netflix-row-section">
+                <div className="netflix-row-header">
+                  <h2 className="netflix-row-title">
+                    Los 10 animes más populares hoy en PiruTV
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#a3a3a3' }}>
+                      chevron_right
+                    </span>
+                  </h2>
+                </div>
+                <div className="netflix-top10-grid">
+                  {top10Animes.map((item, index) => (
+                    <div 
+                      key={`top10-${item.id || item.tmdb_id}-${index}`} 
+                      className="netflix-top10-item"
+                      onClick={() => handleOpenAnime(item)}
+                    >
+                      <span className="netflix-top-num">{index + 1}</span>
+                      <div className="netflix-top-poster">
+                        <img src={item.poster} alt={item.title} />
+                        <div className="netflix-card-top10-badge">TOP 10</div>
+                        <div className="netflix-card-lang-strip">
+                          <span className="netflix-pill-lat">LAT</span>
+                          <span className="netflix-pill-cast">JAP</span>
+                          <span className="netflix-pill-sub">SUB</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Curated Category Content Rows */}
+            {homeRows.map((row) => (
+              <section key={row.id} className="netflix-row-section">
+                <div className="netflix-row-header">
+                  <h2 
+                    className="netflix-row-title"
+                    onClick={() => {
+                      setActiveCategory(row.id);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                  >
+                    {row.title}
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#a3a3a3' }}>
+                      chevron_right
+                    </span>
+                  </h2>
+                  <button 
+                    className="netflix-explore-all"
+                    onClick={() => {
+                      setActiveCategory(row.id);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                  >
+                    Explorar todos
+                  </button>
+                </div>
+
+                <div className="netflix-category-scroll">
+                  {row.items.map((item) => (
+                    <button 
+                      type="button"
+                      key={`scroll-${item.id || item.tmdb_id}`} 
+                      className="netflix-poster-card"
+                      onClick={() => handleOpenAnime(item)}
+                    >
+                      <div className="netflix-poster-img-wrap">
+                        <img src={item.poster} alt={item.title} loading="lazy" />
+                        <div className="netflix-quality-tag">FULL HD</div>
+                        <div className="netflix-card-lang-strip">
+                          <span className="netflix-pill-lat">LAT</span>
+                          <span className="netflix-pill-cast">JAP</span>
+                          <span className="netflix-pill-sub">SUB</span>
+                        </div>
+                      </div>
+                      <span className="netflix-poster-title">{item.title}</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ))}
+
+          </div>
+
+          {/* Netflix Footer */}
+          <footer className="netflix-footer">
+            <div className="netflix-footer-inner">
+              <div className="netflix-copyright">
+                © 2026 PIRU TV • Catálogo Completo de Anime en Español y Japonés
+              </div>
+            </div>
+          </footer>
+        </>
+      ) : (
+        /* NETFLIX CATEGORY / SEARCH GRID VIEW */
+        <div style={{ padding: '1.5rem 3.5rem 4rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <div>
+              <h2 className="section-title" style={{ margin: 0, fontSize: '1.6rem', color: '#ffffff', fontWeight: 800 }}>
+                {searchTerm ? `Resultados para: "${searchTerm}" (${currentGridAnimes.length})` : `${activeCategory} (${totalPages > 1 ? `Página ${currentPage} de ${totalPages}` : `${currentGridAnimes.length} animes`})`}
+              </h2>
+              {activeCategory !== 'Inicio' && !searchTerm && (
+                <p style={{ margin: '4px 0 0', color: '#a3a3a3', fontSize: '0.85rem' }}>
+                  Explora todas las series y películas oficiales con temporadas completas en Full HD
+                </p>
+              )}
             </div>
 
-            <h2 style={{ fontSize: '2.4rem', fontWeight: 900, margin: '0 0 0.5rem 0', color: '#fff', letterSpacing: '-0.5px', textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
-              {activeHero.title}
-            </h2>
+            {isLoading && (
+              <span style={{ fontSize: '0.85rem', color: '#e50914', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span className="pulse-dot" /> Cargando animes de TMDb...
+              </span>
+            )}
+          </div>
 
-            <p style={{ fontSize: '0.92rem', color: '#cbd5e1', lineHeight: '1.5', margin: '0 0 1.5rem 0', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>
-              Disfruta de {activeHero.title} completo en alta definición Full HD con todas las temporadas oficiales y carátulas de episodios.
-            </p>
+          {/* Grid of Posters */}
+          <div className="media-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1.25rem' }}>
+            {currentGridAnimes.length > 0 ? (
+              currentGridAnimes.map((item, idx) => (
+                <button
+                  type="button"
+                  key={`grid-${item.id || item.tmdb_id}-${idx}`}
+                  className="netflix-poster-card"
+                  onClick={() => handleOpenAnime(item)}
+                  style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                >
+                  <div className="netflix-poster-img-wrap" style={{ width: '100%', height: '260px' }}>
+                    <img src={item.poster} alt={item.title} loading="lazy" />
+                    <div className="netflix-quality-tag">{item.quality || 'FULL HD'}</div>
+                    <div className="netflix-card-lang-strip">
+                      <span className="netflix-pill-lat">LAT</span>
+                      <span className="netflix-pill-cast">JAP</span>
+                      <span className="netflix-pill-sub">SUB</span>
+                    </div>
+                  </div>
+                  <span className="netflix-poster-title" style={{ marginTop: '0.5rem', fontWeight: 700, fontSize: '0.88rem' }}>
+                    {item.title}
+                  </span>
+                </button>
+              ))
+            ) : (
+              <div className="empty-state" style={{ gridColumn: '1 / -1', padding: '5rem 2rem', textAlign: 'center' }}>
+                <span className="empty-icon">📺</span>
+                <h3 className="empty-title">No se encontraron animes</h3>
+                <p style={{ color: '#a3a3a3' }}>Intenta buscando con otro término o explorando otra categoría.</p>
+              </div>
+            )}
+          </div>
 
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          {/* Dynamic Pagination (Same as Peliculas.jsx) */}
+          {!searchTerm && activeCategory !== '❤️ Mi Lista' && totalPages > 1 && (
+            <div className="pagination-bar" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: '0.45rem', margin: '3.5rem 0 2rem' }}>
               <button
-                onClick={() => {
-                  handleOpenAnime(activeHero);
-                  setIsPlaying(true);
-                }}
+                type="button"
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage <= 1 || isLoading}
                 style={{
-                  padding: '12px 28px',
-                  background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)',
-                  border: 'none',
-                  borderRadius: '10px',
-                  color: '#fff',
-                  fontWeight: 800,
-                  fontSize: '1rem',
-                  cursor: 'pointer',
+                  background: currentPage > 1 ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid var(--border-color)',
+                  color: currentPage > 1 ? '#fff' : 'rgba(255, 255, 255, 0.25)',
+                  padding: '0.6rem 1.25rem',
+                  borderRadius: '8px',
+                  cursor: currentPage > 1 && !isLoading ? 'pointer' : 'not-allowed',
+                  fontSize: '0.9rem',
+                  fontWeight: '700',
+                  opacity: currentPage > 1 ? 1 : 0.4,
+                  transition: 'all 0.2s ease',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '8px',
-                  boxShadow: '0 4px 15px rgba(229, 9, 20, 0.45)',
-                  transition: 'transform 0.2s ease'
+                  gap: '6px'
                 }}
               >
-                ▶ VER AHORA
+                ← Anterior
               </button>
 
+              {pagesToRender.map((p, idx) => {
+                if (p === '...') {
+                  return (
+                    <span 
+                      key={`dots-${idx}`} 
+                      style={{ color: 'rgba(255, 255, 255, 0.4)', padding: '0 0.35rem', fontSize: '1rem', fontWeight: '700' }}
+                    >
+                      ...
+                    </span>
+                  );
+                }
+
+                const isCurrent = p === currentPage;
+                return (
+                  <button
+                    key={`page-${p}`}
+                    type="button"
+                    onClick={() => goToPage(p)}
+                    disabled={isLoading}
+                    style={{
+                      background: isCurrent ? '#e50914' : 'rgba(255, 255, 255, 0.06)',
+                      border: isCurrent ? '1px solid #e50914' : '1px solid rgba(255, 255, 255, 0.12)',
+                      color: '#ffffff',
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '8px',
+                      cursor: isLoading ? 'wait' : 'pointer',
+                      fontSize: '0.9rem',
+                      fontWeight: isCurrent ? '800' : '600',
+                      boxShadow: isCurrent ? '0 0 16px rgba(229, 9, 20, 0.5)' : 'none'
+                    }}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
+
               <button
-                onClick={async () => {
-                  await toggleFavorite(activeHero);
-                }}
+                type="button"
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage >= totalPages || isLoading}
                 style={{
-                  padding: '12px 22px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.25)',
-                  borderRadius: '10px',
-                  color: '#fff',
-                  fontWeight: 700,
-                  fontSize: '0.95rem',
-                  cursor: 'pointer',
-                  backdropFilter: 'blur(8px)'
+                  background: currentPage < totalPages ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid var(--border-color)',
+                  color: currentPage < totalPages ? '#fff' : 'rgba(255, 255, 255, 0.25)',
+                  padding: '0.6rem 1.25rem',
+                  borderRadius: '8px',
+                  cursor: currentPage < totalPages && !isLoading ? 'pointer' : 'not-allowed',
+                  fontSize: '0.9rem',
+                  fontWeight: '700',
+                  opacity: currentPage < totalPages ? 1 : 0.4,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px'
                 }}
               >
-                {isFavorite(activeHero.id || activeHero.tmdb_id) ? '❤️ EN MI LISTA' : '+ AÑADIR A MI LISTA'}
+                Siguiente →
               </button>
             </div>
-          </div>
-
-          {/* Hero Slider Dots */}
-          <div style={{ position: 'absolute', bottom: '18px', right: '24px', display: 'flex', gap: '6px', zIndex: 3 }}>
-            {heroList.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setHeroIndex(i)}
-                style={{
-                  width: i === heroIndex ? '24px' : '8px',
-                  height: '8px',
-                  borderRadius: '4px',
-                  background: i === heroIndex ? '#e50914' : 'rgba(255,255,255,0.3)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: 0,
-                  transition: 'all 0.3s ease'
-                }}
-              />
-            ))}
-          </div>
+          )}
         </div>
       )}
 
-      {/* Content Grid Section */}
-      <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-          <h2 className="section-title" style={{ margin: 0, fontSize: '1.4rem', color: '#ffffff' }}>
-            {searchTerm ? `Resultados de búsqueda (${currentAnimes.length})` : `${activeCategory} (Página ${currentPage})`}
-          </h2>
-          {isLoading && (
-            <span style={{ fontSize: '0.85rem', color: '#f87171', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span className="pulse-dot" /> Cargando animes...
-            </span>
-          )}
-        </div>
-
-        {/* Media Grid */}
-        <div className="media-grid">
-          {currentAnimes.length > 0 ? (
-            currentAnimes.map((anime, idx) => {
-              const uniqueCardKey = `grid-${anime.id || anime.tmdb_id}-${idx}`;
-              const isCardHovered = hoveredAnimeKey === uniqueCardKey;
-
-              return (
-                <div
-                  key={uniqueCardKey}
-                  className="media-card"
-                  onMouseEnter={() => setHoveredAnimeKey(uniqueCardKey)}
-                  onMouseLeave={() => setHoveredAnimeKey(null)}
-                  onClick={() => handleOpenAnime(anime)}
-                  style={{
-                    position: 'relative',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    background: 'rgba(20, 20, 32, 0.6)',
-                    borderRadius: '16px',
-                    border: isCardHovered ? '1px solid #e50914' : '1px solid rgba(255,255,255,0.08)',
-                    padding: '0.55rem',
-                    transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease',
-                    transform: isCardHovered ? 'translateY(-6px) scale(1.02)' : 'none',
-                    boxShadow: isCardHovered ? '0 10px 25px rgba(229, 9, 20, 0.25)' : 'none'
-                  }}
-                >
-                  <div className="card-poster" style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', height: '270px' }}>
-                    <img
-                      src={anime.poster}
-                      alt={anime.title}
-                      loading="lazy"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/300x450?text=Anime'; }}
-                    />
-                    
-                    <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)', color: '#fff', fontSize: '0.68rem', fontWeight: 900, padding: '3px 8px', borderRadius: '5px' }}>
-                      {anime.quality || 'FULL HD'}
-                    </div>
-
-                    {anime.year && (
-                      <div style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(0,0,0,0.6)', color: '#e2e8f0', fontSize: '0.68rem', fontWeight: 700, padding: '3px 7px', borderRadius: '5px', backdropFilter: 'blur(4px)' }}>
-                        {anime.year}
-                      </div>
-                    )}
-
-                    {/* Hover Synopsis Popover */}
-                    {isCardHovered && (
-                      <div 
-                        style={{
-                          position: 'absolute',
-                          inset: 0,
-                          background: 'rgba(10, 10, 18, 0.95)',
-                          backdropFilter: 'blur(8px)',
-                          padding: '1rem',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'space-between',
-                          animation: 'fadeIn 0.2s ease-in-out'
-                        }}
-                      >
-                        <div>
-                          <span style={{ fontSize: '0.68rem', color: '#86efac', fontWeight: 800, textTransform: 'uppercase', display: 'block', marginBottom: '0.3rem' }}>
-                            {anime.type === 'movie' ? '🎬 PELÍCULA ANIME' : '📺 SERIE ANIME'}
-                          </span>
-                          <h4 style={{ margin: '0 0 0.4rem 0', fontSize: '0.92rem', fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>
-                            {anime.title}
-                          </h4>
-                          <p style={{ margin: 0, fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                            {anime.overview || `Disfruta de ${anime.title} completo en Full HD con doblaje y subtítulos.`}
-                          </p>
-                        </div>
-
-                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
-                          <span style={{ background: 'rgba(229, 9, 20, 0.25)', color: '#f87171', border: '1px solid rgba(229, 9, 20, 0.4)', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 800 }}>
-                            ▶ VER EPISODIOS
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="card-info" style={{ padding: '0.65rem 0.2rem 0.2rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
-                      <span className="card-genre" style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700 }}>
-                        {anime.type === 'movie' ? '🎬 Película' : '📺 Anime'}
-                      </span>
-                      {anime.rating && (
-                        <span style={{ fontSize: '0.75rem', color: '#fbbf24', fontWeight: 700 }}>
-                          ⭐ {anime.rating}
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="card-title" style={{ fontSize: '0.92rem', fontWeight: 800, margin: '0.2rem 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff' }}>
-                      {anime.title}
-                    </h3>
-                  </div>
-                </div>
-              );
-            })
-          ) : (
-            <div className="empty-state" style={{ gridColumn: '1 / -1', padding: '4rem 2rem', textAlign: 'center' }}>
-              <span className="empty-icon">🔥</span>
-              <h3 className="empty-title">No se encontraron animes</h3>
-              <p style={{ color: '#94a3b8' }}>Intenta buscando con otro término o seleccionando otra categoría.</p>
-            </div>
-          )}
-        </div>
-
-        {/* Dynamic Pagination Bar (Same as Peliculas.jsx) */}
-        {!searchTerm && activeCategory !== '❤️ Mis Favoritos' && (
-          <div className="pagination-bar" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: '0.45rem', margin: '3rem 0 2rem' }}>
-            {/* Previous Button */}
-            <button
-              type="button"
-              onClick={() => goToPage(currentPage - 1)}
-              disabled={currentPage <= 1 || isLoading}
-              style={{
-                background: currentPage > 1 ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid var(--border-color)',
-                color: currentPage > 1 ? '#fff' : 'rgba(255, 255, 255, 0.25)',
-                padding: '0.6rem 1.25rem',
-                borderRadius: '10px',
-                cursor: currentPage > 1 && !isLoading ? 'pointer' : 'not-allowed',
-                fontSize: '0.9rem',
-                fontWeight: '700',
-                opacity: currentPage > 1 ? 1 : 0.4,
-                transition: 'all 0.2s ease',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}
-              title="Página Anterior"
-            >
-              ← Anterior
-            </button>
-
-            {/* Dynamic Pages List */}
-            {pagesToRender.map((p, idx) => {
-              if (p === '...') {
-                return (
-                  <span 
-                    key={`dots-${idx}`} 
-                    style={{ 
-                      color: 'rgba(255, 255, 255, 0.4)', 
-                      padding: '0 0.35rem', 
-                      fontSize: '1rem',
-                      fontWeight: '700',
-                      userSelect: 'none'
-                    }}
-                  >
-                    ...
-                  </span>
-                );
-              }
-
-              const isCurrent = p === currentPage;
-              return (
-                <button
-                  key={`page-${p}`}
-                  type="button"
-                  onClick={() => goToPage(p)}
-                  disabled={isLoading}
-                  style={{
-                    background: isCurrent ? 'linear-gradient(135deg, #e50914 0%, #b91c1c 100%)' : 'rgba(255, 255, 255, 0.05)',
-                    border: isCurrent ? '1px solid #ef4444' : '1px solid var(--border-color)',
-                    color: isCurrent ? '#ffffff' : '#cbd5e1',
-                    width: '42px',
-                    height: '42px',
-                    borderRadius: '10px',
-                    cursor: isLoading ? 'wait' : 'pointer',
-                    fontSize: '0.9rem',
-                    fontWeight: isCurrent ? '800' : '600',
-                    transition: 'all 0.2s ease',
-                    boxShadow: isCurrent ? '0 0 16px rgba(229, 9, 20, 0.45)' : 'none'
-                  }}
-                >
-                  {p}
-                </button>
-              );
-            })}
-
-            {/* Next Button */}
-            <button
-              type="button"
-              onClick={() => goToPage(currentPage + 1)}
-              disabled={currentPage >= totalPages || isLoading}
-              style={{
-                background: currentPage < totalPages ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid var(--border-color)',
-                color: currentPage < totalPages ? '#fff' : 'rgba(255, 255, 255, 0.25)',
-                padding: '0.6rem 1.25rem',
-                borderRadius: '10px',
-                cursor: currentPage < totalPages && !isLoading ? 'pointer' : 'not-allowed',
-                fontSize: '0.9rem',
-                fontWeight: '700',
-                opacity: currentPage < totalPages ? 1 : 0.4,
-                transition: 'all 0.2s ease',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}
-              title="Página Siguiente"
-            >
-              Siguiente →
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Video Streaming & Details Modal (Inspired by Peliculas.jsx series modal) */}
+      {/* NETFLIX VIDEO STREAMING & EPISODES MODAL */}
       {selectedAnime && (
         <div className="modal-overlay" onClick={() => { setSelectedAnime(null); setIsPlaying(false); }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '980px' }}>
@@ -1004,7 +1053,7 @@ export default function Animes() {
 
                 {/* Zapping bar when playing */}
                 {isPlaying && selectedAnime.type !== 'movie' && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.04)', padding: '8px 16px', borderRadius: '10px', marginBottom: '1.25rem', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.04)', padding: '8px 16px', borderRadius: '8px', marginBottom: '1.25rem', border: '1px solid rgba(255,255,255,0.08)' }}>
                     <button
                       onClick={handlePrevEpisode}
                       disabled={selectedEpisodeNumber <= 1}
@@ -1027,10 +1076,10 @@ export default function Animes() {
 
                 {/* Episodes Section (ONLY FOR SERIES) */}
                 {selectedAnime.type !== 'movie' && (
-                  <div className="episodes-container" style={{ borderRadius: '14px', padding: '1.25rem' }}>
+                  <div className="episodes-container" style={{ borderRadius: '12px', padding: '1.25rem' }}>
                     <div className="episodes-top-row">
                       <span className="episodes-heading" style={{ fontSize: '1.05rem', fontWeight: 800, color: '#fff' }}>
-                        🌸 Temporadas y Episodios Ordenados
+                        Seleccionar Temporada
                       </span>
 
                       {animeDetails && animeDetails.seasons && animeDetails.seasons.length > 0 ? (
@@ -1055,9 +1104,9 @@ export default function Animes() {
                     </div>
 
                     {/* Quick Episode Bubbles Row */}
-                    <div style={{ marginBottom: '1rem' }}>
-                      <span style={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: 700, display: 'block', marginBottom: '0.5rem' }}>
-                        SALTO RÁPIDO A EPISODIO:
+                    <div style={{ marginBottom: '1.25rem' }}>
+                      <span style={{ fontSize: '0.78rem', color: '#a3a3a3', fontWeight: 700, display: 'block', marginBottom: '0.5rem' }}>
+                        SALTO RÁPIDO:
                       </span>
                       <div className="episodes-bubbles-row">
                         {seasonEpisodes.map(ep => (
@@ -1075,7 +1124,7 @@ export default function Animes() {
                     {/* Rich Episode Cards Grid with Thumbnails and Synopses */}
                     <div>
                       <span style={{ fontSize: '0.85rem', color: '#cbd5e1', fontWeight: 800, display: 'block', marginBottom: '0.75rem' }}>
-                        📺 CATÁLOGO DE EPISODIOS CON CARÁTULAS EN HD ({seasonEpisodes.length}):
+                        EPISODIOS DE LA TEMPORADA ({seasonEpisodes.length}):
                       </span>
 
                       {isLoadingEpisodes ? (
@@ -1098,7 +1147,7 @@ export default function Animes() {
                                 style={{
                                   background: isActive ? 'rgba(229, 9, 20, 0.2)' : 'rgba(255,255,255,0.04)',
                                   border: `2px solid ${isActive ? '#e50914' : 'rgba(255,255,255,0.08)'}`,
-                                  borderRadius: '14px',
+                                  borderRadius: '10px',
                                   overflow: 'hidden',
                                   textAlign: 'left',
                                   cursor: 'pointer',
@@ -1117,11 +1166,11 @@ export default function Animes() {
                                     onError={(e) => { e.target.onerror = null; e.target.src = selectedAnime.poster; }}
                                   />
                                   <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%)' }} />
-                                  <div style={{ position: 'absolute', bottom: '8px', left: '10px', background: isActive ? '#e50914' : 'rgba(0,0,0,0.7)', color: '#fff', fontSize: '0.72rem', fontWeight: 900, padding: '2px 8px', borderRadius: '6px' }}>
+                                  <div style={{ position: 'absolute', bottom: '8px', left: '10px', background: isActive ? '#e50914' : 'rgba(0,0,0,0.75)', color: '#fff', fontSize: '0.72rem', fontWeight: 900, padding: '2px 8px', borderRadius: '4px' }}>
                                     Episodio {ep.episode_number}
                                   </div>
                                   {ep.runtime && (
-                                    <div style={{ position: 'absolute', bottom: '8px', right: '10px', background: 'rgba(0,0,0,0.7)', color: '#cbd5e1', fontSize: '0.7rem', padding: '2px 6px', borderRadius: '4px' }}>
+                                    <div style={{ position: 'absolute', bottom: '8px', right: '10px', background: 'rgba(0,0,0,0.75)', color: '#cbd5e1', fontSize: '0.7rem', padding: '2px 6px', borderRadius: '4px' }}>
                                       ⏱ {ep.runtime} min
                                     </div>
                                   )}
@@ -1201,7 +1250,7 @@ export default function Animes() {
                 {castList.length > 0 ? (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '1rem' }}>
                     {castList.map(actor => (
-                      <div key={actor.id} style={{ textAlign: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', padding: '0.75rem', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      <div key={actor.id} style={{ textAlign: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: '10px', padding: '0.75rem', border: '1px solid rgba(255,255,255,0.06)' }}>
                         <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', margin: '0 auto 0.5rem', background: 'rgba(0,0,0,0.3)' }}>
                           <img
                             src={actor.profile_path ? `https://image.tmdb.org/t/p/w185${actor.profile_path}` : 'https://via.placeholder.com/100x100?text=Actor'}
@@ -1230,7 +1279,7 @@ export default function Animes() {
             {/* TAB 3: TRÁILER OFICIAL */}
             {modalTab === 'trailer' && trailerKey && (
               <div className="modal-tab-body" style={{ padding: '1.5rem 0' }}>
-                <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.6)' }}>
+                <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.6)' }}>
                   <iframe
                     src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1`}
                     title="Tráiler Oficial"
@@ -1246,27 +1295,27 @@ export default function Animes() {
             {modalTab === 'details' && (
               <div className="modal-tab-body" style={{ padding: '1.5rem 0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.25rem' }}>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
                     <span style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Título Original</span>
                     <h4 style={{ margin: '4px 0 0', color: '#fff', fontSize: '0.95rem' }}>{animeDetails?.original_name || animeDetails?.original_title || selectedAnime.title}</h4>
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
                     <span style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Estado</span>
                     <h4 style={{ margin: '4px 0 0', color: '#34d399', fontSize: '0.95rem' }}>{animeDetails?.status || 'En Emisión'}</h4>
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
                     <span style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Número de Temporadas</span>
                     <h4 style={{ margin: '4px 0 0', color: '#fff', fontSize: '0.95rem' }}>{animeDetails?.number_of_seasons || (animeDetails?.seasons?.length || 1)} Temporadas</h4>
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
                     <span style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Episodios Totales</span>
                     <h4 style={{ margin: '4px 0 0', color: '#fff', fontSize: '0.95rem' }}>{animeDetails?.number_of_episodes || 'Múltiples'} Episodios</h4>
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)', gridColumn: '1 / -1' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)', gridColumn: '1 / -1' }}>
                     <span style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Géneros</span>
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '6px' }}>
                       {(animeDetails?.genres || []).map(g => (
-                        <span key={g.id} style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.35)', color: '#fca5a5', padding: '3px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>
+                        <span key={g.id} style={{ background: 'rgba(229, 9, 20, 0.15)', border: '1px solid rgba(229, 9, 20, 0.35)', color: '#fca5a5', padding: '3px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700 }}>
                           {g.name}
                         </span>
                       ))}
