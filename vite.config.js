@@ -13,9 +13,14 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/gql': {
-        target: 'https://sv1.fluxcedene.net',
+        target: 'https://userapi.cloudfleir.xyz',
         changeOrigin: true,
         secure: true,
+        rewrite: (path) => path.replace(/^\/api\/gql/, '/graphql'),
+        headers: {
+          Origin: 'https://doramasflix.in',
+          Referer: 'https://doramasflix.in/'
+        }
       },
       '/primeload-proxy': {
         target: 'https://primeload.co',

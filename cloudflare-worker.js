@@ -91,10 +91,13 @@ async function handleRequest(request) {
   }
 
   const body = await request.text();
-  const response = await fetch('https://sv1.fluxcedene.net/api/gql', {
+  const response = await fetch('https://userapi.cloudfleir.xyz/graphql', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Origin': 'https://doramasflix.in',
+      'Referer': 'https://doramasflix.in/',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     },
     body: body,
   });
