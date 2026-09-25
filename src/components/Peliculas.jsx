@@ -15,41 +15,41 @@ const HDR  = { Authorization: `Bearer ${TMDB_KEY}` };
 const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
 const VIMEUS_PARAMS = '&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3';
 
-// ── Servidores 100% Latino (Vimeus Oficial + UnLimPlay Multi-Latino + Vimeus Respaldo + VidFast 4K) ──
+// ── Servidores 100% Latino (UnLimPlay Activo + Vimeus Oficial + VidSrc HD + CineSrc) ──
 const SERVERS = [
-  {
-    id: 'vimeus',
-    name: 'Vimeus',
-    lang: '🇲🇽 LATINO',
-    langGroup: 'latino',
-    badge: '⭐ Oficial',
-    desc: 'Audio Latino nativo oficial de alta fidelidad (Recomendado)',
-    quality: 'HD'
-  },
   {
     id: 'unlimplay',
     name: 'UnLimPlay',
     lang: '🇲🇽 LATINO',
     langGroup: 'latino',
-    badge: '💎 Multi-Latino',
-    desc: 'Servidor con múltiples fuentes en audio Latino (Directo, Streamwish, Filelions, Voe)',
+    badge: '⭐ Activo 1080p',
+    desc: 'Audio Latino nativo oficial de alta fidelidad (Directo, Streamwish, Filelions, Voe)',
     quality: '1080p'
   },
   {
-    id: 'vimeus_sala2',
-    name: 'Vimeus Sala 2',
+    id: 'vimeus',
+    name: 'Vimeus',
     lang: '🇲🇽 LATINO',
     langGroup: 'latino',
-    badge: '🔄 Respaldo',
-    desc: 'Servidor alternativo de Vimeus en Audio Latino',
+    badge: '⚠️ Error 522 Host',
+    desc: 'Audio Latino oficial (Servidor temporalmente fuera de línea por su proveedor)',
     quality: 'HD'
+  },
+  {
+    id: 'vidsrc',
+    name: 'VidSrc HD',
+    lang: 'MULTI / LAT',
+    langGroup: 'latino',
+    badge: '🚀 Multi-Audio',
+    desc: 'Servidor rápido y estable con selector de subtítulos e idiomas',
+    quality: '1080p'
   },
   {
     id: 'cinesrc',
     name: 'CineSrc',
     lang: 'MULTI / ESP',
     langGroup: 'latino',
-    badge: '⚡ Rápido',
+    badge: '⚡ Respaldo',
     desc: 'Servidor CineSrc de alta velocidad con interfaz moderna y soporte multi-idioma',
     quality: '1080p'
   }
@@ -319,7 +319,7 @@ export default function Peliculas() {
 
   // Player state inside modal
   const [isPlaying, setIsPlaying] = useState(false);
-  const [selectedServer, setSelectedServer] = useState('vimeus');
+  const [selectedServer, setSelectedServer] = useState('unlimplay');
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [selectedEpisode, setSelectedEpisode] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -795,7 +795,7 @@ export default function Peliculas() {
     setIsPlaying(false);
     setSelectedSeason(1);
     setSelectedEpisode(1);
-    setSelectedServer('vimeus'); // Vimeus is Spanish-first by default
+    setSelectedServer('unlimplay'); // UnLimPlay is 100% active Spanish Latino by default
 
     // If the item doesn't have cast or full details loaded yet, fetch them!
     if (!item.cast || (item.type === 'tv' && !item.seasons)) {
@@ -835,8 +835,16 @@ export default function Peliculas() {
 
     const id = selectedItem.id;
 
-    // ── 1. VIMEUS OFICIAL (Audio Latino / Castellano - 100% Intacto) ──
-    if (selectedServer === 'vimeus') {
+    // ── 1. UNLIMPLAY (Multi-Servidor exclusivo en Audio Latino - 100% Funcional) ──
+    if (selectedServer === 'unlimplay') {
+      if (selectedItem.type === 'movie') {
+        return `https://unlimplay.com/f/embed/movie/${id}`;
+      }
+      return `https://unlimplay.com/f/embed/tv/${id}/${selectedSeason}/${selectedEpisode}`;
+    }
+
+    // ── 2. VIMEUS OFICIAL (Audio Latino / Castellano) ──
+    if (selectedServer === 'vimeus' || selectedServer === 'vimeus_sala2') {
       const vk = VIMEUS_VIEW_KEY ? `&view_key=${encodeURIComponent(VIMEUS_VIEW_KEY)}` : '';
       if (selectedItem.type === 'movie') {
         return `https://vimeus.com/e/movie?tmdb=${id}${vk}${VIMEUS_PARAMS}`;
@@ -845,23 +853,12 @@ export default function Peliculas() {
       return `https://vimeus.com/e/${kind}?tmdb=${id}&se=${selectedSeason}&ep=${selectedEpisode}${vk}${VIMEUS_PARAMS}`;
     }
 
-    // ── 2. UNLIMPLAY (Multi-Servidor exclusivo en Audio Latino) ──
-    if (selectedServer === 'unlimplay') {
+    // ── 3. VIDSRC (Multi-Audio y Subtítulos) ──
+    if (selectedServer === 'vidsrc') {
       if (selectedItem.type === 'movie') {
-        return `https://unlimplay.com/f/embed/movie/${id}`;
+        return `https://vidsrc.me/embed/movie?tmdb=${id}`;
       }
-      return `https://unlimplay.com/f/embed/tv/${id}/${selectedSeason}/${selectedEpisode}`;
-    }
-
-    // ── 3. VIMEUS SALA 2 (Respaldo en Audio Latino) ──
-    if (selectedServer === 'vimeus_sala2') {
-      const vk = VIMEUS_VIEW_KEY ? `&view_key=${encodeURIComponent(VIMEUS_VIEW_KEY)}` : '';
-      const params = '&title=PIRU_TV&theme=dark&font=v2&overlay=v3&selector=v2&playUI=v2&epanel=v2';
-      if (selectedItem.type === 'movie') {
-        return `https://vimeus.com/e/movie?tmdb=${id}${vk}${params}`;
-      }
-      const kind = selectedItem.category === 'Anime' ? 'anime' : 'serie';
-      return `https://vimeus.com/e/${kind}?tmdb=${id}&se=${selectedSeason}&ep=${selectedEpisode}${vk}${params}`;
+      return `https://vidsrc.me/embed/tv?tmdb=${id}&season=${selectedSeason}&episode=${selectedEpisode}`;
     }
 
     // ── 4. CINESRC (Streaming Rápido Multi-Idioma / HD) ──
@@ -1683,9 +1680,47 @@ export default function Peliculas() {
                       {/* Informacion de Servidores y Audio */}
                       <div className="latino-notice-pill">
                         <span>🇲🇽</span>
-                        <span><strong>Audio Latino:</strong> Vimeus y UnLimPlay reproducen silenciosamente en Español Latino.</span>
+                        <span><strong>Audio Latino:</strong> UnLimPlay reproduce en Español Latino 1080p. Vimeus temporalmente con caída de servidor (Error 522).</span>
                       </div>
                     </div>
+
+                    {selectedServer === 'vimeus' && (
+                      <div style={{
+                        margin: '0.75rem 0',
+                        padding: '0.75rem 1rem',
+                        background: 'rgba(239, 68, 68, 0.15)',
+                        border: '1px solid rgba(239, 68, 68, 0.4)',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '1rem',
+                        fontSize: '0.85rem'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '1.2rem' }}>⚠️</span>
+                          <span>
+                            <strong>Servidor Vimeus en mantenimiento:</strong> El host de vimeus.com presenta caída de conexión externa (Error 522).
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => { setSelectedServer('unlimplay'); setIsPlaying(true); }}
+                          style={{
+                            background: '#e50914',
+                            border: 'none',
+                            color: '#fff',
+                            padding: '0.4rem 0.8rem',
+                            borderRadius: '6px',
+                            fontWeight: 'bold',
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          Cambiar a UnLimPlay (1080p Latino)
+                        </button>
+                      </div>
+                    )}
 
                     <div className="server-selector-row">
                       {SERVERS.map(srv => (

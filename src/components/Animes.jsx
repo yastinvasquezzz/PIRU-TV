@@ -37,11 +37,19 @@ const CATEGORY_DISCOVER_MAP = {
 
 const ANIME_SERVERS = [
   {
+    id: 'unlimplay',
+    name: 'UnLimPlay',
+    lang: '🇲🇽 LATINO',
+    badge: '⭐ Activo 1080p',
+    desc: 'Audio Latino oficial de alta fidelidad (Directo, Streamwish, Filelions, Voe)',
+    quality: '1080p'
+  },
+  {
     id: 'vimeus',
     name: 'Vimeus',
     lang: '🇲🇽 LATINO',
-    badge: '⭐ Oficial Latino',
-    desc: 'Audio Latino oficial de alta fidelidad sin anuncios invasivos (Recomendado)',
+    badge: '⚠️ Error 522 Host',
+    desc: 'Audio Latino oficial (Servidor temporalmente fuera de línea por su proveedor)',
     quality: '1080p'
   },
   {
@@ -83,7 +91,7 @@ export default function Animes() {
   const [isLoadingSeasons, setIsLoadingSeasons] = useState(false);
   const [isLoadingEpisodes, setIsLoadingEpisodes] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [selectedServer, setSelectedServer] = useState('vimeus');
+  const [selectedServer, setSelectedServer] = useState('unlimplay');
   const [modalTab, setModalTab] = useState('player'); // 'player', 'cast', 'trailer', 'details'
 
   // Watch history for continue watching row (specific to animes)
@@ -284,7 +292,7 @@ export default function Animes() {
   const handleOpenAnime = async (anime) => {
     setSelectedAnime(anime);
     setIsPlaying(false);
-    setSelectedServer('vimeus');
+    setSelectedServer('unlimplay');
     setModalTab('player');
     setAnimeDetails(null);
     setSeasonEpisodes([]);
@@ -406,11 +414,18 @@ export default function Animes() {
     }
   };
 
-  // Vimeus / CineSrc / NasriPlay Embed URL
+  // UnLimPlay / Vimeus / CineSrc / NasriPlay Embed URL
   const embedUrl = useMemo(() => {
     if (!selectedAnime) return '';
     const id = selectedAnime.tmdb_id || selectedAnime.id;
     const isMovie = selectedAnime.type === 'movie' || (animeDetails && !animeDetails.seasons);
+
+    if (selectedServer === 'unlimplay') {
+      if (isMovie) {
+        return `https://unlimplay.com/f/embed/movie/${id}`;
+      }
+      return `https://unlimplay.com/f/embed/tv/${id}/${selectedSeasonNumber}/${selectedEpisodeNumber}`;
+    }
 
     if (selectedServer === 'vimeus') {
       const vk = VIMEUS_VIEW_KEY ? `&view_key=${encodeURIComponent(VIMEUS_VIEW_KEY)}` : '';
@@ -1064,9 +1079,47 @@ export default function Animes() {
 
                     <div className="latino-notice-pill">
                       <span>🇲🇽</span>
-                      <span><strong>Audio Latino:</strong> Vimeus reproduce con doblaje oficial en Español Latino.</span>
+                      <span><strong>Audio Latino:</strong> UnLimPlay reproduce con doblaje oficial en Español Latino 1080p. Vimeus temporalmente con caída de servidor (Error 522).</span>
                     </div>
                   </div>
+
+                  {selectedServer === 'vimeus' && (
+                    <div style={{
+                      margin: '0.75rem 0',
+                      padding: '0.75rem 1rem',
+                      background: 'rgba(239, 68, 68, 0.15)',
+                      border: '1px solid rgba(239, 68, 68, 0.4)',
+                      borderRadius: '8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '1rem',
+                      fontSize: '0.85rem'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '1.2rem' }}>⚠️</span>
+                        <span>
+                          <strong>Servidor Vimeus en mantenimiento:</strong> El host de vimeus.com presenta caída de conexión externa (Error 522).
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => { setSelectedServer('unlimplay'); setIsPlaying(true); }}
+                        style={{
+                          background: '#e50914',
+                          border: 'none',
+                          color: '#fff',
+                          padding: '0.4rem 0.8rem',
+                          borderRadius: '6px',
+                          fontWeight: 'bold',
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
+                        Cambiar a UnLimPlay (1080p Latino)
+                      </button>
+                    </div>
+                  )}
 
                   <div className="server-selector-row">
                     {ANIME_SERVERS.map(srv => (
