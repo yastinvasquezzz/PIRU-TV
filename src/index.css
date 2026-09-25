@@ -2100,6 +2100,26 @@ input:focus,
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
 }
 
+/* Netflix Subnav & Category Pills Bar (Clean spacing under fixed 68px header) */
+.netflix-subnav-bar {
+  padding: 82px 3.5rem 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  position: relative;
+  z-index: 30;
+  background: #141414;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 768px) {
+  .netflix-subnav-bar {
+    padding: 72px 1.25rem 0.75rem;
+  }
+}
+
 .netflix-header-inner {
   height: 68px;
   width: 100%;

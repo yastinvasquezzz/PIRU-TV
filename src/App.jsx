@@ -105,7 +105,7 @@ function App() {
                 className={`netflix-nav-link ${activeTab === 'peliculas' ? 'active' : ''}`}
                 onClick={() => {
                   setActiveTab('peliculas');
-                  window.dispatchEvent(new CustomEvent('reset-piru-home'));
+                  window.dispatchEvent(new CustomEvent('open-piru-category', { detail: '🗣️ Películas Latino' }));
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
               >
@@ -192,7 +192,7 @@ function App() {
         </div>
       </header>
 
-      <main className={`app-content ${activeTab === 'peliculas' ? 'netflix-full-bleed' : ''}`}>
+      <main className={`app-content ${activeTab === 'peliculas' || activeTab === 'kdramas' || activeTab === 'animes' ? 'netflix-full-bleed' : ''}`}>
         <Suspense fallback={
           <div style={{ padding: '2rem 1rem' }}>
             <SkeletonGrid count={12} />

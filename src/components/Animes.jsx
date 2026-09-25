@@ -520,16 +520,7 @@ export default function Animes() {
     <div className="peliculas-container netflix-view" style={{ minHeight: '100vh', background: '#141414', color: '#fff' }}>
       
       {/* Netflix Subnav & Category Pills */}
-      <div style={{
-        padding: '1.25rem 3.5rem 0.5rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '1rem',
-        position: 'relative',
-        zIndex: 30
-      }}>
+      <div className="netflix-subnav-bar">
         {/* Category Tabs Bar */}
         <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none' }}>
           {ANIME_CATEGORIES.map(cat => (
