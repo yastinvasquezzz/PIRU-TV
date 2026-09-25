@@ -4,48 +4,32 @@ import { SkeletonGrid } from './SkeletonLoader';
 import { saveWatchProgress, toggleFavorite, isFavorite, getWatchHistory } from '../utils/storage';
 import { castWithWebVideoCaster } from '../utils/wvcCast';
 
-// ── GraphQL Proxy Configuration ──
 const PROXY_WORKER = 'https://pirutv-proxy.skillful-part.workers.dev';
 
 const queryFlix = async (query, variables = {}) => {
   const endpoints = ['/api/gql', PROXY_WORKER];
-  let lastError = null;
-
-  for (const ep of endpoints) {
+  let lastErr = null;
+  for (const url of endpoints) {
     try {
-      const res = await fetch(ep, {
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query, variables })
       });
       if (res.ok) {
-        return await res.json();
+        const json = await res.json();
+        if (json.data && !json.errors) return json;
       }
-    } catch (err) {
-      lastError = err;
+    } catch (e) {
+      lastErr = e;
     }
   }
-  throw lastError || new Error('GraphQL request failed');
+  throw lastErr || new Error('GraphQL request failed');
 };
-
-// ── Doramasflix Live GraphQL Queries ──
-const TRENDS_DORAMAS_QUERY = `
-  query TrendsDoramas($platform: String, $days: Int, $limit: Int) {
-    trendsDoramas(platform: $platform, days: $days, limit: $limit) {
-      _id
-      name
-      name_es
-      slug
-      poster_path
-      backdrop_path
-      views_count
-    }
-  }
-`;
 
 const SEARCH_FLIX_QUERY = `
   query searchDorama($input: String!) {
-    searchDorama(input: $input, limit: 24) {
+    searchDorama(input: $input, limit: 20) {
       _id
       slug
       name
@@ -59,8 +43,18 @@ const SEARCH_FLIX_QUERY = `
 `;
 
 const LIST_DORAMAS_QUERY = `
-  query listDoramas($page: Int, $perPage: Int, $sort: SortDorama, $filter: FilterDoramasInput) {
-    paginationDorama(page: $page, limit: $perPage, sort: $sort, filter: $filter) {
+  query listDoramas(
+    $page: Int
+    $perPage: Int
+    $sort: SortDorama
+    $filter: FilterDoramasInput
+  ) {
+    paginationDorama(
+      page: $page
+      perPage: $perPage
+      sort: $sort
+      filter: $filter
+    ) {
       count
       items {
         _id
@@ -71,6 +65,7 @@ const LIST_DORAMAS_QUERY = `
         backdrop_path
         first_air_date
         overview
+        languages
       }
     }
   }
@@ -98,6 +93,7 @@ const DETAIL_DORAMA_EXTRA_QUERY = `
     listEpisodes(
       sort: NUMBER_ASC
       filter: {
+        type_serie: DORAMA
         serie_slug: $slug
         season_number: $season_number
       }
@@ -107,27 +103,33 @@ const DETAIL_DORAMA_EXTRA_QUERY = `
       name_es
       slug
       episode_number
+      languages
     }
   }
 `;
 
 const LINKS_FLIX_QUERY = `
-  query EpisodeLinksOnline($id: ID!, $app: String) {
+  query GetEpisodeLinks($id: ID!, $app: String) {
     getEpisodeLinks(id: $id, app: $app) {
       links_online {
+        _id
+        link
         server
         lang
-        link
-        _id
-        is_recommended
       }
     }
   }
 `;
 
 const LIST_MOVIES_QUERY = `
-  query listMovies($page: Int, $perPage: Int, $sort: SortMovie, $filter: FilterMoviesInput) {
-    paginationMovie(page: $page, limit: $perPage, sort: $sort, filter: $filter) {
+  query listMovies(
+    $page: Int
+    $perPage: Int
+  ) {
+    paginationMovie(
+      page: $page
+      perPage: $perPage
+    ) {
       count
       items {
         _id
@@ -136,7 +138,6 @@ const LIST_MOVIES_QUERY = `
         slug
         poster_path
         backdrop_path
-        release_date
         overview
       }
     }
@@ -152,78 +153,79 @@ const SEARCH_MOVIES_QUERY = `
       name_es
       poster_path
       backdrop_path
-      release_date
       overview
     }
   }
 `;
 
 const MOVIE_LINKS_QUERY = `
-  query GetMovieLinks($id: ID!, $app: String) {
-    getMovieLinks(id: $id, app: $app) {
+  query getMovieLinks($id: ID!) {
+    getMovieLinks(id: $id) {
       links_online {
+        _id
+        link
         server
         lang
-        link
-        is_recommended
       }
     }
   }
 `;
 
-// ── Known Server Names for Doramasflix ──
 const SERVER_NAMES = {
-  '4721': 'PrimeLoad ⚡',
-  '1230': 'Voe',
-  '38585': 'Streamwish',
-  '69c690a20bef0992e5c91fa1': 'PrimeLoad ⚡',
-  '60ac0eb8ac46a43f59a5b21f': 'Streamtape',
-  '60ac0d08ac46a43f59a5b21d': 'Mixdrop',
-  '60ac0f2eac46a43f59a5b221': 'Uqload',
-  '60ac0f52ac46a43f59a5b222': 'Mp4Upload',
-  '60ac0abeac46a43f59a5b21b': 'Okru',
-  '60ac0f0eac46a43f59a5b220': 'Voe',
-  '60ac0e7eac46a43f59a5b21e': 'Dood',
-  '64b19a4035461c5d64ef5b84': 'Filemoon',
-  '64b18fdc35461c5d64ef5b59': 'Streamwish',
-  '65c6b7f9149d4675d1547a5c': 'VidHide',
-  '61707703fa461256758155c5': 'Mega'
+  "4721": "PrimeLoad ⚡",
+  "1113": "Voe",
+  "38585": "Streamwish",
+  "576857": "Filemoon",
+  "1230": "Filemoon",
+  "7286": "Streamwish",
+  "1233": "Streamwish",
+  "1004": "Doodstream",
+  "1007": "Lulustream",
+  "69c690a20bef0992e5c91fa1": "PrimeLoad ⚡",
+  "60ac0eb8ac46a43f59a5b21f": "Streamtape",
+  "60ac0d08ac46a43f59a5b21d": "Mixdrop",
+  "60ac0f2eac46a43f59a5b221": "Uqload",
+  "60ac0f52ac46a43f59a5b222": "Mp4Upload",
+  "60ac0abeac46a43f59a5b21b": "Okru",
+  "60ac0f0eac46a43f59a5b220": "Voe",
+  "60ac0e7eac46a43f59a5b21e": "Dood",
+  "64b19a4035461c5d64ef5b84": "Filemoon",
+  "64b18fdc35461c5d64ef5b59": "Streamwish",
+  "65c6b7f9149d4675d1547a5c": "VidHide",
+  "61707703fa461256758155c5": "Mega"
 };
 
 const LANG_NAMES = {
-  '38': 'Latino 🗣️',
-  '13109': 'Coreano 🇰🇷',
-  '13110': 'Japonés 🇯🇵',
-  '13111': 'Chino 🇨🇳',
-  '13112': 'Tailandés 🇹🇭',
-  '13113': 'Taiwanés 🇹🇼',
-  '36': 'Inglés 🇬🇧'
+  "38": "Latino 🗣️",
+  "13109": "Coreano 🇰🇷",
+  "13110": "Japonés 🇯🇵",
+  "13111": "Chino 🇨🇳",
+  "13112": "Japonés/Tailandés 🇯🇵🇹🇭",
+  "13113": "Taiwanés 🇹🇼",
+  "36": "Inglés 🇬🇧"
 };
 
-// Decode shortened JWT URLs (e.g. embedshortener.co/e/<jwt>) into the actual direct player URL
-const decodeEmbedUrl = (link) => {
-  if (!link) return '';
-  if (link.includes('embedshortener.co/e/')) {
+const decodeEmbedUrl = (url) => {
+  if (!url) return '';
+  if (url.includes('embedshortener.co/e/')) {
     try {
-      const parts = link.split('/e/')[1].split('.');
-      if (parts[1]) {
-        let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-        while (base64.length % 4) base64 += '=';
-        const payload = JSON.parse(atob(base64));
-        if (payload && payload.link) {
-          let innerBase64 = payload.link.replace(/-/g, '+').replace(/_/g, '/');
-          while (innerBase64.length % 4) innerBase64 += '=';
-          return atob(innerBase64);
+      const token = url.split('/e/')[1]?.split('?')[0];
+      if (token) {
+        const parts = token.split('.');
+        if (parts.length >= 2) {
+          const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+          if (payload?.link) {
+            return atob(payload.link);
+          }
         }
       }
     } catch (e) {
-      console.warn('Error decoding shortener JWT:', e);
+      console.warn('Error decoding shortener link:', e);
     }
   }
-  return link;
+  return url;
 };
 
-// Route PrimeLoad through proxy to bypass Content-Security-Policy & frame blocking
 const getPlayerUrl = (embed) => {
   if (!embed) return '';
   const decoded = decodeEmbedUrl(embed);
@@ -237,31 +239,162 @@ const getPlayerUrl = (embed) => {
   return decoded;
 };
 
-// Detect human-readable server name based on host domain or server reference
-const getHostName = (url, serverRef) => {
+const getHostName = (url, server_ref) => {
+  if (SERVER_NAMES[server_ref]) return SERVER_NAMES[server_ref];
   const decoded = decodeEmbedUrl(url);
   if (decoded.includes('primeload.co')) return 'PrimeLoad ⚡';
-  if (decoded.includes('streamwish') || decoded.includes('flaswish')) return 'Streamwish';
+  if (decoded.includes('streamwish')) return 'Streamwish';
   if (decoded.includes('filemoon')) return 'Filemoon';
-  if (decoded.includes('voe.sx') || decoded.includes('voe.')) return 'Voe';
-  if (decoded.includes('streamtape')) return 'Streamtape';
-  if (decoded.includes('mixdrop')) return 'Mixdrop';
-  if (decoded.includes('ok.ru') || decoded.includes('okru')) return 'Okru';
-  if (decoded.includes('uqload')) return 'Uqload';
-  if (decoded.includes('mp4upload')) return 'Mp4Upload';
-  if (decoded.includes('dood')) return 'Dood';
-  if (decoded.includes('vidhide')) return 'VidHide';
-  if (decoded.includes('mega.nz') || decoded.includes('mega.')) return 'Mega';
-
-  if (serverRef && SERVER_NAMES[serverRef]) return SERVER_NAMES[serverRef];
+  if (decoded.includes('voe.sx') || decoded.includes('voe-unblock') || decoded.includes('voe.to')) return 'Voe';
   try {
-    const hostname = new URL(decoded || url).hostname;
+    const hostname = new URL(decoded).hostname;
     const parts = hostname.replace('www.', '').split('.');
     return parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
-  } catch {
-    return 'Servidor HD';
+  } catch (e) {
+    return "Servidor HD";
   }
 };
+
+const CURATED_INITIAL_LATINO = [
+  {
+    id: "65ec7d58b17478a71d4a4726_p",
+    type: "dorama",
+    title: "La Reina de las Lágrimas",
+    poster: "https://image.tmdb.org/t/p/w500/yfJ2erY2SJiov0LaRhlSMhSPqYx.jpg",
+    backdrop: "https://image.tmdb.org/t/p/original/cIGwlcstPVnyhY0Oqrvly6yrYz7.jpg",
+    overview: "La reina de las tiendas departamentales y su esposo de pueblo sufren una crisis matrimonial, hasta que el amor comienza a renacer milagrosamente.",
+    slug: "queen-of-tears",
+    year: "2024",
+    lang: "LAT"
+  },
+  {
+    id: "6ab53bd6a0001a2903c7e4f8",
+    type: "dorama",
+    title: "Delirio mortal",
+    poster: "https://image.tmdb.org/t/p/w500/aJboceWct3FYptVPavlhUOjiiSe.jpg",
+    backdrop: "https://image.tmdb.org/t/p/original/cae4gjklRHnzQTmVCxpZnOdPw71.jpg",
+    overview: "Cuando la demencia agravada de su padre lo convierte en el principal sospechoso de un caso de asesinato, una maestra se apresura a descubrir la verdad.",
+    slug: "delusion",
+    year: "2026",
+    lang: "LAT"
+  },
+  {
+    id: "5fee7e4065207828ca15b8db",
+    type: "dorama",
+    title: "Señor Reina (Mr. Queen)",
+    poster: "https://image.tmdb.org/t/p/w500/sghnD3xZEGWMdjpVFnIKOYs5teA.jpg",
+    backdrop: "https://image.tmdb.org/t/p/original/8GdL6o4zzSAJmHy5ZwWwTDLwXS1.jpg",
+    overview: "Un chef de la Casa Azul despierta en el cuerpo de una joven reina de la era Joseon tras un extraño accidente.",
+    slug: "mr-queen",
+    year: "2020",
+    lang: "LAT"
+  },
+  {
+    id: "6ab48a55a0001a2903c7d99a",
+    type: "dorama",
+    title: "Vivir para siempre (Live Forever)",
+    poster: "https://image.tmdb.org/t/p/w500/aJboceWct3FYptVPavlhUOjiiSe.jpg",
+    backdrop: "https://image.tmdb.org/t/p/original/cae4gjklRHnzQTmVCxpZnOdPw71.jpg",
+    overview: "Una intensa historia de supervivencia, misterio y lealtad entre familias rivales.",
+    slug: "live-forever",
+    year: "2026",
+    lang: "LAT"
+  },
+  {
+    id: "6ab4854ba0001a2903c7d80e",
+    type: "dorama",
+    title: "Un Profeta (A Prophet)",
+    poster: "https://image.tmdb.org/t/p/w500/yfJ2erY2SJiov0LaRhlSMhSPqYx.jpg",
+    backdrop: "https://image.tmdb.org/t/p/original/cIGwlcstPVnyhY0Oqrvly6yrYz7.jpg",
+    overview: "Un hombre con visiones proféticas intenta salvar a sus seres queridos de un destino inminente.",
+    slug: "a-prophet",
+    year: "2026",
+    lang: "LAT"
+  }
+];
+
+const CURATED_INITIAL_SUB = [
+  {
+    id: "65ec7d58b17478a71d4a4726_sub",
+    type: "dorama",
+    title: "Queen of Tears",
+    poster: "https://image.tmdb.org/t/p/w500/yfJ2erY2SJiov0LaRhlSMhSPqYx.jpg",
+    backdrop: "https://image.tmdb.org/t/p/original/cIGwlcstPVnyhY0Oqrvly6yrYz7.jpg",
+    overview: "Hong Hae-in, the chaebol heiress of Queens Group, and Baek Hyun-woo, a lawyer from a small town, navigate marital friction and love.",
+    slug: "queen-of-tears",
+    year: "2024",
+    lang: "SUB"
+  },
+  {
+    id: "6ab53bd6a0001a2903c7e4f8_sub",
+    type: "dorama",
+    title: "Delusion",
+    poster: "https://image.tmdb.org/t/p/w500/aJboceWct3FYptVPavlhUOjiiSe.jpg",
+    backdrop: "https://image.tmdb.org/t/p/original/cae4gjklRHnzQTmVCxpZnOdPw71.jpg",
+    overview: "A painter is commissioned to paint a portrait of a mysterious vampire woman living in 1935 Gyeongseong.",
+    slug: "delusion",
+    year: "2026",
+    lang: "SUB"
+  },
+  {
+    id: "5fee7e4065207828ca15b8db_sub",
+    type: "dorama",
+    title: "Mr. Queen",
+    poster: "https://image.tmdb.org/t/p/w500/sghnD3xZEGWMdjpVFnIKOYs5teA.jpg",
+    backdrop: "https://image.tmdb.org/t/p/original/8GdL6o4zzSAJmHy5ZwWwTDLwXS1.jpg",
+    overview: "A modern chef finds himself trapped in the body of a queen in the Joseon dynasty.",
+    slug: "mr-queen",
+    year: "2020",
+    lang: "SUB"
+  }
+];
+
+const CURATED_INITIAL_MOVIES = [
+  {
+    id: "63f93ddecd7d648f313b9e0c",
+    type: "movie",
+    title: "Reina del baile (Dancing Queen)",
+    poster: "https://image.tmdb.org/t/p/w500/t0TmIy5LfKvU6qDoBXPTvvQm4oM.jpg",
+    backdrop: "https://image.tmdb.org/t/p/original/pRQW3X6xdPnhhDgUoH4XBp2hCnz.jpg",
+    overview: "La esposa del próximo candidato a alcalde de Seúl se convierte en cantante de baile en secreto.",
+    slug: "dancing-queen",
+    year: "2012",
+    lang: "LAT"
+  },
+  {
+    id: "5f354e4ffaa7f5a779562d3b",
+    type: "movie",
+    title: "Arquitectura 101",
+    poster: "https://image.tmdb.org/t/p/w500/6ChBkMt5fwYPtKvbtq8irLfuKHc.jpg",
+    backdrop: "https://image.tmdb.org/t/p/original/mhYkTN7wcb53nzEerIt0RSojLCw.jpg",
+    overview: "El arquitecto Seung Min es visitado por su primer amor durante sus años universitarios, quien le pide construir su casa.",
+    slug: "architecture-101",
+    year: "2012",
+    lang: "LAT"
+  },
+  {
+    id: "5f354eb0faa7f5a779562d42",
+    type: "movie",
+    title: "Trabajo extremo (Extreme Job)",
+    poster: "https://image.tmdb.org/t/p/w500/jbHNkNydiZstlqhhBSvG19lm4NL.jpg",
+    backdrop: "https://image.tmdb.org/t/p/original/hn7oqr6RVqr3u6dcGoPRPi4jj1m.jpg",
+    overview: "Un escuadrón antinarcóticos encubierto abre un restaurante de pollo frito que se convierte en un éxito inesperado.",
+    slug: "extreme-job",
+    year: "2019",
+    lang: "LAT"
+  },
+  {
+    id: "5f3550bffaa7f5a779562d5b",
+    type: "movie",
+    title: "Tae Guk Gi: La Hermandad de la Guerra",
+    poster: "https://image.tmdb.org/t/p/w500/tPR5ecnXLypzOdEV5TLxQ8CkczF.jpg",
+    backdrop: "https://image.tmdb.org/t/p/original/dx3c5kdZUNDZujNv2XvHrqR3kMN.jpg",
+    overview: "Dos hermanos se ven obligados a luchar en la Guerra de Corea, poniendo a prueba sus lazos y supervivencia.",
+    slug: "tae-guk-gi-the-brotherhood-of-war",
+    year: "2004",
+    lang: "LAT"
+  }
+];
 
 const KDRAMA_CATEGORIES = [
   'Inicio',
@@ -271,153 +404,18 @@ const KDRAMA_CATEGORIES = [
   '❤️ Mi Lista'
 ];
 
-// Fallback initial dataset of top Doramasflix dramas so the page NEVER renders blank or collapsed
-const INITIAL_TOP_DORAMAS = [
-  {
-    id: '6a8e442472e6043f632a13a3',
-    type: 'dorama',
-    title: 'The Early Spring',
-    name_es: 'Primavera Temprana',
-    slug: 'the-early-spring',
-    poster: 'https://image.tmdb.org/t/p/w500/lGFngmJWMO4HTPcI0sUGKBAFqMe.jpg',
-    backdrop: 'https://image.tmdb.org/t/p/original/9Z2VLmjRJGvjnzWXFzM9MPUQbbC.jpg',
-    overview: 'Una historia cautivadora sobre el renacer de emociones profundas y secretos del pasado en una pintoresca ciudad costera.',
-    year: '2026',
-    lang: 'SUB/LAT',
-    match: '99%'
-  },
-  {
-    id: '6a90af448bb053076c412a15',
-    type: 'dorama',
-    title: 'Summertime',
-    name_es: 'Verano',
-    slug: 'summertime',
-    poster: 'https://image.tmdb.org/t/p/w500/uZLTSPocZHlezHcfqEYgW4JhcCR.jpg',
-    backdrop: 'https://image.tmdb.org/t/p/original/mcwzXqLswl7gjmJTXG2Z0JcuhfE.jpg',
-    overview: 'Dos vidas totalmente distintas convergen durante las vacaciones de verano, desatando una serie de eventos inesperados.',
-    year: '2026',
-    lang: 'SUB',
-    match: '98%'
-  },
-  {
-    id: '6a446bb925dd378319c3e60d',
-    type: 'dorama',
-    title: 'Knot',
-    name_es: 'Nudo',
-    slug: 'knot',
-    poster: 'https://image.tmdb.org/t/p/w500/8z62pp4K602d1y6079oU1GBeiAG.jpg',
-    backdrop: 'https://image.tmdb.org/t/p/original/zq22918LdWTkBstphgUfxDZUO7i.jpg',
-    overview: 'Un apasionante drama de misterio psicológico donde una red de engaños familiares amenaza con destruir todo lo construido.',
-    year: '2025',
-    lang: 'SUB/LAT',
-    match: '97%'
-  },
-  {
-    id: '6aa36763d5181060190d61c7',
-    type: 'dorama',
-    title: 'Against the Current',
-    name_es: 'Contra la Corriente',
-    slug: 'against-the-current',
-    poster: 'https://image.tmdb.org/t/p/w500/kMj4j1ejPRJCOR3JIJLqku6rEPe.jpg',
-    backdrop: 'https://image.tmdb.org/t/p/original/lKsZNWBsKYJysXQsbtC2GbJS8E2.jpg',
-    overview: 'Luchando contra las normas sociales y las expectativas corporativas, una joven ejecutiva desafía el destino para encontrar su propia verdad.',
-    year: '2026',
-    lang: 'SUB',
-    match: '96%'
-  },
-  {
-    id: '6aab6f358a55c366bc0e987a',
-    type: 'dorama',
-    title: 'Spring of the Blade',
-    name_es: 'La Primavera de la Espada',
-    slug: 'spring-of-the-blade',
-    poster: 'https://image.tmdb.org/t/p/w500/uRWqHI4R4nOSPpRnbr8JjnpCmgx.jpg',
-    backdrop: 'https://image.tmdb.org/t/p/original/g4gMgBm59j25eGKQFrME2NluDy7.jpg',
-    overview: 'Artes marciales, lealtad y amor prohibido en la era de los reinos guerreros. Un maestro de la espada emprende un viaje para salvar a su clan.',
-    year: '2026',
-    lang: 'SUB',
-    match: '98%'
-  },
-  {
-    id: '6a93ced024356d46eff3b74c',
-    type: 'dorama',
-    title: 'Blossom Through the Cloud',
-    name_es: 'Florecer entre las Nubes',
-    slug: 'blossom-through-the-cloud',
-    poster: 'https://image.tmdb.org/t/p/w500/ecUJK58QyF1uBuDzJwxTItWg2WK.jpg',
-    backdrop: 'https://image.tmdb.org/t/p/original/pzVQamYApSGKqA4hWFTw5955wH6.jpg',
-    overview: 'A través de las dificultades más oscuras, el amor florece entre dos personas marcadas por el dolor del pasado.',
-    year: '2026',
-    lang: 'SUB/LAT',
-    match: '95%'
-  },
-  {
-    id: '6aab6f508a55c366bc0e98f0',
-    type: 'dorama',
-    title: 'Revenge from a Wife',
-    name_es: 'La Venganza de la Esposa',
-    slug: 'revenge-from-a-wife',
-    poster: 'https://image.tmdb.org/t/p/w500/hABseMRLlM8tOSJTcyJku7VmxsZ.jpg',
-    backdrop: 'https://image.tmdb.org/t/p/original/hABseMRLlM8tOSJTcyJku7VmxsZ.jpg',
-    overview: 'Tras ser traicionada por quien más amaba, renace con una nueva identidad para cobrar venganza contra todos los que conspiraron contra ella.',
-    year: '2026',
-    lang: 'SUB',
-    match: '97%'
-  },
-  {
-    id: '6aab6f508a55c366bc0e98f2',
-    type: 'dorama',
-    title: 'As Promised',
-    name_es: 'Como se Prometió',
-    slug: 'as-promised',
-    poster: 'https://image.tmdb.org/t/p/w500/ewaAPeYaAbSfKKQJ5g4VAdikh8J.jpg',
-    backdrop: 'https://image.tmdb.org/t/p/original/ewaAPeYaAbSfKKQJ5g4VAdikh8J.jpg',
-    overview: 'Una promesa hecha en la infancia reúne a dos amantes diez años después, desafiando todos los obstáculos.',
-    year: '2026',
-    lang: 'SUB',
-    match: '94%'
-  },
-  {
-    id: '6aab6f508a55c366bc0e98f4',
-    type: 'dorama',
-    title: "Our Yesterday's Escape",
-    name_es: 'Nuestra Huida de Ayer',
-    slug: 'our-yesterdays-escape',
-    poster: 'https://image.tmdb.org/t/p/w500/sIHdJBPyJ3FMeLuMl6kmyKfwlDv.jpg',
-    backdrop: 'https://image.tmdb.org/t/p/original/sIHdJBPyJ3FMeLuMl6kmyKfwlDv.jpg',
-    overview: 'Dos fugitivos del destino se encuentran en una travesía llena de adrenalina, redención y romance.',
-    year: '2026',
-    lang: 'SUB',
-    match: '95%'
-  },
-  {
-    id: '6aab6f508a55c366bc0e98f6',
-    type: 'dorama',
-    title: 'Plastic Beauty',
-    name_es: 'Belleza Plástica',
-    slug: 'plastic-beauty',
-    poster: 'https://image.tmdb.org/t/p/w500/zUp3F7qtpJIUMsf31DDLNx1xOdS.jpg',
-    backdrop: 'https://image.tmdb.org/t/p/original/zUp3F7qtpJIUMsf31DDLNx1xOdS.jpg',
-    overview: 'Una ácida mirada al mundo de la estética moderna y el verdadero significado de la identidad y la belleza personal.',
-    year: '2026',
-    lang: 'SUB',
-    match: '93%'
-  }
-];
-
 export default function Kdramas() {
   const [activeCategory, setActiveCategory] = useState('Inicio');
   const [searchTerm, setSearchTerm] = useState('');
   const [isMuted, setIsMuted] = useState(true);
 
-  // Home rows data (initialized with curated list for instant rendering)
-  const [topKdramas, setTopKdramas] = useState(INITIAL_TOP_DORAMAS);
-  const [homeLatinoDoramas, setHomeLatinoDoramas] = useState(INITIAL_TOP_DORAMAS.slice(0, 6));
-  const [homeSubDoramas, setHomeSubDoramas] = useState(INITIAL_TOP_DORAMAS);
-  const [homeAsianMovies, setHomeAsianMovies] = useState([]);
+  // Home curated rows data
+  const [homeLatinoDoramas, setHomeLatinoDoramas] = useState(CURATED_INITIAL_LATINO);
+  const [homeSubDoramas, setHomeSubDoramas] = useState(CURATED_INITIAL_SUB);
+  const [homeAsianMovies, setHomeAsianMovies] = useState(CURATED_INITIAL_MOVIES);
   const [heroIndex, setHeroIndex] = useState(0);
 
-  // Grid & Pagination for specific tabs
+  // Category grid data & pagination
   const [gridItems, setGridItems] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -428,169 +426,166 @@ export default function Kdramas() {
   // Watch history
   const [watchHistory, setWatchHistory] = useState(getWatchHistory());
 
-  // Modal & Player State
+  // Modal State
   const [selectedDrama, setSelectedDrama] = useState(null);
   const [seasonsList, setSeasonsList] = useState([]);
   const [activeSeason, setActiveSeason] = useState(1);
   const [episodesData, setEpisodesData] = useState([]);
   const [activeEpisode, setActiveEpisode] = useState(1);
-  const [activeEpisodeId, setActiveEpisodeId] = useState(null);
+  const [allEpisodeLinks, setAllEpisodeLinks] = useState([]);
   const [serversList, setServersList] = useState([]);
   const [activeServer, setActiveServer] = useState(null);
   const [activePlayerUrl, setActivePlayerUrl] = useState('');
   const [isPlaying, setIsPlaying] = useState(false);
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
-  const [isLinksLoading, setIsLinksLoading] = useState(false);
-  const [modalTab, setModalTab] = useState('player'); // 'player' | 'details'
+  const [modalTab, setModalTab] = useState('player'); // 'player', 'details'
 
-  // Load live home datasets on mount
+  // Load initial home datasets on mount (Doramas Latino, Sub, Movies)
   useEffect(() => {
-    let isMounted = true;
-
     const loadHomeData = async () => {
       try {
-        // 1. Fetch Trending Doramas
-        const resTrends = await queryFlix(TRENDS_DORAMAS_QUERY, {
-          platform: 'doramasgo',
-          days: 7,
-          limit: 15
-        });
-
-        const rawTrends = resTrends?.data?.trendsDoramas || [];
-        if (rawTrends.length > 0 && isMounted) {
-          const formattedTrends = rawTrends.map((x, idx) => ({
-            id: x._id,
-            type: 'dorama',
-            title: x.name_es || x.name || 'Kdrama',
-            name_es: x.name_es,
-            slug: x.slug,
-            poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=80',
-            backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
-            overview: `Dorama asiático muy popular con más de ${(x.views_count || 1200).toLocaleString()} reproducciones.`,
-            year: '2026',
-            lang: 'SUB/LAT',
-            match: `${99 - idx}%`
-          }));
-          setTopKdramas(formattedTrends);
-          setHomeLatinoDoramas(formattedTrends.slice(0, 8));
-        }
-
-        // 2. Fetch Catalog Doramas
-        const resSub = await queryFlix(LIST_DORAMAS_QUERY, {
+        // 1. Doramas
+        const resDoramas = await queryFlix(LIST_DORAMAS_QUERY, {
           page: 1,
-          perPage: 20
+          perPage: 30,
+          sort: 'POPULARITY_DESC',
+          filter: {}
         });
+        const allItems = (resDoramas.data?.paginationDorama?.items || []).map(x => ({
+          id: x._id,
+          type: 'dorama',
+          title: x.name_es || x.name || 'Kdrama',
+          poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://via.placeholder.com/200x300?text=Kdrama',
+          backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
+          overview: x.overview || 'Sin descripción disponible.',
+          slug: x.slug,
+          year: (x.first_air_date || '').slice(0, 4) || '2026',
+          lang: (x.languages && x.languages.includes('38')) ? 'LAT' : 'SUB'
+        }));
 
-        const rawSub = resSub?.data?.paginationDorama?.items || [];
-        if (rawSub.length > 0 && isMounted) {
-          const formattedSub = rawSub.map((x, idx) => ({
-            id: x._id,
-            type: 'dorama',
-            title: x.name_es || x.name || 'Kdrama',
-            name_es: x.name_es,
-            slug: x.slug,
-            poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=80',
-            backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
-            overview: x.overview || 'Sin descripción disponible.',
-            year: (x.first_air_date || '').slice(0, 4) || '2026',
-            lang: 'SUB',
-            match: `${98 - (idx % 8)}%`
-          }));
-          setHomeSubDoramas(formattedSub);
+        if (allItems.length > 0) {
+          const lat = allItems.filter(i => i.lang === 'LAT');
+          const sub = allItems.filter(i => i.lang === 'SUB');
+          setHomeLatinoDoramas(lat.length > 0 ? lat : allItems);
+          setHomeSubDoramas(sub.length > 0 ? sub : allItems);
         }
 
-        // 3. Fetch Asian Movies
+        // 2. Asian Movies
         const resMovies = await queryFlix(LIST_MOVIES_QUERY, {
           page: 1,
           perPage: 20
         });
-
-        const rawMovies = resMovies?.data?.paginationMovie?.items || [];
-        if (rawMovies.length > 0 && isMounted) {
-          const formattedMovies = rawMovies.map((x, idx) => ({
-            id: x._id,
-            type: 'movie',
-            title: x.name_es || x.name || 'Película Asiática',
-            slug: x.slug,
-            poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=500&auto=format&fit=crop&q=80',
-            backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
-            overview: x.overview || 'Película asiática disponible para ver online.',
-            year: (x.release_date || '').slice(0, 4) || '2026',
-            lang: 'MULTI',
-            match: `${97 - (idx % 6)}%`
-          }));
-          setHomeAsianMovies(formattedMovies);
+        const movieItems = (resMovies.data?.paginationMovie?.items || []).map(x => ({
+          id: x._id,
+          type: 'movie',
+          title: x.name_es || x.name || 'Película',
+          poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://via.placeholder.com/200x300?text=Película',
+          backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
+          overview: x.overview || 'Sin descripción disponible.',
+          slug: x.slug,
+          year: (x.release_date || '').slice(0, 4) || '2026',
+          lang: 'LAT'
+        }));
+        if (movieItems.length > 0) {
+          setHomeAsianMovies(movieItems);
         }
       } catch (err) {
-        console.warn('Live Doramasflix query failed, using preloaded catalog fallback:', err);
+        console.error('Error loading Kdramas home data:', err);
       }
     };
 
     loadHomeData();
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
-  // Category Grid pagination
-  useEffect(() => {
-    if (activeCategory === 'Inicio' || activeCategory === '❤️ Mi Lista') return;
+  // Hero billboard item & rotation
+  const heroList = useMemo(() => {
+    return homeLatinoDoramas.length > 0 ? homeLatinoDoramas.slice(0, 8) : [];
+  }, [homeLatinoDoramas]);
+  const heroItem = heroList[heroIndex] || heroList[0];
 
-    let isMounted = true;
-    const fetchGrid = async () => {
+  useEffect(() => {
+    if (heroList.length <= 1) return;
+    const timer = setInterval(() => {
+      setHeroIndex(prev => (prev + 1) % heroList.length);
+    }, 7500);
+    return () => clearInterval(timer);
+  }, [heroList]);
+
+  // Top 10 items for giant ranking row
+  const top10Kdramas = useMemo(() => {
+    return homeLatinoDoramas.slice(0, 10);
+  }, [homeLatinoDoramas]);
+
+  // Filtered continue watching for kdrama
+  const continueWatchingKdramas = useMemo(() => {
+    return (watchHistory || []).filter(item => item.type === 'kdrama' || item.type === 'dorama').slice(0, 10);
+  }, [watchHistory]);
+
+  // Load category grid when not in 'Inicio'
+  useEffect(() => {
+    if (activeCategory === 'Inicio' || activeCategory === '❤️ Mi Lista' || searchTerm.trim()) {
+      return;
+    }
+
+    const loadCategory = async () => {
       setIsLoading(true);
       try {
-        if (activeCategory === '🎬 Películas Asiáticas') {
-          const res = await queryFlix(LIST_MOVIES_QUERY, { page, perPage: 24 });
-          const items = (res.data?.paginationMovie?.items || []).map(x => ({
-            id: x._id,
-            type: 'movie',
-            title: x.name_es || x.name || 'Película',
-            poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=500&auto=format&fit=crop&q=80',
-            backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
-            overview: x.overview || '',
-            slug: x.slug,
-            year: (x.release_date || '').slice(0, 4) || '2026',
-            lang: 'MULTI'
-          }));
-          if (isMounted) {
-            setGridItems(items);
-            setTotalPages(Math.ceil((res.data?.paginationMovie?.count || 100) / 24));
+        const isMovies = activeCategory === '🎬 Películas Asiáticas';
+        const isSub = activeCategory === '💬 Doramas Sub Español';
+
+        if (isMovies) {
+          const res = await queryFlix(LIST_MOVIES_QUERY, {
+            page: page,
+            perPage: 24
+          });
+          const data = res.data?.paginationMovie;
+          if (data) {
+            setTotalPages(Math.ceil((data.count || 0) / 24));
+            setGridItems((data.items || []).map(x => ({
+              id: x._id,
+              type: 'movie',
+              title: x.name_es || x.name || 'Película',
+              poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://via.placeholder.com/200x300?text=Película',
+              backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
+              overview: x.overview || 'Sin descripción disponible.',
+              slug: x.slug,
+              year: (x.release_date || '').slice(0, 4) || '—',
+              lang: 'LAT'
+            })));
           }
         } else {
-          // Doramas Sub or Latino
-          const res = await queryFlix(LIST_DORAMAS_QUERY, { page, perPage: 24 });
-          const items = (res.data?.paginationDorama?.items || []).map(x => ({
-            id: x._id,
-            type: 'dorama',
-            title: x.name_es || x.name || 'Kdrama',
-            poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=80',
-            backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
-            overview: x.overview || '',
-            slug: x.slug,
-            year: (x.first_air_date || '').slice(0, 4) || '2026',
-            lang: activeCategory.includes('Latino') ? 'LAT' : 'SUB'
-          }));
-          if (isMounted) {
-            setGridItems(items);
-            setTotalPages(Math.ceil((res.data?.paginationDorama?.count || 200) / 24));
+          const res = await queryFlix(LIST_DORAMAS_QUERY, {
+            page: page,
+            perPage: 24,
+            sort: 'POPULARITY_DESC'
+          });
+          const data = res.data?.paginationDorama;
+          if (data) {
+            setTotalPages(Math.ceil((data.count || 0) / 24));
+            setGridItems((data.items || []).map(x => ({
+              id: x._id,
+              type: 'dorama',
+              title: x.name_es || x.name || 'Kdrama',
+              poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://via.placeholder.com/200x300?text=Kdrama',
+              backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
+              overview: x.overview || 'Sin descripción disponible.',
+              slug: x.slug,
+              year: (x.first_air_date || '').slice(0, 4) || '—',
+              lang: isSub ? 'SUB' : 'LAT'
+            })));
           }
         }
       } catch (err) {
-        console.error('Error fetching grid items:', err);
+        console.error('Error fetching category kdramas:', err);
       } finally {
-        if (isMounted) setIsLoading(false);
+        setIsLoading(false);
       }
     };
 
-    fetchGrid();
-    return () => {
-      isMounted = false;
-    };
-  }, [activeCategory, page]);
+    loadCategory();
+  }, [activeCategory, page, searchTerm]);
 
-  // Search Debounce
+  // Live Search with Debounce
   useEffect(() => {
     if (!searchTerm.trim()) {
       setSearchResults([]);
@@ -598,263 +593,297 @@ export default function Kdramas() {
       return;
     }
 
+    setIsSearching(true);
     const timer = setTimeout(async () => {
-      setIsSearching(true);
       try {
-        const [doramaRes, movieRes] = await Promise.all([
+        const [resDoramas, resMovies] = await Promise.all([
           queryFlix(SEARCH_FLIX_QUERY, { input: searchTerm.trim() }),
-          queryFlix(SEARCH_MOVIES_QUERY, { input: searchTerm.trim() }).catch(() => ({ data: { searchMovie: [] } }))
+          queryFlix(SEARCH_MOVIES_QUERY, { input: searchTerm.trim() })
         ]);
 
-        const doramas = (doramaRes.data?.searchDorama || []).map(x => ({
+        const doramaItems = (resDoramas.data?.searchDorama || []).map(x => ({
           id: x._id,
           type: 'dorama',
-          title: x.name_es || x.name,
-          poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=80',
+          title: x.name_es || x.name || 'Kdrama',
+          poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://via.placeholder.com/200x300?text=Kdrama',
           backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
-          overview: x.overview,
+          overview: x.overview || 'Sin descripción disponible.',
           slug: x.slug,
-          year: (x.first_air_date || '').slice(0, 4) || '2026',
-          lang: 'SUB/LAT'
+          year: (x.first_air_date || '').slice(0, 4) || '—',
+          lang: (x.languages && x.languages.includes('38')) ? 'LAT' : 'SUB'
         }));
 
-        const movies = (movieRes.data?.searchMovie || []).map(x => ({
+        const movieItems = (resMovies.data?.searchMovie || []).map(x => ({
           id: x._id,
           type: 'movie',
-          title: x.name_es || x.name,
-          poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=500&auto=format&fit=crop&q=80',
+          title: x.name_es || x.name || 'Película',
+          poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://via.placeholder.com/200x300?text=Película',
           backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
-          overview: x.overview,
+          overview: x.overview || 'Sin descripción disponible.',
           slug: x.slug,
-          year: (x.release_date || '').slice(0, 4) || '2026',
-          lang: 'MULTI'
+          year: (x.release_date || '').slice(0, 4) || '—',
+          lang: 'LAT'
         }));
 
-        setSearchResults([...doramas, ...movies]);
+        setSearchResults([...doramaItems, ...movieItems]);
       } catch (err) {
         console.error('Search error:', err);
       } finally {
         setIsSearching(false);
       }
-    }, 450);
+    }, 400);
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Open Drama / Movie Modal
-  const openDramaModal = async (drama, autoplay = false) => {
-    setSelectedDrama(drama);
-    setIsPlaying(autoplay);
+  // Current items for active view
+  const currentRenderItems = useMemo(() => {
+    if (searchTerm.trim()) return searchResults;
+    if (activeCategory === '❤️ Mi Lista') {
+      return homeLatinoDoramas.filter(d => isFavorite(d.id));
+    }
+    return gridItems;
+  }, [searchTerm, searchResults, activeCategory, homeLatinoDoramas, gridItems]);
+
+  // Handle open drama modal and load seasons & episodes
+  const handleOpenDrama = async (drama, autoPlay = true) => {
     setIsDetailsLoading(true);
-    setModalTab('player');
+    setSelectedDrama(drama);
+    setSeasonsList([]);
+    setActiveSeason(1);
+    setEpisodesData([]);
+    setActiveEpisode(1);
+    setAllEpisodeLinks([]);
+    setServersList([]);
     setActiveServer(null);
     setActivePlayerUrl('');
-    setServersList([]);
-    setEpisodesData([]);
+    setIsPlaying(autoPlay);
+    setModalTab('player');
 
-    // Check if it's a Movie or a Series
-    if (drama.type === 'movie') {
-      try {
-        const linksRes = await queryFlix(MOVIE_LINKS_QUERY, {
-          id: drama.id,
-          app: 'com.asiapp.doramasgo'
-        });
-        const onlineLinks = linksRes.data?.getMovieLinks?.links_online || [];
+    saveWatchProgress({
+      id: drama.id,
+      title: drama.title,
+      poster: drama.poster,
+      backdrop: drama.backdrop,
+      type: 'kdrama'
+    });
+    setWatchHistory(getWatchHistory());
 
-        const servers = onlineLinks.map(l => {
-          const directUrl = decodeEmbedUrl(l.link);
-          return {
-            id: l._id || l.server,
-            serverRef: l.server,
-            name: getHostName(directUrl, l.server),
-            url: directUrl,
-            rawUrl: l.link,
-            lang: LANG_NAMES[l.lang] || 'Audio Original',
-            isRecommended: l.is_recommended || false
-          };
-        });
-
-        // Sort so PrimeLoad is always first
-        servers.sort((a, b) => {
-          if (a.name.includes('PrimeLoad')) return -1;
-          if (b.name.includes('PrimeLoad')) return 1;
-          if (a.isRecommended && !b.isRecommended) return -1;
-          if (!a.isRecommended && b.isRecommended) return 1;
-          return 0;
-        });
-
-        setServersList(servers);
-        if (servers.length > 0) {
-          setActiveServer(servers[0]);
-          setActivePlayerUrl(getPlayerUrl(servers[0].url));
-        }
-      } catch (err) {
-        console.error('Error fetching movie links:', err);
-      } finally {
-        setIsDetailsLoading(false);
-      }
-      return;
-    }
-
-    // It is a Dorama series
     try {
-      const slug = drama.slug || drama.title?.toLowerCase().replace(/\s+/g, '-');
-      const res = await queryFlix(DETAIL_DORAMA_EXTRA_QUERY, {
-        slug,
-        season_number: 1
-      });
+      if (drama.type === 'movie') {
+        // Asian Movie: get movie links directly
+        const res = await queryFlix(MOVIE_LINKS_QUERY, { id: drama.id });
+        const links = (res.data?.getMovieLinks?.links_online) || [];
+        setAllEpisodeLinks(links);
+      } else {
+        // Kdrama Serie: get seasons and initial season episodes
+        const res = await queryFlix(DETAIL_DORAMA_EXTRA_QUERY, {
+          slug: drama.slug,
+          season_number: 1
+        });
 
-      const seasons = res.data?.listSeasons || [];
-      const episodes = res.data?.listEpisodes || [];
+        if (res.data) {
+          const seasons = res.data.listSeasons || [];
+          setSeasonsList(seasons);
 
-      // Sort episodes ascending
-      episodes.sort((a, b) => (a.episode_number || 0) - (b.episode_number || 0));
+          const episodes = res.data.listEpisodes || [];
+          setEpisodesData(episodes);
 
-      setSeasonsList(seasons.length > 0 ? seasons : [{ season_number: 1, name: 'Temporada 1' }]);
-      setActiveSeason(1);
-      setEpisodesData(episodes);
-
-      if (episodes.length > 0) {
-        setActiveEpisode(episodes[0].episode_number || 1);
-        setActiveEpisodeId(episodes[0]._id);
-        await loadEpisodeServers(episodes[0]._id);
+          if (episodes.length > 0) {
+            setActiveEpisode(episodes[0].episode_number);
+            const linksRes = await queryFlix(LINKS_FLIX_QUERY, {
+              id: episodes[0]._id,
+              app: 'com.asiapp.doramasgo'
+            });
+            const links = (linksRes.data?.getEpisodeLinks?.links_online) || [];
+            setAllEpisodeLinks(links);
+          }
+        }
       }
     } catch (err) {
-      console.error('Error fetching dorama details:', err);
+      console.error('Error opening drama details:', err);
     } finally {
       setIsDetailsLoading(false);
     }
   };
 
-  // Load servers for a specific episode
-  const loadEpisodeServers = async (episodeId) => {
-    if (!episodeId) return;
-    setIsLinksLoading(true);
+  // Change season
+  const handleSeasonChange = async (seasonNum) => {
+    if (!selectedDrama || selectedDrama.type === 'movie') return;
+    setIsDetailsLoading(true);
+    setActiveSeason(seasonNum);
+    setActiveEpisode(1);
+    setAllEpisodeLinks([]);
+    setServersList([]);
+    setActiveServer(null);
+    setActivePlayerUrl('');
+    setIsPlaying(true);
+
     try {
-      const res = await queryFlix(LINKS_FLIX_QUERY, {
-        id: episodeId,
-        app: 'com.asiapp.doramasgo'
+      const res = await queryFlix(DETAIL_DORAMA_EXTRA_QUERY, {
+        slug: selectedDrama.slug,
+        season_number: Number(seasonNum)
+      });
+      if (res.data) {
+        const episodes = res.data.listEpisodes || [];
+        setEpisodesData(episodes);
+
+        if (episodes.length > 0) {
+          setActiveEpisode(episodes[0].episode_number);
+          const linksRes = await queryFlix(LINKS_FLIX_QUERY, {
+            id: episodes[0]._id,
+            app: 'com.asiapp.doramasgo'
+          });
+          const links = (linksRes.data?.getEpisodeLinks?.links_online) || [];
+          setAllEpisodeLinks(links);
+        }
+      }
+    } catch (err) {
+      console.error('Error loading season:', err);
+    } finally {
+      setIsDetailsLoading(false);
+    }
+  };
+
+  // Change episode
+  const handleEpisodeChange = async (epNum) => {
+    setIsDetailsLoading(true);
+    setActiveEpisode(epNum);
+    setAllEpisodeLinks([]);
+    setServersList([]);
+    setActiveServer(null);
+    setActivePlayerUrl('');
+    setIsPlaying(true);
+
+    const epObj = episodesData.find(e => e.episode_number === epNum);
+    if (epObj) {
+      try {
+        const linksRes = await queryFlix(LINKS_FLIX_QUERY, {
+          id: epObj._id,
+          app: 'com.asiapp.doramasgo'
+        });
+        const links = (linksRes.data?.getEpisodeLinks?.links_online) || [];
+        setAllEpisodeLinks(links);
+      } catch (err) {
+        console.error('Error loading episode links:', err);
+      }
+    }
+    setIsDetailsLoading(false);
+  };
+
+  // Zapping: Next / Previous episode
+  const handlePrevEpisode = () => {
+    if (activeEpisode > 1) {
+      handleEpisodeChange(activeEpisode - 1);
+    }
+  };
+
+  const handleNextEpisode = () => {
+    if (activeEpisode < episodesData.length) {
+      handleEpisodeChange(activeEpisode + 1);
+    }
+  };
+
+  const handleServerClick = (server) => {
+    setActiveServer(server);
+    if (server && server.embed) {
+      setActivePlayerUrl(getPlayerUrl(server.embed));
+      setIsPlaying(true);
+    }
+  };
+
+  // Format streaming servers from episode links
+  useEffect(() => {
+    if (allEpisodeLinks && allEpisodeLinks.length > 0) {
+      const isSubCategory = activeCategory === '💬 Doramas Sub Español';
+
+      const validLinks = allEpisodeLinks.filter(l => (l.embed || l.link) && l.is_active !== false);
+
+      const isLatino = (l) => String(l.lang) === '38' || l.language_code === 'es';
+
+      // Sort: if Sub category, prefer sub first; otherwise prefer Latino first
+      const sortedLinks = [...validLinks].sort((a, b) => {
+        const aLat = isLatino(a);
+        const bLat = isLatino(b);
+        if (isSubCategory) {
+          if (!aLat && bLat) return -1;
+          if (aLat && !bLat) return 1;
+        } else {
+          if (aLat && !bLat) return -1;
+          if (!aLat && bLat) return 1;
+        }
+        return 0;
       });
 
-      const onlineLinks = res.data?.getEpisodeLinks?.links_online || [];
-      const servers = onlineLinks.map(l => {
-        const directUrl = decodeEmbedUrl(l.link);
+      const servers = sortedLinks.map(l => {
+        const rawUrl = l.embed || l.link;
+        const decoded = decodeEmbedUrl(rawUrl);
+        const lat = isLatino(l);
+        const name = getHostName(rawUrl, l.server || l.server_ref);
         return {
-          id: l._id || l.server,
-          serverRef: l.server,
-          name: getHostName(directUrl, l.server),
-          url: directUrl,
-          rawUrl: l.link,
-          lang: LANG_NAMES[l.lang] || 'Sub Español',
-          isRecommended: l.is_recommended || false
+          hash: l._id || rawUrl,
+          name: name,
+          embed: decoded,
+          rawUrl: rawUrl,
+          lang: l.lang,
+          isLat: lat,
+          langLabel: lat ? '🇲🇽 LAT' : '💬 SUB'
         };
-      });
-
-      // Sort so PrimeLoad is always first
-      servers.sort((a, b) => {
-        if (a.name.includes('PrimeLoad')) return -1;
-        if (b.name.includes('PrimeLoad')) return 1;
-        if (a.isRecommended && !b.isRecommended) return -1;
-        if (!a.isRecommended && b.isRecommended) return 1;
+      }).sort((a, b) => {
+        const aIsPrime = a.name.includes('PrimeLoad');
+        const bIsPrime = b.name.includes('PrimeLoad');
+        if (aIsPrime && !bIsPrime) return -1;
+        if (!aIsPrime && bIsPrime) return 1;
         return 0;
       });
 
       setServersList(servers);
       if (servers.length > 0) {
         setActiveServer(servers[0]);
-        setActivePlayerUrl(getPlayerUrl(servers[0].url));
+        setActivePlayerUrl(getPlayerUrl(servers[0].embed));
       } else {
         setActiveServer(null);
         setActivePlayerUrl('');
       }
-    } catch (err) {
-      console.error('Error fetching episode links:', err);
-    } finally {
-      setIsLinksLoading(false);
+    } else {
+      setServersList([]);
+      setActiveServer(null);
+      setActivePlayerUrl('');
     }
-  };
+  }, [allEpisodeLinks, activeCategory]);
 
-  // Change season in modal
-  const handleSeasonChange = async (seasonNum) => {
-    setActiveSeason(seasonNum);
-    setIsDetailsLoading(true);
-    try {
-      const slug = selectedDrama.slug || selectedDrama.title?.toLowerCase().replace(/\s+/g, '-');
-      const res = await queryFlix(DETAIL_DORAMA_EXTRA_QUERY, {
-        slug,
-        season_number: seasonNum
-      });
-      const episodes = res.data?.listEpisodes || [];
-      episodes.sort((a, b) => (a.episode_number || 0) - (b.episode_number || 0));
-      setEpisodesData(episodes);
-
-      if (episodes.length > 0) {
-        setActiveEpisode(episodes[0].episode_number || 1);
-        setActiveEpisodeId(episodes[0]._id);
-        await loadEpisodeServers(episodes[0]._id);
-      }
-    } catch (err) {
-      console.error('Error changing season:', err);
-    } finally {
-      setIsDetailsLoading(false);
-    }
-  };
-
-  // Select episode in modal
-  const handleSelectEpisode = async (ep) => {
-    setActiveEpisode(ep.episode_number);
-    setActiveEpisodeId(ep._id);
-    setIsPlaying(true);
-    setModalTab('player');
-    await loadEpisodeServers(ep._id);
-
-    // Save watch progress
-    if (selectedDrama) {
-      saveWatchProgress(selectedDrama.id, {
+  // Persist watch progress on active server url
+  useEffect(() => {
+    if (selectedDrama && activePlayerUrl) {
+      saveWatchProgress({
         id: selectedDrama.id,
-        type: 'dorama',
         title: selectedDrama.title,
         poster: selectedDrama.poster,
+        backdrop: selectedDrama.backdrop,
+        type: 'kdrama',
         season: activeSeason,
-        episode: ep.episode_number,
-        progress: 10,
-        timestamp: Date.now()
+        episode: activeEpisode
       });
       setWatchHistory(getWatchHistory());
     }
+  }, [selectedDrama, activePlayerUrl, activeSeason, activeEpisode]);
+
+  // Pagination helper
+  const getPaginationList = (curr, total) => {
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+    if (curr <= 3) return [1, 2, 3, 4, 5, '...', total];
+    if (curr >= total - 2) return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+    return [1, '...', curr - 1, curr, curr + 1, '...', total];
   };
 
-  // Change server tab
-  const handleServerChange = (server) => {
-    setActiveServer(server);
-    setActivePlayerUrl(getPlayerUrl(server.url));
+  const pagesToRender = getPaginationList(page, totalPages);
+
+  const goToPage = (newPage) => {
+    if (newPage < 1 || newPage > totalPages || newPage === page || isLoading) return;
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Cast with Web Video Caster
-  const handleCast = () => {
-    if (!activePlayerUrl) return;
-    castWithWebVideoCaster(
-      activePlayerUrl,
-      `${selectedDrama?.title || 'Kdrama'} - S${activeSeason} E${activeEpisode}`,
-      selectedDrama?.poster
-    );
-  };
-
-  // Filter Continue Watching to only Kdramas
-  const continueWatchingKdramas = useMemo(() => {
-    const history = getWatchHistory();
-    return Object.values(history)
-      .filter(item => item.type === 'dorama' || item.type === 'serie')
-      .slice(0, 8);
-  }, [watchHistory]);
-
-  // Current Billboard Hero item
-  const heroItem = useMemo(() => {
-    if (topKdramas.length === 0) return INITIAL_TOP_DORAMAS[0];
-    return topKdramas[heroIndex % topKdramas.length];
-  }, [topKdramas, heroIndex]);
-
-  // D-Pad Navigation for Smart TV
   useDpadNavigation({
     onBack: () => {
       if (selectedDrama) {
@@ -865,42 +894,74 @@ export default function Kdramas() {
   });
 
   return (
-    <div className="netflix-browse min-h-screen bg-[#141414] text-white">
-      {/* Category Pills Header */}
-      <div className="netflix-category-nav flex items-center justify-between px-6 md:px-14 pt-20 pb-4 border-b border-white/5 bg-[#141414]/95 sticky top-0 z-30 backdrop-blur-md">
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+    <div className="peliculas-container netflix-view" style={{ minHeight: '100vh', background: '#141414', color: '#fff' }}>
+      
+      {/* Netflix Subnav & Category Pills */}
+      <div style={{
+        padding: '1.25rem 3.5rem 0.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '1rem',
+        position: 'relative',
+        zIndex: 30
+      }}>
+        {/* Category Tabs */}
+        <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none' }}>
           {KDRAMA_CATEGORIES.map(cat => (
             <button
               key={cat}
+              type="button"
+              className={`filter-badge ${activeCategory === cat && !searchTerm ? 'active' : ''}`}
               onClick={() => {
                 setActiveCategory(cat);
-                setPage(1);
                 setSearchTerm('');
+                setPage(1);
               }}
-              className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap focus:outline-none ${
-                activeCategory === cat
-                  ? 'bg-white text-black shadow-lg font-bold scale-105'
-                  : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
-              }`}
+              style={{
+                padding: '7px 16px',
+                borderRadius: '20px',
+                background: (activeCategory === cat && !searchTerm) ? '#e50914' : 'rgba(255, 255, 255, 0.08)',
+                border: (activeCategory === cat && !searchTerm) ? '1px solid #e50914' : '1px solid rgba(255, 255, 255, 0.12)',
+                color: '#fff',
+                fontWeight: (activeCategory === cat && !searchTerm) ? '800' : '600',
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s ease',
+                boxShadow: (activeCategory === cat && !searchTerm) ? '0 0 16px rgba(229, 9, 20, 0.6)' : 'none'
+              }}
             >
               {cat}
             </button>
           ))}
         </div>
 
-        {/* Search input */}
-        <div className="relative ml-4">
+        {/* Search Bar */}
+        <div style={{ width: '320px', position: 'relative' }}>
+          <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }}>🔍</span>
           <input
             type="text"
-            placeholder="Buscar doramas, películas..."
+            placeholder="Buscar kdrama o película asiática..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-44 md:w-64 bg-black/60 border border-white/20 rounded-full px-4 py-1.5 text-xs text-white placeholder-white/40 focus:outline-none focus:border-red-600 focus:w-72 transition-all"
+            style={{
+              width: '100%',
+              boxSizing: 'border-box',
+              padding: '9px 36px 9px 36px',
+              borderRadius: '6px',
+              background: 'rgba(0, 0, 0, 0.75)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              color: '#fff',
+              fontSize: '0.88rem',
+              outline: 'none'
+            }}
           />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
-              className="absolute right-3 top-2 text-white/50 hover:text-white text-xs"
+              style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1rem' }}
             >
               ✕
             </button>
@@ -908,595 +969,807 @@ export default function Kdramas() {
         </div>
       </div>
 
-      {/* Main Content Area */}
-      {searchTerm.trim().length > 0 ? (
-        // Search Results Grid
-        <div className="px-6 md:px-14 pt-8 pb-16">
-          <h2 className="text-xl font-bold mb-6 text-white/90">
-            Resultados de búsqueda para: <span className="text-red-500">"{searchTerm}"</span>
-          </h2>
-          {isSearching ? (
-            <SkeletonGrid count={12} />
-          ) : searchResults.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {searchResults.map(item => (
-                <div
-                  key={item.id}
-                  onClick={() => openDramaModal(item, true)}
-                  className="group relative rounded-md overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105 hover:z-20 shadow-lg"
-                >
-                  <img
-                    src={item.poster}
-                    alt={item.title}
-                    className="w-full h-64 object-cover"
-                    loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.src = 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=80';
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end">
-                    <span className="text-xs bg-red-600 px-1.5 py-0.5 rounded w-max mb-1 font-bold">
-                      {item.type === 'movie' ? 'Película' : 'Kdrama'}
-                    </span>
-                    <h3 className="text-sm font-bold text-white line-clamp-2">{item.title}</h3>
-                    <p className="text-[11px] text-white/70">{item.year} · {item.lang}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-20 text-white/40">
-              <span className="text-4xl block mb-2">🔍</span>
-              No se encontraron resultados para "{searchTerm}"
-            </div>
-          )}
-        </div>
-      ) : activeCategory === 'Inicio' ? (
-        // Netflix Home Feed: Hero Billboard + Curated Rows
+      {/* NETFLIX HOME VIEW */}
+      {activeCategory === 'Inicio' && !searchTerm ? (
         <>
-          {/* Hero Billboard */}
+          {/* Netflix Full-Bleed Hero Billboard */}
           {heroItem && (
-            <div className="netflix-billboard relative w-full h-[65vh] md:h-[80vh] overflow-hidden select-none">
-              <div
-                className="absolute inset-0 bg-cover bg-center transition-all duration-1000 scale-105 filter brightness-90"
-                style={{
-                  backgroundImage: `url(${heroItem.backdrop || heroItem.poster})`
-                }}
+            <section className="netflix-hero-billboard">
+              <div 
+                className="netflix-hero-bg"
+                style={{ backgroundImage: `url(${heroItem.backdrop || heroItem.poster})` }}
               />
-              {/* Vignette Gradients */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#141414] via-[#141414]/60 to-transparent w-full md:w-3/5" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-transparent h-full" />
+              <div className="netflix-vignette-bottom" />
+              <div className="netflix-vignette-left" />
+              <div className="netflix-vignette-top" />
 
-              {/* Billboard Details */}
-              <div className="absolute left-6 md:left-14 bottom-24 md:bottom-32 max-w-xl z-20">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="bg-red-600 text-white text-[10px] md:text-xs font-black px-2 py-0.5 rounded tracking-widest uppercase">
-                    SERIE ASIÁTICA
-                  </span>
-                  <span className="text-emerald-400 font-bold text-xs md:text-sm">
-                    {heroItem.match || '98% de coincidencia'}
-                  </span>
-                  <span className="text-white/60 text-xs">{heroItem.year || '2026'}</span>
+              <div className="netflix-hero-content">
+                <div className="netflix-rank-badge">
+                  <div className="netflix-top10-tag">
+                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", fontSize: '15px' }}>
+                      local_fire_department
+                    </span>
+                    TOP 10
+                  </div>
+                  <span className="netflix-rank-text">N.º {heroIndex + 1} en kdramas hoy</span>
                 </div>
 
-                <h1 className="text-3xl md:text-5xl font-black text-white mb-3 tracking-tight drop-shadow-md">
-                  {heroItem.title}
-                </h1>
+                <h1 className="netflix-hero-title">{heroItem.title}</h1>
 
-                <p className="text-xs md:text-sm text-white/80 line-clamp-3 mb-6 font-normal drop-shadow">
-                  {heroItem.overview}
+                <div className="netflix-meta-row">
+                  <span className="netflix-match">98% de coincidencia</span>
+                  <span>{heroItem.year}</span>
+                  <span className="netflix-badge-age">16+</span>
+                  <span>FULL HD</span>
+                  <span className="netflix-badge-tech">5.1</span>
+                  <span className="netflix-badge-tech">Audio Latino & Coreano</span>
+                </div>
+
+                <p className="netflix-hero-synopsis">
+                  {heroItem.overview || `Disfruta de ${heroItem.title} completo en alta definición Full HD con todas las temporadas y episodios en español latino.`}
                 </p>
 
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => openDramaModal(heroItem, true)}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-white text-black font-bold text-sm md:text-base rounded hover:bg-white/80 transition-transform active:scale-95 shadow-md"
+                <div className="netflix-hero-actions">
+                  <button 
+                    className="btn-netflix-play" 
+                    onClick={() => {
+                      handleOpenDrama(heroItem);
+                      setIsPlaying(true);
+                    }}
                   >
-                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                    Ver Ahora
+                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", fontSize: '26px' }}>
+                      play_arrow
+                    </span>
+                    Reproducir
                   </button>
 
-                  <button
-                    onClick={() => openDramaModal(heroItem, false)}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-white/20 text-white font-bold text-sm md:text-base rounded backdrop-blur-sm hover:bg-white/30 transition-transform active:scale-95"
+                  <button 
+                    className="btn-netflix-info" 
+                    onClick={() => {
+                      handleOpenDrama(heroItem);
+                      setModalTab('player');
+                    }}
                   >
-                    <svg className="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="10" strokeWidth="2" />
-                      <line x1="12" y1="16" x2="12" y2="12" strokeWidth="2" />
-                      <circle cx="12" cy="8" r="1" fill="currentColor" />
-                    </svg>
-                    Más Información
+                    <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>
+                      info
+                    </span>
+                    Más información
                   </button>
 
-                  <button
-                    onClick={() => setHeroIndex(prev => (prev + 1) % topKdramas.length)}
-                    className="p-2.5 rounded-full bg-black/40 border border-white/20 text-white hover:bg-white/20 transition-colors ml-auto"
-                    title="Siguiente recomendación"
+                  <button 
+                    className="btn-netflix-round" 
+                    title={isFavorite(heroItem.id) ? 'En Mi Lista' : 'Añadir a Mi Lista'}
+                    onClick={async () => {
+                      await toggleFavorite(heroItem);
+                    }}
                   >
-                    <svg className="w-4 h-4 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="2.5">
-                      <polyline points="9 18 15 12 9 6" />
-                    </svg>
+                    <span className="material-symbols-outlined" style={{ fontSize: '22px' }}>
+                      {isFavorite(heroItem.id) ? 'check' : 'add'}
+                    </span>
                   </button>
                 </div>
               </div>
-            </div>
+
+              {/* Right Billboard Controls */}
+              <div className="netflix-right-controls">
+                <button 
+                  className="btn-netflix-round" 
+                  style={{ width: '36px', height: '36px' }}
+                  onClick={() => setIsMuted(prev => !prev)}
+                  title={isMuted ? 'Activar audio' : 'Desactivar audio'}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    {isMuted ? 'volume_off' : 'volume_up'}
+                  </span>
+                </button>
+                <div className="netflix-maturity-tag">
+                  16+
+                </div>
+              </div>
+            </section>
           )}
 
-          {/* Rows Container */}
-          <div className="netflix-rows-container relative z-20 -mt-14 md:-mt-24 space-y-10 px-6 md:px-14 pb-20">
-            {/* 1. Continuar Viendo */}
+          {/* Netflix Content Rows Section */}
+          <div className="netflix-rows-container" style={{ marginTop: heroItem ? '-3.5rem' : '1.5rem', position: 'relative', zIndex: 10 }}>
+            
+            {/* Row 0: Continuar Viendo */}
             {continueWatchingKdramas.length > 0 && (
-              <div className="netflix-row">
-                <h2 className="text-lg md:text-xl font-bold mb-3 flex items-center gap-2">
-                  <span className="w-1.5 h-4 bg-red-600 rounded-sm inline-block" />
-                  Continuar viendo
-                </h2>
-                <div className="flex gap-4 overflow-x-auto no-scrollbar py-2">
-                  {continueWatchingKdramas.map(item => (
-                    <div
-                      key={item.id}
-                      onClick={() => openDramaModal(item, true)}
-                      className="flex-shrink-0 w-48 md:w-56 bg-zinc-900 rounded-md overflow-hidden cursor-pointer group hover:scale-105 transition-transform duration-300 shadow-md border border-white/5"
+              <section className="netflix-row-section">
+                <div className="netflix-row-header">
+                  <h2 className="netflix-row-title">
+                    Continuar viendo
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#a3a3a3' }}>
+                      chevron_right
+                    </span>
+                  </h2>
+                </div>
+                <div className="netflix-continue-grid">
+                  {continueWatchingKdramas.map((item) => (
+                    <div 
+                      key={`continue-${item.id}`} 
+                      className="netflix-continue-card"
+                      onClick={() => handleOpenDrama(item)}
                     >
-                      <div className="relative h-28 md:h-32 bg-zinc-800">
-                        <img
-                          src={item.poster}
-                          alt={item.title}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.src = 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=80';
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                          <div className="w-10 h-10 rounded-full bg-red-600/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                            <svg className="w-5 h-5 fill-white" viewBox="0 0 24 24">
-                              <path d="M8 5v14l11-7z" />
-                            </svg>
+                      <div className="netflix-continue-thumb">
+                        <img src={item.backdrop || item.poster} alt={item.title} />
+                        <div className="netflix-continue-overlay">
+                          <div className="netflix-center-play">
+                            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", fontSize: '24px' }}>
+                              play_arrow
+                            </span>
                           </div>
                         </div>
-                        {/* Progress Bar */}
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
-                          <div
-                            className="h-full bg-red-600"
-                            style={{ width: `${item.progress || 35}%` }}
-                          />
+                      </div>
+                      <div className="netflix-progress-bar">
+                        <div className="netflix-progress-fill" style={{ width: '65%' }} />
+                      </div>
+                      <div className="netflix-continue-info">
+                        <span className="netflix-continue-title">{item.title}</span>
+                        <span className="netflix-continue-sub">Continuar</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Row 1: Top 10 Kdramas con números gigantes */}
+            {top10Kdramas.length > 0 && (
+              <section className="netflix-row-section">
+                <div className="netflix-row-header">
+                  <h2 className="netflix-row-title">
+                    Los 10 kdramas más populares hoy en PiruTV
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#a3a3a3' }}>
+                      chevron_right
+                    </span>
+                  </h2>
+                </div>
+                <div className="netflix-top10-grid">
+                  {top10Kdramas.map((item, index) => (
+                    <div 
+                      key={`top10-${item.id}-${index}`} 
+                      className="netflix-top10-item"
+                      onClick={() => handleOpenDrama(item)}
+                    >
+                      <span className="netflix-top-num">{index + 1}</span>
+                      <div className="netflix-top-poster">
+                        <img src={item.poster} alt={item.title} />
+                        <div className="netflix-card-top10-badge">TOP 10</div>
+                        <div className="netflix-card-lang-strip">
+                          <span className="netflix-pill-lat">LAT</span>
+                          <span className="netflix-pill-cast">COR</span>
+                          <span className="netflix-pill-sub">SUB</span>
                         </div>
                       </div>
-                      <div className="p-3">
-                        <h4 className="text-xs md:text-sm font-bold truncate text-white">{item.title}</h4>
-                        <p className="text-[11px] text-white/50 mt-0.5">
-                          T{item.season || 1} · Ep {item.episode || 1}
-                        </p>
-                      </div>
                     </div>
                   ))}
                 </div>
-              </div>
+              </section>
             )}
 
-            {/* 2. Top 10 Kdramas Hoy (Numbered Big Cards) */}
-            <div className="netflix-row">
-              <h2 className="text-lg md:text-xl font-bold mb-3 flex items-center gap-2">
-                <span className="w-1.5 h-4 bg-red-600 rounded-sm inline-block" />
-                Los 10 Kdramas más populares hoy
-              </h2>
-              <div className="flex gap-6 overflow-x-auto no-scrollbar py-4 px-2">
-                {topKdramas.slice(0, 10).map((drama, idx) => (
-                  <div
-                    key={drama.id}
-                    onClick={() => openDramaModal(drama, false)}
-                    className="flex-shrink-0 flex items-end cursor-pointer group hover:scale-105 transition-transform duration-300"
+            {/* Row 2: Doramas en Latino */}
+            {homeLatinoDoramas.length > 0 && (
+              <section className="netflix-row-section">
+                <div className="netflix-row-header">
+                  <h2 
+                    className="netflix-row-title"
+                    onClick={() => {
+                      setActiveCategory('🍙 Doramas Latino');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
                   >
-                    {/* Big stylized number */}
-                    <span
-                      className="text-7xl md:text-8xl font-black -mr-4 select-none leading-none z-10"
-                      style={{
-                        WebkitTextStroke: '2.5px #595959',
-                        color: '#141414',
-                        textShadow: '0 4px 10px rgba(0,0,0,0.8)'
-                      }}
-                    >
-                      {idx + 1}
+                    🍙 Kdramas Populares con Doblaje Latino
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#a3a3a3' }}>
+                      chevron_right
                     </span>
-                    <div className="w-32 md:w-40 h-48 md:h-60 rounded-md overflow-hidden shadow-xl relative z-0 bg-zinc-900 border border-white/10">
-                      <img
-                        src={drama.poster}
-                        alt={drama.title}
-                        className="w-full h-full object-cover group-hover:brightness-110 transition-all"
-                        onError={(e) => {
-                          e.currentTarget.src = 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=80';
-                        }}
-                      />
-                      <div className="absolute top-2 right-2 bg-red-600 text-white font-bold text-[9px] px-1.5 py-0.5 rounded shadow">
-                        TOP {idx + 1}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 3. Doramas Latino Row */}
-            <div className="netflix-row">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-lg md:text-xl font-bold flex items-center gap-2">
-                  <span className="w-1.5 h-4 bg-red-600 rounded-sm inline-block" />
-                  🍙 Doramas en Audio Latino
-                </h2>
-                <button
-                  onClick={() => setActiveCategory('🍙 Doramas Latino')}
-                  className="text-xs text-white/50 hover:text-white transition-colors"
-                >
-                  Explorar todos ›
-                </button>
-              </div>
-              <div className="flex gap-4 overflow-x-auto no-scrollbar py-2">
-                {homeLatinoDoramas.map(drama => (
-                  <div
-                    key={drama.id}
-                    onClick={() => openDramaModal(drama, false)}
-                    className="flex-shrink-0 w-36 md:w-44 rounded-md overflow-hidden cursor-pointer group hover:scale-105 transition-transform duration-300 shadow-md bg-zinc-900 border border-white/5"
-                  >
-                    <div className="h-52 md:h-64 relative">
-                      <img
-                        src={drama.poster}
-                        alt={drama.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=80';
-                        }}
-                      />
-                      <span className="absolute top-2 left-2 bg-black/70 text-emerald-400 font-bold text-[10px] px-1.5 py-0.5 rounded">
-                        LATINO
-                      </span>
-                    </div>
-                    <div className="p-2">
-                      <h4 className="text-xs font-bold text-white truncate">{drama.title}</h4>
-                      <p className="text-[10px] text-white/50">{drama.year || '2026'}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 4. Doramas Sub Español Row */}
-            <div className="netflix-row">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-lg md:text-xl font-bold flex items-center gap-2">
-                  <span className="w-1.5 h-4 bg-red-600 rounded-sm inline-block" />
-                  💬 Doramas Sub Español
-                </h2>
-                <button
-                  onClick={() => setActiveCategory('💬 Doramas Sub Español')}
-                  className="text-xs text-white/50 hover:text-white transition-colors"
-                >
-                  Explorar todos ›
-                </button>
-              </div>
-              <div className="flex gap-4 overflow-x-auto no-scrollbar py-2">
-                {homeSubDoramas.map(drama => (
-                  <div
-                    key={drama.id}
-                    onClick={() => openDramaModal(drama, false)}
-                    className="flex-shrink-0 w-36 md:w-44 rounded-md overflow-hidden cursor-pointer group hover:scale-105 transition-transform duration-300 shadow-md bg-zinc-900 border border-white/5"
-                  >
-                    <div className="h-52 md:h-64 relative">
-                      <img
-                        src={drama.poster}
-                        alt={drama.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=80';
-                        }}
-                      />
-                      <span className="absolute top-2 left-2 bg-black/70 text-amber-400 font-bold text-[10px] px-1.5 py-0.5 rounded">
-                        SUB
-                      </span>
-                    </div>
-                    <div className="p-2">
-                      <h4 className="text-xs font-bold text-white truncate">{drama.title}</h4>
-                      <p className="text-[10px] text-white/50">{drama.year || '2026'}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 5. Películas Asiáticas Row */}
-            {homeAsianMovies.length > 0 && (
-              <div className="netflix-row">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-lg md:text-xl font-bold flex items-center gap-2">
-                    <span className="w-1.5 h-4 bg-red-600 rounded-sm inline-block" />
-                    🎬 Películas Asiáticas Destacadas
                   </h2>
-                  <button
-                    onClick={() => setActiveCategory('🎬 Películas Asiáticas')}
-                    className="text-xs text-white/50 hover:text-white transition-colors"
+                  <button 
+                    className="netflix-explore-all"
+                    onClick={() => {
+                      setActiveCategory('🍙 Doramas Latino');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
                   >
-                    Explorar todas ›
+                    Explorar todos
                   </button>
                 </div>
-                <div className="flex gap-4 overflow-x-auto no-scrollbar py-2">
-                  {homeAsianMovies.map(movie => (
-                    <div
-                      key={movie.id}
-                      onClick={() => openDramaModal(movie, true)}
-                      className="flex-shrink-0 w-36 md:w-44 rounded-md overflow-hidden cursor-pointer group hover:scale-105 transition-transform duration-300 shadow-md bg-zinc-900 border border-white/5"
+                <div className="netflix-category-scroll">
+                  {homeLatinoDoramas.map((item) => (
+                    <button 
+                      type="button"
+                      key={`scroll-lat-${item.id}`} 
+                      className="netflix-poster-card"
+                      onClick={() => handleOpenDrama(item)}
                     >
-                      <div className="h-52 md:h-64 relative">
-                        <img
-                          src={movie.poster}
-                          alt={movie.title}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.src = 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=500&auto=format&fit=crop&q=80';
-                          }}
-                        />
-                        <span className="absolute top-2 left-2 bg-red-600 text-white font-bold text-[10px] px-1.5 py-0.5 rounded">
-                          PELÍCULA
-                        </span>
+                      <div className="netflix-poster-img-wrap">
+                        <img src={item.poster} alt={item.title} loading="lazy" />
+                        <div className="netflix-quality-tag">FULL HD</div>
+                        <div className="netflix-card-lang-strip">
+                          <span className="netflix-pill-lat">LATINO</span>
+                        </div>
                       </div>
-                      <div className="p-2">
-                        <h4 className="text-xs font-bold text-white truncate">{movie.title}</h4>
-                        <p className="text-[10px] text-white/50">{movie.year || '2026'}</p>
-                      </div>
-                    </div>
+                      <span className="netflix-poster-title">{item.title}</span>
+                    </button>
                   ))}
                 </div>
+              </section>
+            )}
+
+            {/* Row 3: Doramas Sub Español */}
+            {homeSubDoramas.length > 0 && (
+              <section className="netflix-row-section">
+                <div className="netflix-row-header">
+                  <h2 
+                    className="netflix-row-title"
+                    onClick={() => {
+                      setActiveCategory('💬 Doramas Sub Español');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                  >
+                    💬 Doramas en Emisión con Subtítulos
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#a3a3a3' }}>
+                      chevron_right
+                    </span>
+                  </h2>
+                  <button 
+                    className="netflix-explore-all"
+                    onClick={() => {
+                      setActiveCategory('💬 Doramas Sub Español');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                  >
+                    Explorar todos
+                  </button>
+                </div>
+                <div className="netflix-category-scroll">
+                  {homeSubDoramas.map((item) => (
+                    <button 
+                      type="button"
+                      key={`scroll-sub-${item.id}`} 
+                      className="netflix-poster-card"
+                      onClick={() => handleOpenDrama(item)}
+                    >
+                      <div className="netflix-poster-img-wrap">
+                        <img src={item.poster} alt={item.title} loading="lazy" />
+                        <div className="netflix-quality-tag">HD</div>
+                        <div className="netflix-card-lang-strip">
+                          <span className="netflix-pill-sub">SUBTITULADO</span>
+                        </div>
+                      </div>
+                      <span className="netflix-poster-title">{item.title}</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Row 4: Películas Asiáticas */}
+            {homeAsianMovies.length > 0 && (
+              <section className="netflix-row-section">
+                <div className="netflix-row-header">
+                  <h2 
+                    className="netflix-row-title"
+                    onClick={() => {
+                      setActiveCategory('🎬 Películas Asiáticas');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                  >
+                    🎬 Películas Asiáticas y Cine Coreano
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#a3a3a3' }}>
+                      chevron_right
+                    </span>
+                  </h2>
+                  <button 
+                    className="netflix-explore-all"
+                    onClick={() => {
+                      setActiveCategory('🎬 Películas Asiáticas');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                  >
+                    Explorar todos
+                  </button>
+                </div>
+                <div className="netflix-category-scroll">
+                  {homeAsianMovies.map((item) => (
+                    <button 
+                      type="button"
+                      key={`scroll-mov-${item.id}`} 
+                      className="netflix-poster-card"
+                      onClick={() => handleOpenDrama(item)}
+                    >
+                      <div className="netflix-poster-img-wrap">
+                        <img src={item.poster} alt={item.title} loading="lazy" />
+                        <div className="netflix-quality-tag">FULL HD</div>
+                        <div className="netflix-card-lang-strip">
+                          <span className="netflix-pill-lat">PELÍCULA</span>
+                        </div>
+                      </div>
+                      <span className="netflix-poster-title">{item.title}</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
+
+          </div>
+
+          {/* Netflix Footer */}
+          <footer className="netflix-footer">
+            <div className="netflix-footer-inner">
+              <div className="netflix-copyright">
+                © 2026 PIRU TV • Los Mejores Doramas y Kdramas en Español Latino
+              </div>
+            </div>
+          </footer>
+        </>
+      ) : (
+        /* NETFLIX CATEGORY / SEARCH GRID VIEW */
+        <div style={{ padding: '1.5rem 3.5rem 4rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <div>
+              <h2 className="section-title" style={{ margin: 0, fontSize: '1.6rem', color: '#ffffff', fontWeight: 800 }}>
+                {searchTerm ? `Resultados para: "${searchTerm}" (${currentRenderItems.length})` : `${activeCategory} (${totalPages > 1 ? `Página ${page} de ${totalPages}` : `${currentRenderItems.length} títulos`})`}
+              </h2>
+              {activeCategory !== 'Inicio' && !searchTerm && (
+                <p style={{ margin: '4px 0 0', color: '#a3a3a3', fontSize: '0.85rem' }}>
+                  Catálogo completo en alta definición con servidores rápidos en español latino y subtítulos
+                </p>
+              )}
+            </div>
+
+            {isLoading && (
+              <span style={{ fontSize: '0.85rem', color: '#e50914', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span className="pulse-dot" /> Cargando catálogo...
+              </span>
+            )}
+          </div>
+
+          {/* Grid of Posters */}
+          <div className="media-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1.25rem' }}>
+            {currentRenderItems.length > 0 ? (
+              currentRenderItems.map((item, idx) => (
+                <button
+                  type="button"
+                  key={`grid-${item.id}-${idx}`}
+                  className="netflix-poster-card"
+                  onClick={() => handleOpenDrama(item)}
+                  style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                >
+                  <div className="netflix-poster-img-wrap" style={{ width: '100%', height: '260px' }}>
+                    <img src={item.poster} alt={item.title} loading="lazy" />
+                    <div className="netflix-quality-tag">HD</div>
+                    <div className="netflix-card-lang-strip">
+                      <span className="netflix-pill-lat">{item.lang || 'LAT'}</span>
+                    </div>
+                  </div>
+                  <span className="netflix-poster-title" style={{ marginTop: '0.5rem', fontWeight: 700, fontSize: '0.88rem' }}>
+                    {item.title}
+                  </span>
+                </button>
+              ))
+            ) : (
+              <div className="empty-state" style={{ gridColumn: '1 / -1', padding: '5rem 2rem', textAlign: 'center' }}>
+                <span className="empty-icon">🍙</span>
+                <h3 className="empty-title">No se encontraron kdramas</h3>
+                <p style={{ color: '#a3a3a3' }}>Intenta buscando con otro término o explorando otra sección.</p>
               </div>
             )}
           </div>
-        </>
-      ) : activeCategory === '❤️ Mi Lista' ? (
-        // My List
-        <div className="px-6 md:px-14 pt-8 pb-16">
-          <h2 className="text-xl font-bold mb-6">Mi Lista de Kdramas</h2>
-          <div className="text-center py-20 text-white/40">
-            <span className="text-4xl block mb-2">⭐</span>
-            Agrega doramas a tus favoritos para verlos aquí
-          </div>
-        </div>
-      ) : (
-        // Category Grid View (Latino, Sub, Películas)
-        <div className="px-6 md:px-14 pt-8 pb-16">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl md:text-2xl font-bold text-white">
-              {activeCategory}
-            </h2>
-            <div className="text-xs text-white/50">
-              Página {page} de {totalPages}
-            </div>
-          </div>
 
-          {isLoading ? (
-            <SkeletonGrid count={18} />
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {gridItems.map(item => (
-                <div
-                  key={item.id}
-                  onClick={() => openDramaModal(item, item.type === 'movie')}
-                  className="group relative rounded-md overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105 hover:z-20 shadow-lg bg-zinc-900 border border-white/5"
-                >
-                  <img
-                    src={item.poster}
-                    alt={item.title}
-                    className="w-full h-64 object-cover"
-                    loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.src = 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=80';
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end">
-                    <span className="text-xs bg-red-600 px-1.5 py-0.5 rounded w-max mb-1 font-bold">
-                      {item.type === 'movie' ? 'Película' : 'Kdrama'}
+          {/* Dynamic Pagination Bar */}
+          {!searchTerm && activeCategory !== '❤️ Mi Lista' && totalPages > 1 && (
+            <div className="pagination-bar" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: '0.45rem', margin: '3.5rem 0 2rem' }}>
+              <button
+                type="button"
+                onClick={() => goToPage(page - 1)}
+                disabled={page <= 1 || isLoading}
+                style={{
+                  background: page > 1 ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid var(--border-color)',
+                  color: page > 1 ? '#fff' : 'rgba(255, 255, 255, 0.25)',
+                  padding: '0.6rem 1.25rem',
+                  borderRadius: '8px',
+                  cursor: page > 1 && !isLoading ? 'pointer' : 'not-allowed',
+                  fontSize: '0.9rem',
+                  fontWeight: '700',
+                  opacity: page > 1 ? 1 : 0.4,
+                  transition: 'all 0.2s ease',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                ← Anterior
+              </button>
+
+              {pagesToRender.map((p, idx) => {
+                if (p === '...') {
+                  return (
+                    <span 
+                      key={`dots-${idx}`} 
+                      style={{ color: 'rgba(255, 255, 255, 0.4)', padding: '0 0.35rem', fontSize: '1rem', fontWeight: '700' }}
+                    >
+                      ...
                     </span>
-                    <h3 className="text-sm font-bold text-white line-clamp-2">{item.title}</h3>
-                    <p className="text-[11px] text-white/70">{item.year} · {item.lang}</p>
-                  </div>
-                </div>
-              ))}
+                  );
+                }
+
+                const isCurrent = p === page;
+                return (
+                  <button
+                    key={`page-${p}`}
+                    type="button"
+                    onClick={() => goToPage(p)}
+                    disabled={isLoading}
+                    style={{
+                      background: isCurrent ? '#e50914' : 'rgba(255, 255, 255, 0.06)',
+                      border: isCurrent ? '1px solid #e50914' : '1px solid rgba(255, 255, 255, 0.12)',
+                      color: '#ffffff',
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '8px',
+                      cursor: isLoading ? 'wait' : 'pointer',
+                      fontSize: '0.9rem',
+                      fontWeight: isCurrent ? '800' : '600',
+                      boxShadow: isCurrent ? '0 0 16px rgba(229, 9, 20, 0.5)' : 'none'
+                    }}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
+
+              <button
+                type="button"
+                onClick={() => goToPage(page + 1)}
+                disabled={page >= totalPages || isLoading}
+                style={{
+                  background: page < totalPages ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid var(--border-color)',
+                  color: page < totalPages ? '#fff' : 'rgba(255, 255, 255, 0.25)',
+                  padding: '0.6rem 1.25rem',
+                  borderRadius: '8px',
+                  cursor: page < totalPages && !isLoading ? 'pointer' : 'not-allowed',
+                  fontSize: '0.9rem',
+                  fontWeight: '700',
+                  opacity: page < totalPages ? 1 : 0.4,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                Siguiente →
+              </button>
             </div>
           )}
-
-          {/* Pagination Controls */}
-          <div className="flex items-center justify-center gap-4 mt-12">
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page <= 1 || isLoading}
-              className="px-5 py-2 rounded-full bg-white/10 text-white font-semibold text-xs hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-            >
-              ‹ Anterior
-            </button>
-            <span className="text-xs text-white/60">
-              {page} / {totalPages}
-            </span>
-            <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page >= totalPages || isLoading}
-              className="px-5 py-2 rounded-full bg-white/10 text-white font-semibold text-xs hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-            >
-              Siguiente ›
-            </button>
-          </div>
         </div>
       )}
 
-      {/* Netflix Detail & Player Modal */}
+      {/* NETFLIX STREAMING & EPISODES MODAL */}
       {selectedDrama && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-6 bg-black/80 backdrop-blur-md overflow-y-auto">
-          <div className="relative w-full max-w-5xl bg-[#181818] rounded-none md:rounded-lg overflow-hidden shadow-2xl border border-white/10 my-auto">
-            {/* Close Button */}
-            <button
-              onClick={() => {
-                setSelectedDrama(null);
-                setIsPlaying(false);
-              }}
-              className="absolute top-4 right-4 z-40 w-10 h-10 rounded-full bg-black/70 text-white hover:bg-white/20 flex items-center justify-center font-bold text-lg transition-colors border border-white/20"
-            >
-              ✕
-            </button>
+        <div className="modal-overlay" onClick={() => { setSelectedDrama(null); setIsPlaying(false); }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '980px' }}>
+            <button className="modal-close-btn" onClick={() => { setSelectedDrama(null); setIsPlaying(false); }}>✕</button>
 
-            {/* Video Player or Billboard Banner */}
-            {isPlaying && activePlayerUrl ? (
-              <div className="relative w-full aspect-video bg-black">
-                <iframe
-                  src={activePlayerUrl}
-                  title="Reproductor Kdrama"
-                  className="w-full h-full border-0"
-                  allowFullScreen
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                />
-              </div>
-            ) : (
-              <div className="relative w-full h-72 md:h-96 bg-zinc-900 overflow-hidden">
-                <img
-                  src={selectedDrama.backdrop || selectedDrama.poster}
-                  alt={selectedDrama.title}
-                  className="w-full h-full object-cover filter brightness-75"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#181818] via-transparent to-transparent" />
+            {/* Video Player Container */}
+            <div className="movie-player-container">
+              {isPlaying ? (
+                activePlayerUrl ? (
+                  <iframe
+                    src={activePlayerUrl}
+                    className="player-iframe"
+                    title={`${selectedDrama.title} - ${activeEpisode}`}
+                    allowFullScreen
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                  />
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '380px', background: '#0a0a0f', color: '#fff', gap: '1rem', padding: '2rem' }}>
+                    {isDetailsLoading ? (
+                      <>
+                        <div className="pulse-dot" style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#e50914', boxShadow: '0 0 25px rgba(229, 9, 20, 0.8)' }} />
+                        <span style={{ fontSize: '1rem', fontWeight: 700, color: '#f1f5f9' }}>
+                          Cargando servidor y enlaces de reproducción...
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span style={{ fontSize: '2.5rem' }}>⚠️</span>
+                        <strong style={{ fontSize: '1.05rem', color: '#f87171' }}>No se pudo conectar con el servidor</strong>
+                        <span style={{ fontSize: '0.85rem', color: '#94a3b8', textAlign: 'center', maxWidth: '400px' }}>
+                          Intenta seleccionando otra opción en los servidores disponibles o cambia de episodio.
+                        </span>
+                      </>
+                    )}
+                  </div>
+                )
+              ) : (
+                <button
+                  type="button"
+                  className="player-placeholder-btn"
+                  style={{
+                    backgroundImage: `linear-gradient(to top, rgba(11, 12, 22, 0.95) 0%, rgba(11, 12, 22, 0.45) 50%, rgba(11, 12, 22, 0.75) 100%), url(${selectedDrama.backdrop || selectedDrama.poster})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center 30%',
+                    flexDirection: 'column',
+                    gap: '0.85rem',
+                    cursor: 'pointer',
+                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    font: 'inherit'
+                  }}
+                  onClick={() => setIsPlaying(true)}
+                >
+                  <div className="player-play-circle">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#000" style={{ marginLeft: '3px' }}>
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                  <strong className="player-play-text">
+                    Haga clic para reproducir {selectedDrama.type !== 'movie' ? `Episodio ${activeEpisode}` : selectedDrama.title}
+                  </strong>
+                </button>
+              )}
+            </div>
 
-                <div className="absolute left-6 md:left-10 bottom-6 max-w-xl z-20">
-                  <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded mb-2 inline-block">
-                    {selectedDrama.type === 'movie' ? 'PELÍCULA ASIÁTICA' : 'KDRAMA'}
-                  </span>
-                  <h2 className="text-2xl md:text-4xl font-black text-white drop-shadow mb-2">
-                    {selectedDrama.title}
-                  </h2>
-                  <p className="text-xs text-white/70 line-clamp-2 mb-4">
-                    {selectedDrama.overview}
-                  </p>
+            {/* Modal Navigation Tabs */}
+            <div className="modal-tab-nav">
+              <button 
+                type="button" 
+                className={`modal-tab-btn ${modalTab === 'player' ? 'active' : ''}`}
+                onClick={() => setModalTab('player')}
+              >
+                <span>📺</span> Reproductor y Episodios
+              </button>
+              <button 
+                type="button" 
+                className={`modal-tab-btn ${modalTab === 'details' ? 'active' : ''}`}
+                onClick={() => setModalTab('details')}
+              >
+                <span>📄</span> Ficha Técnica
+              </button>
+            </div>
 
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setIsPlaying(true)}
-                      disabled={!activePlayerUrl && serversList.length === 0}
-                      className="flex items-center gap-2 px-6 py-2.5 bg-white text-black font-bold text-sm rounded hover:bg-white/80 active:scale-95 transition-all shadow"
-                    >
-                      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                      {activePlayerUrl ? 'Reproducir' : 'Cargando...'}
-                    </button>
+            {/* TAB 1: REPRODUCTOR, SERVIDORES Y EPISODIOS */}
+            {modalTab === 'player' && (
+              <div className="modal-tab-body">
+                
+                {/* Servidores Selector */}
+                <div className="player-servers-block" style={{ marginBottom: '1.25rem' }}>
+                  <div className="player-subbar">
+                    <div className="player-title-info">
+                      <span className="bullet-dot">•</span>
+                      <span className="player-title-text">
+                        {selectedDrama.title} 
+                        {selectedDrama.type !== 'movie' && ` - Temp. ${activeSeason}, Ep. ${activeEpisode}`}
+                      </span>
+                    </div>
 
-                    <button
-                      onClick={handleCast}
-                      disabled={!activePlayerUrl}
-                      className="flex items-center gap-2 px-4 py-2.5 bg-white/20 text-white font-bold text-sm rounded hover:bg-white/30 active:scale-95 transition-all border border-white/10"
-                      title="Transmitir con Web Video Caster"
-                    >
-                      <svg className="w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth="2">
-                        <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6" />
-                        <line x1="2" y1="20" x2="2.01" y2="20" />
-                      </svg>
-                      Transmitir TV
-                    </button>
+                    <div className="latino-notice-pill">
+                      <span>🗣️</span>
+                      <span><strong>Servidores Disponibles:</strong> {serversList.length} opciones en línea.</span>
+                    </div>
+                  </div>
+
+                  <div className="server-selector-row">
+                    {serversList.length > 0 ? (
+                      serversList.map((srv, idx) => (
+                        <button
+                          key={`srv-${idx}-${srv.hash}`}
+                          type="button"
+                          className={`server-pill-btn ${activeServer?.hash === srv.hash ? 'active' : ''}`}
+                          onClick={() => handleServerClick(srv)}
+                        >
+                          <span className="server-pill-name">{srv.name}</span>
+                          <span className="server-pill-lang">{srv.langLabel}</span>
+                        </button>
+                      ))
+                    ) : (
+                      <div style={{ color: '#a3a3a3', fontSize: '0.85rem', padding: '0.4rem 0' }}>
+                        {isDetailsLoading ? 'Cargando servidores...' : 'No hay servidores disponibles para este episodio.'}
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-            )}
 
-            {/* Modal Body */}
-            <div className="p-6 md:p-8 space-y-6">
-              {/* Server Selector Bar */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-xs font-bold text-white/70 uppercase tracking-wider flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    Servidores Disponibles
-                  </h3>
-                  {isLinksLoading && (
-                    <span className="text-xs text-white/40">Cargando servidores...</span>
-                  )}
-                </div>
+                {/* Zapping bar when playing */}
+                {isPlaying && selectedDrama.type !== 'movie' && episodesData.length > 1 && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.04)', padding: '8px 16px', borderRadius: '8px', marginBottom: '1.25rem', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <button
+                      onClick={handlePrevEpisode}
+                      disabled={activeEpisode <= 1 || isDetailsLoading}
+                      style={{ background: 'none', border: 'none', color: activeEpisode <= 1 ? '#64748b' : '#fff', cursor: activeEpisode <= 1 ? 'not-allowed' : 'pointer', fontWeight: 700, fontSize: '0.85rem' }}
+                    >
+                      ⏮ Episodio Anterior
+                    </button>
+                    <span style={{ fontSize: '0.85rem', color: '#e2e8f0', fontWeight: 600 }}>
+                      Temporada {activeSeason} • Episodio {activeEpisode}
+                    </span>
+                    <button
+                      onClick={handleNextEpisode}
+                      disabled={activeEpisode >= episodesData.length || isDetailsLoading}
+                      style={{ background: 'none', border: 'none', color: activeEpisode >= episodesData.length ? '#64748b' : '#fff', cursor: activeEpisode >= episodesData.length ? 'not-allowed' : 'pointer', fontWeight: 700, fontSize: '0.85rem' }}
+                    >
+                      Siguiente Episodio ⏭
+                    </button>
+                  </div>
+                )}
 
-                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-                  {serversList.length > 0 ? (
-                    serversList.map(srv => {
-                      const isActive = activeServer?.id === srv.id;
-                      return (
-                        <button
-                          key={srv.id}
-                          onClick={() => handleServerChange(srv)}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap border ${
-                            isActive
-                              ? 'bg-red-600 text-white border-red-500 shadow-md scale-105'
-                              : 'bg-zinc-800 text-white/70 border-white/5 hover:bg-zinc-700 hover:text-white'
-                          }`}
-                        >
-                          <span>{srv.name}</span>
-                          <span className="text-[10px] opacity-75 font-normal">({srv.lang})</span>
-                        </button>
-                      );
-                    })
-                  ) : (
-                    <div className="text-xs text-white/40 py-2">
-                      {isLinksLoading ? 'Buscando servidores de reproducción...' : 'No hay servidores disponibles para este episodio.'}
-                    </div>
-                  )}
-                </div>
-              </div>
+                {/* Episodes Section (ONLY FOR SERIES / DORAMAS) */}
+                {selectedDrama.type !== 'movie' && (
+                  <div className="episodes-container" style={{ borderRadius: '12px', padding: '1.25rem' }}>
+                    <div className="episodes-top-row">
+                      <span className="episodes-heading" style={{ fontSize: '1.05rem', fontWeight: 800, color: '#fff' }}>
+                        Seleccionar Temporada
+                      </span>
 
-              {/* Season & Episode Selector (Series Only) */}
-              {selectedDrama.type !== 'movie' && (
-                <div className="border-t border-white/10 pt-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-                      Episodios
-                    </h3>
-
-                    {/* Season Dropdown */}
-                    {seasonsList.length > 1 && (
-                      <div className="relative">
-                        <select
+                      {seasonsList.length > 1 ? (
+                        <select 
+                          className="season-dropdown"
                           value={activeSeason}
                           onChange={(e) => handleSeasonChange(Number(e.target.value))}
-                          className="bg-zinc-800 border border-white/20 rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-red-600"
                         >
                           {seasonsList.map(s => (
-                            <option key={s.season_number} value={s.season_number}>
+                            <option key={`s-${s.season_number}`} value={s.season_number}>
                               Temporada {s.season_number}
                             </option>
                           ))}
                         </select>
+                      ) : (
+                        <span style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>Temporada 1</span>
+                      )}
+                    </div>
+
+                    {/* Quick Episode Bubbles Row */}
+                    <div style={{ marginBottom: '1.25rem' }}>
+                      <span style={{ fontSize: '0.78rem', color: '#a3a3a3', fontWeight: 700, display: 'block', marginBottom: '0.5rem' }}>
+                        SALTO RÁPIDO A EPISODIO ({episodesData.length} CAPÍTULOS):
+                      </span>
+                      <div className="episodes-bubbles-row">
+                        {episodesData.map(ep => (
+                          <button
+                            key={`bubble-${ep._id || ep.episode_number}`}
+                            className={`episode-bubble-btn ${activeEpisode === ep.episode_number ? 'active' : ''}`}
+                            onClick={() => {
+                              handleEpisodeChange(ep.episode_number);
+                              setIsPlaying(true);
+                            }}
+                          >
+                            {ep.episode_number}
+                          </button>
+                        ))}
                       </div>
-                    )}
+                    </div>
+
+                    {/* Episodes List */}
+                    <div>
+                      <span style={{ fontSize: '0.85rem', color: '#cbd5e1', fontWeight: 800, display: 'block', marginBottom: '0.75rem' }}>
+                        LISTA DE EPISODIOS:
+                      </span>
+                      {isDetailsLoading ? (
+                        <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                          <span className="pulse-dot" /> Cargando episodios...
+                        </div>
+                      ) : (
+                        <div style={{ maxHeight: '340px', overflowY: 'auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '0.85rem', paddingRight: '0.4rem' }}>
+                          {episodesData.map(ep => {
+                            const isCurrent = activeEpisode === ep.episode_number;
+                            return (
+                              <button
+                                key={`list-${ep._id || ep.episode_number}`}
+                                type="button"
+                                onClick={() => {
+                                  handleEpisodeChange(ep.episode_number);
+                                  setIsPlaying(true);
+                                }}
+                                style={{
+                                  background: isCurrent ? 'rgba(229, 9, 20, 0.2)' : 'rgba(255,255,255,0.04)',
+                                  border: `1.5px solid ${isCurrent ? '#e50914' : 'rgba(255,255,255,0.08)'}`,
+                                  borderRadius: '8px',
+                                  padding: '0.85rem 1rem',
+                                  textAlign: 'left',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  gap: '0.5rem'
+                                }}
+                              >
+                                <div>
+                                  <strong style={{ fontSize: '0.9rem', color: isCurrent ? '#f87171' : '#fff', display: 'block' }}>
+                                    Episodio {ep.episode_number}
+                                  </strong>
+                                  <span style={{ fontSize: '0.75rem', color: '#a3a3a3' }}>
+                                    {ep.name_es || ep.name || `Capítulo ${ep.episode_number}`}
+                                  </span>
+                                </div>
+                                <span style={{ fontSize: '0.8rem', color: isCurrent ? '#e50914' : '#64748b' }}>
+                                  {isCurrent ? '▶' : '▷'}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+
+                  </div>
+                )}
+
+                {/* Modal Info Section */}
+                <div className="modal-info-section">
+                  <div className="modal-badges-row">
+                    <span className="modal-badge-type drama">
+                      {selectedDrama.type === 'movie' ? '🎬 PELÍCULA ASIÁTICA' : '📺 KDRAMA'}
+                    </span>
+                    {selectedDrama.year && <span className="modal-badge-meta">{selectedDrama.year}</span>}
+                    <span className="modal-badge-meta">FULL HD</span>
+                    <span className="modal-badge-meta">Doblaje Latino & Sub</span>
                   </div>
 
-                  {/* Episodes List Grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 max-h-60 overflow-y-auto pr-2 no-scrollbar">
-                    {episodesData.map(ep => {
-                      const isCurrent = activeEpisode === ep.episode_number;
-                      return (
-                        <button
-                          key={ep._id || ep.episode_number}
-                          onClick={() => handleSelectEpisode(ep)}
-                          className={`flex flex-col p-3 rounded-md text-left transition-all border ${
-                            isCurrent
-                              ? 'bg-red-600/20 border-red-600 text-white shadow'
-                              : 'bg-zinc-800/60 border-white/5 text-white/70 hover:bg-zinc-800 hover:text-white'
-                          }`}
-                        >
-                          <span className="text-xs font-bold truncate">
-                            Episodio {ep.episode_number}
-                          </span>
-                          <span className="text-[10px] text-white/40 truncate mt-0.5">
-                            {ep.name_es || ep.name || `Capítulo ${ep.episode_number}`}
-                          </span>
-                        </button>
-                      );
-                    })}
+                  <h2 className="modal-main-title">{selectedDrama.title}</h2>
+                  <p className="modal-overview-text">
+                    {selectedDrama.overview || 'Sin descripción disponible.'}
+                  </p>
+
+                  <div className="modal-actions-row">
+                    <button
+                      type="button"
+                      className="btn-modal-list"
+                      onClick={async () => {
+                        await toggleFavorite(selectedDrama);
+                        setSelectedDrama({ ...selectedDrama });
+                      }}
+                    >
+                      {isFavorite(selectedDrama.id) ? '❤️ En Mi Lista' : '🤍 Agregar a Mi Lista'}
+                    </button>
+
+                    <button
+                      type="button"
+                      className="btn-modal-cast"
+                      onClick={() => {
+                        const urlToCast = activePlayerUrl || window.location.href;
+                        castWithWebVideoCaster(urlToCast, selectedDrama.title);
+                      }}
+                    >
+                      📱 Transmitir a TV (Web Video Caster)
+                    </button>
                   </div>
                 </div>
-              )}
-            </div>
+
+              </div>
+            )}
+
+            {/* TAB 2: FICHA TÉCNICA */}
+            {modalTab === 'details' && (
+              <div className="modal-tab-body" style={{ padding: '1.5rem 0' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.25rem' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Título Original / Slug</span>
+                    <h4 style={{ margin: '4px 0 0', color: '#fff', fontSize: '0.95rem' }}>{selectedDrama.slug || selectedDrama.title}</h4>
+                  </div>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Tipo</span>
+                    <h4 style={{ margin: '4px 0 0', color: '#ec4899', fontSize: '0.95rem' }}>{selectedDrama.type === 'movie' ? 'Película' : 'Serie / Dorama'}</h4>
+                  </div>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Año de Estreno</span>
+                    <h4 style={{ margin: '4px 0 0', color: '#fff', fontSize: '0.95rem' }}>{selectedDrama.year}</h4>
+                  </div>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Idiomas Disponibles</span>
+                    <h4 style={{ margin: '4px 0 0', color: '#34d399', fontSize: '0.95rem' }}>Español Latino & Subtitulado</h4>
+                  </div>
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
       )}
+
     </div>
   );
 }
