@@ -146,8 +146,14 @@ function App() {
               className="netflix-icon-btn" 
               title="Buscar"
               onClick={() => {
-                setActiveTab('peliculas');
-                window.dispatchEvent(new CustomEvent('open-piru-search'));
+                let targetTab = activeTab;
+                if (targetTab === 'mi-lista' || targetTab === 'mi-cuenta') {
+                  targetTab = 'peliculas';
+                  setActiveTab('peliculas');
+                }
+                setTimeout(() => {
+                  window.dispatchEvent(new CustomEvent('focus-section-search', { detail: targetTab }));
+                }, 50);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
             >

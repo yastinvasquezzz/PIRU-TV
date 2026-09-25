@@ -423,8 +423,21 @@ export default function Kdramas() {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
 
-  // Watch history
-  const [watchHistory, setWatchHistory] = useState(getWatchHistory());
+  // Watch history (specific to kdramas)
+  const [watchHistory, setWatchHistory] = useState(() => getWatchHistory('kdramas'));
+  const searchInputRef = React.useRef(null);
+
+  // Focus search when triggered from global header
+  useEffect(() => {
+    const handleFocusSearch = (e) => {
+      if (e.detail === 'kdramas' || e.detail === 'series') {
+        searchInputRef.current?.focus();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+    window.addEventListener('focus-section-search', handleFocusSearch);
+    return () => window.removeEventListener('focus-section-search', handleFocusSearch);
+  }, []);
 
   // Modal State
   const [selectedDrama, setSelectedDrama] = useState(null);
@@ -518,7 +531,9 @@ export default function Kdramas() {
 
   // Filtered continue watching for kdrama
   const continueWatchingKdramas = useMemo(() => {
-    return (watchHistory || []).filter(item => item.type === 'kdrama' || item.type === 'dorama').slice(0, 10);
+    return (watchHistory || []).filter(item => 
+      item.section === 'kdramas' || item.type === 'kdrama' || item.type === 'dorama'
+    ).slice(0, 10);
   }, [watchHistory]);
 
   // Load category grid when not in 'Inicio'
@@ -665,9 +680,10 @@ export default function Kdramas() {
       title: drama.title,
       poster: drama.poster,
       backdrop: drama.backdrop,
-      type: 'kdrama'
-    });
-    setWatchHistory(getWatchHistory());
+      type: 'kdrama',
+      section: 'kdramas'
+    }, 'kdramas');
+    setWatchHistory(getWatchHistory('kdramas'));
 
     try {
       if (drama.type === 'movie') {
@@ -861,10 +877,11 @@ export default function Kdramas() {
         poster: selectedDrama.poster,
         backdrop: selectedDrama.backdrop,
         type: 'kdrama',
+        section: 'kdramas',
         season: activeSeason,
         episode: activeEpisode
-      });
-      setWatchHistory(getWatchHistory());
+      }, 'kdramas');
+      setWatchHistory(getWatchHistory('kdramas'));
     }
   }, [selectedDrama, activePlayerUrl, activeSeason, activeEpisode]);
 
@@ -942,6 +959,7 @@ export default function Kdramas() {
         <div style={{ width: '320px', position: 'relative' }}>
           <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }}>🔍</span>
           <input
+            ref={searchInputRef}
             type="text"
             placeholder="Buscar kdrama o película asiática..."
             value={searchTerm}

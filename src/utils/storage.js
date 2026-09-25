@@ -11,26 +11,75 @@ const KEYS = {
   LAST_TAB: 'piru_tv_last_tab'
 };
 
-export const getWatchHistory = () => {
+export const getWatchHistory = (section) => {
   try {
     const data = localStorage.getItem(KEYS.WATCH_HISTORY);
-    return data ? JSON.parse(data) : [];
+    const all = data ? JSON.parse(data) : [];
+    if (!section) return all;
+
+    const normSection = String(section).toLowerCase();
+
+    if (normSection === 'peliculas' || normSection === 'movies' || normSection === 'movie') {
+      return all.filter(item => {
+        if (item.section) return item.section === 'peliculas';
+        const t = (item.type || '').toLowerCase();
+        return t === 'movie' || t === 'pelicula' || t === 'tv' || t === 'latino-movie' || (!t && !item.url && !item.slug);
+      });
+    }
+
+    if (normSection === 'kdramas' || normSection === 'kdrama' || normSection === 'dorama') {
+      return all.filter(item => {
+        if (item.section) return item.section === 'kdramas';
+        const t = (item.type || '').toLowerCase();
+        return t === 'kdrama' || t === 'dorama';
+      });
+    }
+
+    if (normSection === 'animes' || normSection === 'anime') {
+      return all.filter(item => {
+        if (item.section) return item.section === 'animes';
+        const t = (item.type || '').toLowerCase();
+        return t === 'anime' || t === 'vimeus-anime';
+      });
+    }
+
+    if (normSection === 'tv-libre' || normSection === 'tv' || normSection === 'iptv') {
+      return all.filter(item => {
+        if (item.section) return item.section === 'tv-libre';
+        const t = (item.type || '').toLowerCase();
+        return t === 'iptv' || t === 'tv-libre' || Boolean(item.url && item.group);
+      });
+    }
+
+    return all.filter(item => item.section === section);
   } catch (e) {
     console.error('Error reading watch history:', e);
     return [];
   }
 };
 
-export const saveWatchProgress = async (item) => {
+export const saveWatchProgress = async (item, explicitSection) => {
   if (!item || !item.id) return;
   try {
     const history = getWatchHistory();
     const filtered = history.filter(h => String(h.id) !== String(item.id));
+    
+    // Determine section
+    let section = explicitSection || item.section;
+    if (!section) {
+      const t = (item.type || '').toLowerCase();
+      if (t === 'kdrama' || t === 'dorama') section = 'kdramas';
+      else if (t === 'anime' || t === 'vimeus-anime') section = 'animes';
+      else if (t === 'iptv' || item.url) section = 'tv-libre';
+      else section = 'peliculas';
+    }
+
     const updatedItem = {
       ...item,
+      section,
       updatedAt: new Date().toISOString()
     };
-    const newHistory = [updatedItem, ...filtered].slice(0, 30);
+    const newHistory = [updatedItem, ...filtered].slice(0, 50);
     localStorage.setItem(KEYS.WATCH_HISTORY, JSON.stringify(newHistory));
 
     // Async sync to Supabase if logged in

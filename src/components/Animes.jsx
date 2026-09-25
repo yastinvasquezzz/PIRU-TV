@@ -86,8 +86,21 @@ export default function Animes() {
   const [selectedServer, setSelectedServer] = useState('vimeus');
   const [modalTab, setModalTab] = useState('player'); // 'player', 'cast', 'trailer', 'details'
 
-  // Watch history for continue watching row
-  const [watchHistory, setWatchHistory] = useState(getWatchHistory());
+  // Watch history for continue watching row (specific to animes)
+  const [watchHistory, setWatchHistory] = useState(() => getWatchHistory('animes'));
+  const searchInputRef = useRef(null);
+
+  // Focus search when triggered from global header
+  useEffect(() => {
+    const handleFocusSearch = (e) => {
+      if (e.detail === 'animes' || e.detail === 'anime') {
+        searchInputRef.current?.focus();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+    window.addEventListener('focus-section-search', handleFocusSearch);
+    return () => window.removeEventListener('focus-section-search', handleFocusSearch);
+  }, []);
 
   // Hero Featured Billboard List (Rotates every 7 seconds)
   const heroList = useMemo(() => {
@@ -111,7 +124,9 @@ export default function Animes() {
 
   // Filtered continue watching for anime
   const continueWatchingAnimes = useMemo(() => {
-    return (watchHistory || []).filter(item => item.type === 'anime' || item.type === 'vimeus-anime').slice(0, 10);
+    return (watchHistory || []).filter(item => 
+      item.section === 'animes' || item.type === 'anime' || item.type === 'vimeus-anime'
+    ).slice(0, 10);
   }, [watchHistory]);
 
   // Curated rows for Netflix Home view
@@ -282,9 +297,10 @@ export default function Animes() {
       title: anime.title || anime.name,
       poster: anime.poster,
       backdrop: anime.backdrop,
-      type: 'anime'
-    });
-    setWatchHistory(getWatchHistory());
+      type: 'anime',
+      section: 'animes'
+    }, 'animes');
+    setWatchHistory(getWatchHistory('animes'));
 
     const isMovie = anime.type === 'movie';
     const mediaType = isMovie ? 'movie' : 'tv';
@@ -421,6 +437,23 @@ export default function Animes() {
     return '';
   }, [selectedAnime, selectedServer, selectedSeasonNumber, selectedEpisodeNumber, animeDetails]);
 
+  // Persist watch progress on active playback
+  useEffect(() => {
+    if (selectedAnime && isPlaying) {
+      saveWatchProgress({
+        id: selectedAnime.id || selectedAnime.tmdb_id,
+        title: selectedAnime.title || selectedAnime.name,
+        poster: selectedAnime.poster,
+        backdrop: selectedAnime.backdrop,
+        type: 'anime',
+        section: 'animes',
+        season: selectedSeasonNumber,
+        episode: selectedEpisodeNumber
+      }, 'animes');
+      setWatchHistory(getWatchHistory('animes'));
+    }
+  }, [selectedAnime, isPlaying, selectedSeasonNumber, selectedEpisodeNumber]);
+
   // Trailer URL
   const trailerKey = useMemo(() => {
     if (!animeDetails?.videos?.results) return null;
@@ -516,6 +549,7 @@ export default function Animes() {
         <div style={{ width: '320px', position: 'relative' }}>
           <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }}>🔍</span>
           <input
+            ref={searchInputRef}
             type="text"
             placeholder="Buscar anime por nombre..."
             value={searchTerm}
@@ -680,7 +714,9 @@ export default function Animes() {
                       </div>
                       <div className="netflix-continue-info">
                         <span className="netflix-continue-title">{item.title}</span>
-                        <span className="netflix-continue-sub">Continuar</span>
+                        <span className="netflix-continue-sub">
+                          {item.remaining || (item.season && item.episode ? `T${item.season}:E${item.episode}` : 'Continuar')}
+                        </span>
                       </div>
                     </div>
                   ))}

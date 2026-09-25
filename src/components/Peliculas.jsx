@@ -212,7 +212,8 @@ export default function Peliculas() {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [watchHistory, setWatchHistory] = useState(() => getWatchHistory());
+  const [watchHistory, setWatchHistory] = useState(() => getWatchHistory('peliculas'));
+  const searchInputRef = React.useRef(null);
   
   const [tmdbCache, setTmdbCache] = useState(() => {
     try {
@@ -234,9 +235,16 @@ export default function Peliculas() {
   const [categoryTotalPages, setCategoryTotalPages] = useState({}); // Total pages for each category
   const [selectedItem, setSelectedItem] = useState(null);
 
-  // Combine real user watch history with curated items
+  // Combine real user watch history with curated items (filtered strictly to peliculas/series)
   const continueWatchingItems = useMemo(() => {
-    const list = [...watchHistory];
+    const list = (watchHistory || []).filter(item => 
+      item.section === 'peliculas' || 
+      item.type === 'movie' || 
+      item.type === 'pelicula' || 
+      item.type === 'tv' || 
+      item.type === 'latino-movie' || 
+      (!item.section && !item.type && !item.url)
+    );
     for (const c of CURATED_CONTINUE) {
       if (list.length >= 6) break;
       if (!list.some(item => String(item.id) === String(c.id))) {
@@ -246,7 +254,7 @@ export default function Peliculas() {
     return list.slice(0, 6);
   }, [watchHistory]);
 
-  // Listen to header events (Search, Home, Category)
+  // Listen to header events (Search, Home, Category, Focus)
   useEffect(() => {
     const handleReset = () => {
       setActiveCategory('Home');
@@ -258,6 +266,7 @@ export default function Peliculas() {
       setActiveCategory('Search');
       setSelectedItem(null);
       setIsPlaying(false);
+      searchInputRef.current?.focus();
     };
     const handleCategory = (e) => {
       if (e.detail) {
@@ -266,13 +275,21 @@ export default function Peliculas() {
         setIsPlaying(false);
       }
     };
+    const handleFocusSearch = (e) => {
+      if (e.detail === 'peliculas') {
+        searchInputRef.current?.focus();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
     window.addEventListener('reset-piru-home', handleReset);
     window.addEventListener('open-piru-search', handleSearch);
     window.addEventListener('open-piru-category', handleCategory);
+    window.addEventListener('focus-section-search', handleFocusSearch);
     return () => {
       window.removeEventListener('reset-piru-home', handleReset);
       window.removeEventListener('open-piru-search', handleSearch);
       window.removeEventListener('open-piru-category', handleCategory);
+      window.removeEventListener('focus-section-search', handleFocusSearch);
     };
   }, []);
 
@@ -339,12 +356,15 @@ export default function Peliculas() {
     if (selectedItem && isPlaying) {
       saveWatchProgress({
         id: selectedItem.id,
-        titulo: selectedItem.title,
-        portada: selectedItem.poster,
-        type: selectedItem.type,
+        title: selectedItem.title,
+        poster: selectedItem.poster,
+        backdrop: selectedItem.backdrop,
+        type: selectedItem.type || 'movie',
+        section: 'peliculas',
         season: selectedSeason,
         episode: selectedEpisode
-      });
+      }, 'peliculas');
+      setWatchHistory(getWatchHistory('peliculas'));
     }
   }, [selectedItem, isPlaying, selectedSeason, selectedEpisode]);
 
@@ -728,8 +748,15 @@ export default function Peliculas() {
   const handleOpenItem = async (item) => {
     // Record watch progress
     if (item && item.id) {
-      saveWatchProgress(item);
-      setWatchHistory(getWatchHistory());
+      saveWatchProgress({
+        ...item,
+        title: item.title,
+        poster: item.poster,
+        backdrop: item.backdrop,
+        type: item.type || 'movie',
+        section: 'peliculas'
+      }, 'peliculas');
+      setWatchHistory(getWatchHistory('peliculas'));
     }
 
     // Latino movie: load doramasflix links
@@ -849,8 +876,91 @@ export default function Peliculas() {
   }, [selectedItem, selectedServer, selectedSeason, selectedEpisode, activeLatinoServer]);
 
   return (
-    <div className="peliculas-container netflix-view">
-      {activeCategory === 'Home' ? (
+    <div className="peliculas-container netflix-view" style={{ minHeight: '100vh', background: '#141414', color: '#fff' }}>
+      
+      {/* Netflix Subnav & Category Pills & Search */}
+      <div style={{
+        padding: '1.25rem 3.5rem 0.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '1rem',
+        position: 'relative',
+        zIndex: 30
+      }}>
+        {/* Category Tabs */}
+        <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none' }}>
+          {categories.map(cat => (
+            <button
+              key={cat}
+              type="button"
+              className={`filter-badge ${(activeCategory === cat && !searchTerm) ? 'active' : ''}`}
+              onClick={() => {
+                setSelectedItem(null);
+                setIsPlaying(false);
+                setActiveCategory(cat);
+                setSearchTerm('');
+              }}
+              style={{
+                padding: '7px 16px',
+                borderRadius: '20px',
+                background: (activeCategory === cat && !searchTerm) ? '#e50914' : 'rgba(255, 255, 255, 0.08)',
+                border: (activeCategory === cat && !searchTerm) ? '1px solid #e50914' : '1px solid rgba(255, 255, 255, 0.12)',
+                color: '#fff',
+                fontWeight: (activeCategory === cat && !searchTerm) ? '800' : '600',
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.2s ease',
+                boxShadow: (activeCategory === cat && !searchTerm) ? '0 0 16px rgba(229, 9, 20, 0.6)' : 'none'
+              }}
+            >
+              {cat === 'Home' ? '🏠 Inicio' : cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Search Bar */}
+        <div style={{ width: '320px', position: 'relative' }}>
+          <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }}>🔍</span>
+          <input
+            ref={searchInputRef}
+            type="text"
+            placeholder="Buscar película o serie..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSelectedItem(null);
+              setIsPlaying(false);
+              setSearchTerm(e.target.value);
+            }}
+            style={{
+              width: '100%',
+              boxSizing: 'border-box',
+              padding: '9px 36px 9px 36px',
+              borderRadius: '6px',
+              background: 'rgba(0, 0, 0, 0.75)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              color: '#fff',
+              fontSize: '0.88rem',
+              outline: 'none'
+            }}
+          />
+          {searchTerm && (
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                if (activeCategory === 'Search') setActiveCategory('Home');
+              }}
+              style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1rem' }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
+
+      {activeCategory === 'Home' && !searchTerm ? (
         <>
           {/* Netflix Full-Bleed Hero Billboard */}
           {heroItem && (
@@ -1141,8 +1251,8 @@ export default function Peliculas() {
             </div>
           </footer>
         </>
-      ) : activeCategory === 'Search' ? (
-        <div className="search-results-section" style={{ padding: '7.5rem 3.5rem 3rem' }}>
+      ) : (searchTerm.trim() || activeCategory === 'Search') ? (
+        <div className="search-results-section" style={{ padding: '2rem 3.5rem 3rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
             <button
               onClick={() => {
@@ -1167,24 +1277,12 @@ export default function Peliculas() {
               Volver al Inicio
             </button>
 
-            <div className="search-container" style={{ margin: 0, maxWidth: '400px', width: '100%' }}>
-              <span className="search-icon">🔍</span>
-              <input
-                type="text"
-                placeholder="Buscar película o serie..."
-                className="search-input"
-                value={searchTerm}
-                autoFocus
-                onChange={(e) => {
-                  setSelectedItem(null);
-                  setIsPlaying(false);
-                  setSearchTerm(e.target.value);
-                }}
-              />
-            </div>
+            <h2 className="dashboard-section-title" style={{ margin: 0 }}>
+              {searchTerm ? `Resultados para "${searchTerm}"` : 'Resultados de búsqueda'}
+            </h2>
           </div>
 
-          <h2 className="dashboard-section-title">Resultados de búsqueda</h2>
+          <h2 className="dashboard-section-title" style={{ display: 'none' }}>Resultados de búsqueda</h2>
           {isSearching ? (
             <div className="empty-state">
               <div className="player-loading-spinner" style={{ position: 'relative', margin: '0 auto 1.5rem' }}></div>
@@ -1246,7 +1344,7 @@ export default function Peliculas() {
         </div>
       ) : (
         // CATEGORY VIEW GRID
-        <div className="category-results" style={{ padding: '7.5rem 3.5rem 3rem' }}>
+        <div className="category-results" style={{ padding: '2rem 3.5rem 3rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
             <button
               onClick={() => {
@@ -1271,41 +1369,11 @@ export default function Peliculas() {
               Volver al Inicio
             </button>
 
-            <div className="search-container" style={{ margin: 0, maxWidth: '350px', width: '100%' }}>
-              <span className="search-icon">🔍</span>
-              <input
-                type="text"
-                placeholder="Buscar en esta categoría..."
-                className="search-input"
-                value={searchTerm}
-                onChange={(e) => {
-                  setSelectedItem(null);
-                  setIsPlaying(false);
-                  setSearchTerm(e.target.value);
-                  if (e.target.value.trim() !== '') {
-                    setActiveCategory('Search');
-                  }
-                }}
-              />
-            </div>
+            <h2 className="dashboard-section-title" style={{ margin: 0 }}>
+              {activeCategory}
+            </h2>
           </div>
 
-          <div className="filters-wrapper" style={{ marginBottom: '2rem' }}>
-            {categories.map(cat => (
-              <button
-                key={cat}
-                className={`filter-badge ${activeCategory === cat ? 'active' : ''}`}
-                onClick={() => {
-                  setSelectedItem(null);
-                  setIsPlaying(false);
-                  setActiveCategory(cat);
-                  setSearchTerm('');
-                }}
-              >
-                {cat === 'Home' ? '🏠 Inicio' : cat}
-              </button>
-            ))}
-          </div>
           {isLoading && currentItems.length === 0 ? (
             <SkeletonGrid count={12} />
           ) : (

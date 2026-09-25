@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Hls from 'hls.js';
 import useDpadNavigation from '../hooks/useDpadNavigation';
-import { saveWatchProgress, toggleFavorite, isFavorite } from '../utils/storage';
+import { saveWatchProgress, toggleFavorite, isFavorite, getWatchHistory } from '../utils/storage';
 import { castWithWebVideoCaster } from '../utils/wvcCast';
 import localChannelsData from '../data/iptv_spa.json';
 
@@ -57,10 +57,31 @@ export default function TvLibre() {
   const [playerError, setPlayerError] = useState(null);
   const [playerLoading, setPlayerLoading] = useState(false);
   const [favMap, setFavMap] = useState({});
+  const [watchHistory, setWatchHistory] = useState(() => getWatchHistory('tv-libre'));
 
+  const searchInputRef = useRef(null);
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
   const playerContainerRef = useRef(null);
+
+  // Focus search when triggered from global header
+  useEffect(() => {
+    const handleFocusSearch = (e) => {
+      if (e.detail === 'tv-libre' || e.detail === 'tv') {
+        searchInputRef.current?.focus();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+    window.addEventListener('focus-section-search', handleFocusSearch);
+    return () => window.removeEventListener('focus-section-search', handleFocusSearch);
+  }, []);
+
+  // Filtered recent channels for continue watching
+  const recentChannels = useMemo(() => {
+    return (watchHistory || []).filter(item => 
+      item.section === 'tv-libre' || item.type === 'iptv' || Boolean(item.url && item.group)
+    ).slice(0, 10);
+  }, [watchHistory]);
 
   // Sync favorites on mount
   useEffect(() => {
@@ -225,11 +246,14 @@ export default function TvLibre() {
     saveWatchProgress({
       id: channel.id || channel.url,
       title: channel.name,
-      poster_path: channel.logo,
+      poster: channel.logo,
+      logo: channel.logo,
       type: 'iptv',
+      section: 'tv-libre',
       group: channel.group,
       url: channel.url
-    });
+    }, 'tv-libre');
+    setWatchHistory(getWatchHistory('tv-libre'));
 
     // Smooth scroll to player on mobile / desktop
     setTimeout(() => {
@@ -746,6 +770,7 @@ export default function TvLibre() {
               🔍
             </span>
             <input
+              ref={searchInputRef}
               type="text"
               placeholder="Buscar canal por nombre o temática..."
               value={searchTerm}
@@ -844,6 +869,63 @@ export default function TvLibre() {
           })}
         </div>
       </div>
+
+      {/* Continuar viendo / Canales Recientes */}
+      {!searchTerm && recentChannels.length > 0 && activeCategory === 'all' && (
+        <section className="netflix-row-section" style={{ marginBottom: '2.5rem' }}>
+          <div className="netflix-row-header">
+            <h2 className="netflix-row-title" style={{ fontSize: '1.25rem' }}>
+              Continuar viendo / Canales recientes
+              <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#a3a3a3' }}>
+                chevron_right
+              </span>
+            </h2>
+          </div>
+          <div className="netflix-continue-grid">
+            {recentChannels.map((item) => (
+              <div 
+                key={`continue-${item.id || item.url}`} 
+                className="netflix-continue-card"
+                onClick={() => {
+                  const full = channels.find(c => c.url === item.url || (item.id && c.id === item.id)) || item;
+                  handleSelectChannel(full);
+                }}
+                style={{ cursor: 'pointer' }}
+              >
+                <div className="netflix-continue-thumb" style={{ background: '#161622', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {item.poster || item.logo || item.poster_path ? (
+                    <img 
+                      src={item.poster || item.logo || item.poster_path} 
+                      alt={item.title || item.name} 
+                      style={{ objectFit: 'contain', padding: '1.2rem', width: '100%', height: '100%' }}
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  ) : (
+                    <span style={{ fontSize: '2.5rem' }}>📺</span>
+                  )}
+                  <div className="netflix-continue-overlay">
+                    <div className="netflix-center-play">
+                      <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", fontSize: '24px' }}>
+                        play_arrow
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="netflix-progress-bar">
+                  <div className="netflix-progress-fill" style={{ width: '100%', background: '#e50914' }} />
+                </div>
+                <div className="netflix-continue-info">
+                  <span className="netflix-continue-title">{item.title || item.name}</span>
+                  <span className="netflix-continue-sub" style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ef4444', display: 'inline-block' }}></span>
+                    EN VIVO {item.group ? `• ${item.group}` : ''}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Channel Count & Current Results info */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', padding: '0 4px' }}>
