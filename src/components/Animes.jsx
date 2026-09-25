@@ -93,6 +93,21 @@ export default function Animes() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedServer, setSelectedServer] = useState('unlimplay');
   const [modalTab, setModalTab] = useState('player'); // 'player', 'cast', 'trailer', 'details'
+  const [adShield, setAdShield] = useState(() => {
+    try {
+      return localStorage.getItem('piru_ad_shield') !== 'false';
+    } catch {
+      return true;
+    }
+  });
+
+  const toggleAdShield = () => {
+    setAdShield(prev => {
+      const next = !prev;
+      try { localStorage.setItem('piru_ad_shield', String(next)); } catch {}
+      return next;
+    });
+  };
 
   // Watch history for continue watching row (specific to animes)
   const [watchHistory, setWatchHistory] = useState(() => getWatchHistory('animes'));
@@ -994,7 +1009,10 @@ export default function Animes() {
                   className="player-iframe"
                   title={`${selectedAnime.title} - T${selectedSeasonNumber} E${selectedEpisodeNumber}`}
                   allowFullScreen
-                  allow="autoplay; encrypted-media; picture-in-picture"
+                  allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                  sandbox={adShield 
+                    ? "allow-scripts allow-same-origin allow-forms allow-presentation" 
+                    : "allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-popups-to-escape-sandbox"}
                 />
               ) : (
                 <button
@@ -1077,9 +1095,23 @@ export default function Animes() {
                       </span>
                     </div>
 
-                    <div className="latino-notice-pill">
-                      <span>🇲🇽</span>
-                      <span><strong>Audio Latino:</strong> UnLimPlay reproduce con doblaje oficial en Español Latino 1080p. Vimeus temporalmente con caída de servidor (Error 522).</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      <div className="latino-notice-pill">
+                        <span>🇲🇽</span>
+                        <span><strong>Audio Latino:</strong> UnLimPlay reproduce con doblaje oficial en Español Latino 1080p. Vimeus temporalmente con caída de servidor (Error 522).</span>
+                      </div>
+                      {/* Escudo Anti-Publicidad */}
+                      <button
+                        type="button"
+                        className={`shield-toggle-btn ${!adShield ? 'disabled' : ''}`}
+                        onClick={toggleAdShield}
+                        title={adShield 
+                          ? "Escudo Anti-Anuncios ACTIVO: Bloquea popups y redirecciones. Si el reproductor no inicia, haz clic para pausarlo." 
+                          : "Escudo en pausa: Clic para volver a activar la protección anti-anuncios."}
+                      >
+                        <span>{adShield ? '🛡️' : '⚠️'}</span>
+                        <span>Escudo: <strong>{adShield ? 'Activo (Anti-Popups)' : 'Pausado'}</strong></span>
+                      </button>
                     </div>
                   </div>
 

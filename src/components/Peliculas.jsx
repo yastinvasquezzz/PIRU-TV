@@ -323,6 +323,21 @@ export default function Peliculas() {
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [selectedEpisode, setSelectedEpisode] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [adShield, setAdShield] = useState(() => {
+    try {
+      return localStorage.getItem('piru_ad_shield') !== 'false';
+    } catch {
+      return true;
+    }
+  });
+
+  const toggleAdShield = () => {
+    setAdShield(prev => {
+      const next = !prev;
+      try { localStorage.setItem('piru_ad_shield', String(next)); } catch {}
+      return next;
+    });
+  };
 
   // Doramasflix Latino Movies state
   const [latinoMovies, setLatinoMovies] = useState([]);
@@ -1594,7 +1609,10 @@ export default function Peliculas() {
                   src={embedUrl}
                   className="player-iframe"
                   allowFullScreen
-                  allow="autoplay; encrypted-media; picture-in-picture"
+                  allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                  sandbox={adShield 
+                    ? "allow-scripts allow-same-origin allow-forms allow-presentation" 
+                    : "allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-popups-to-escape-sandbox"}
                   title={selectedItem.title}
                 />
               ) : (
@@ -1677,10 +1695,24 @@ export default function Peliculas() {
                           {selectedItem.type === 'tv' && ` - Temp. ${selectedSeason}, Ep. ${selectedEpisode}`}
                         </span>
                       </div>
-                      {/* Informacion de Servidores y Audio */}
-                      <div className="latino-notice-pill">
-                        <span>🇲🇽</span>
-                        <span><strong>Audio Latino:</strong> UnLimPlay reproduce en Español Latino 1080p. Vimeus temporalmente con caída de servidor (Error 522).</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        {/* Informacion de Servidores y Audio */}
+                        <div className="latino-notice-pill">
+                          <span>🇲🇽</span>
+                          <span><strong>Audio Latino:</strong> UnLimPlay reproduce en Español Latino 1080p. Vimeus temporalmente con caída de servidor (Error 522).</span>
+                        </div>
+                        {/* Escudo Anti-Publicidad */}
+                        <button
+                          type="button"
+                          className={`shield-toggle-btn ${!adShield ? 'disabled' : ''}`}
+                          onClick={toggleAdShield}
+                          title={adShield 
+                            ? "Escudo Anti-Anuncios ACTIVO: Bloquea popups y redirecciones. Si el reproductor no inicia, haz clic para pausarlo." 
+                            : "Escudo en pausa: Clic para volver a activar la protección anti-anuncios."}
+                        >
+                          <span>{adShield ? '🛡️' : '⚠️'}</span>
+                          <span>Escudo: <strong>{adShield ? 'Activo (Anti-Popups)' : 'Pausado'}</strong></span>
+                        </button>
                       </div>
                     </div>
 
@@ -1751,6 +1783,17 @@ export default function Peliculas() {
                         <span className="bullet-dot">•</span>
                         <span className="player-title-text">🗣️ {selectedItem.title}</span>
                       </div>
+                      <button
+                        type="button"
+                        className={`shield-toggle-btn ${!adShield ? 'disabled' : ''}`}
+                        onClick={toggleAdShield}
+                        title={adShield 
+                          ? "Escudo Anti-Anuncios ACTIVO: Bloquea popups y redirecciones. Si el reproductor no inicia, haz clic para pausarlo." 
+                          : "Escudo en pausa: Clic para volver a activar la protección anti-anuncios."}
+                      >
+                        <span>{adShield ? '🛡️' : '⚠️'}</span>
+                        <span>Escudo: <strong>{adShield ? 'Activo (Anti-Popups)' : 'Pausado'}</strong></span>
+                      </button>
                     </div>
                     <div className="server-selector-row">
                       {latinoMovieLinks.map(srv => (
