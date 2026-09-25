@@ -452,21 +452,6 @@ export default function Kdramas() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
   const [modalTab, setModalTab] = useState('player'); // 'player', 'details'
-  const [adShield, setAdShield] = useState(() => {
-    try {
-      return localStorage.getItem('piru_ad_shield') !== 'false';
-    } catch {
-      return true;
-    }
-  });
-
-  const toggleAdShield = () => {
-    setAdShield(prev => {
-      const next = !prev;
-      try { localStorage.setItem('piru_ad_shield', String(next)); } catch {}
-      return next;
-    });
-  };
 
   // Load initial home datasets on mount (Doramas Latino, Sub, Movies)
   useEffect(() => {
@@ -1493,10 +1478,7 @@ export default function Kdramas() {
                     className="player-iframe"
                     title={`${selectedDrama.title} - ${activeEpisode}`}
                     allowFullScreen
-                    allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-                    sandbox={adShield 
-                      ? "allow-scripts allow-same-origin allow-forms allow-presentation" 
-                      : "allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-popups-to-escape-sandbox"}
+                    allow="autoplay; encrypted-media; picture-in-picture"
                   />
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '380px', background: '#0a0a0f', color: '#fff', gap: '1rem', padding: '2rem' }}>
@@ -1583,23 +1565,9 @@ export default function Kdramas() {
                       </span>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                      <div className="latino-notice-pill">
-                        <span>🗣️</span>
-                        <span><strong>Servidores Disponibles:</strong> {serversList.length} opciones en línea.</span>
-                      </div>
-                      {/* Escudo Anti-Publicidad */}
-                      <button
-                        type="button"
-                        className={`shield-toggle-btn ${!adShield ? 'disabled' : ''}`}
-                        onClick={toggleAdShield}
-                        title={adShield 
-                          ? "Escudo Anti-Anuncios ACTIVO: Bloquea popups y redirecciones. Si el reproductor no inicia, haz clic para pausarlo." 
-                          : "Escudo en pausa: Clic para volver a activar la protección anti-anuncios."}
-                      >
-                        <span>{adShield ? '🛡️' : '⚠️'}</span>
-                        <span>Escudo: <strong>{adShield ? 'Activo (Anti-Popups)' : 'Pausado'}</strong></span>
-                      </button>
+                    <div className="latino-notice-pill">
+                      <span>🗣️</span>
+                      <span><strong>Servidores Disponibles:</strong> {serversList.length} opciones en línea.</span>
                     </div>
                   </div>
 

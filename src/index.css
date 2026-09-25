@@ -1540,42 +1540,6 @@ input:focus,
   color: #10b981;
 }
 
-.shield-toggle-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  border-radius: 9999px;
-  padding: 4px 12px;
-  font-size: 0.74rem;
-  color: #34d399;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  user-select: none;
-}
-
-.shield-toggle-btn:hover {
-  background: rgba(16, 185, 129, 0.22);
-  border-color: rgba(16, 185, 129, 0.6);
-  transform: translateY(-1px);
-}
-
-.shield-toggle-btn.disabled {
-  background: rgba(239, 68, 68, 0.12);
-  border-color: rgba(239, 68, 68, 0.35);
-  color: #f87171;
-}
-
-.shield-toggle-btn.disabled:hover {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(239, 68, 68, 0.55);
-}
-
-.shield-toggle-btn strong {
-  font-weight: 700;
-}
-
 .server-selector-row {
   display: flex;
   flex-wrap: wrap;
