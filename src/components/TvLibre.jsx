@@ -3,6 +3,7 @@ import Hls from 'hls.js';
 import useDpadNavigation from '../hooks/useDpadNavigation';
 import { saveWatchProgress, toggleFavorite, isFavorite, getWatchHistory } from '../utils/storage';
 import { castWithWebVideoCaster } from '../utils/wvcCast';
+import { isLgTv } from '../utils/deviceDetect';
 import localChannelsData from '../data/iptv_spa.json';
 
 const CATEGORIES = [
@@ -263,6 +264,26 @@ export default function TvLibre() {
     }, 100);
   };
 
+  // Handle external open event (e.g. from Mi Lista or Mi Cuenta)
+  useEffect(() => {
+    const handleRemoteOpen = (e) => {
+      if (e.detail?.tab === 'tv-libre' && e.detail?.item) {
+        const item = e.detail.item;
+        handleSelectChannel({
+          id: item.id || item.url,
+          name: item.title || item.name,
+          logo: item.logo || item.poster,
+          url: item.url,
+          group: item.group || 'General'
+        });
+      }
+    };
+    window.addEventListener('open-piru-item', handleRemoteOpen);
+    return () => {
+      window.removeEventListener('open-piru-item', handleRemoteOpen);
+    };
+  }, []);
+
   // Setup Hls.js or native player
   useEffect(() => {
     if (!selectedChannel || !selectedChannel.url) return;
@@ -282,10 +303,12 @@ export default function TvLibre() {
     const streamUrl = selectedChannel.url;
 
     if (Hls.isSupported()) {
+      const isTV = isLgTv();
       const hls = new Hls({
-        enableWorker: true,
-        lowLatencyMode: true,
-        backBufferLength: 60,
+        enableWorker: !isTV,
+        lowLatencyMode: !isTV,
+        backBufferLength: isTV ? 10 : 60,
+        maxBufferLength: isTV ? 20 : 60,
         manifestLoadingTimeOut: 15000,
         manifestLoadingMaxRetry: 3,
         levelLoadingTimeOut: 15000,
@@ -897,6 +920,8 @@ export default function TvLibre() {
                     <img 
                       src={item.poster || item.logo || item.poster_path} 
                       alt={item.title || item.name} 
+                      loading="lazy"
+                      decoding="async"
                       style={{ objectFit: 'contain', padding: '1.2rem', width: '100%', height: '100%' }}
                       onError={(e) => { e.target.style.display = 'none'; }}
                     />
@@ -1066,6 +1091,7 @@ export default function TvLibre() {
                         alt={channel.name}
                         style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                         loading="lazy"
+                        decoding="async"
                         onError={(e) => {
                           e.target.style.display = 'none';
                           if (e.target.parentElement) e.target.parentElement.innerHTML = '📺';

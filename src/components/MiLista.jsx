@@ -56,6 +56,8 @@ export default function MiLista({ onOpenItem }) {
                   <img
                     src={item.poster || item.portada || 'https://via.placeholder.com/160x240?text=?'}
                     alt={item.title || item.titulo}
+                    loading="lazy"
+                    decoding="async"
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                   <div className="play-hover-btn">
@@ -116,6 +118,8 @@ export default function MiLista({ onOpenItem }) {
                   <img
                     src={item.poster || item.portada || 'https://via.placeholder.com/160x240?text=?'}
                     alt={item.title || item.titulo}
+                    loading="lazy"
+                    decoding="async"
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                   <div className="play-hover-btn">

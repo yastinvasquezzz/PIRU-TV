@@ -4,6 +4,7 @@ import { SkeletonGrid } from './components/SkeletonLoader';
 import WelcomeConfirmedModal from './components/WelcomeConfirmedModal';
 import { supabase } from './lib/supabase';
 import { getSelectedAvatar } from './utils/avatars';
+import { isLgTv } from './utils/deviceDetect';
 
 const Peliculas = lazy(() => import('./components/Peliculas'));
 const TvLibre = lazy(() => import('./components/TvLibre'));
@@ -20,6 +21,11 @@ function App() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
+    // On LG Smart TV, keep header solid black and avoid continuous scroll listeners
+    if (isLgTv()) {
+      setIsScrolled(true);
+      return;
+    }
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 25);
     };
@@ -28,11 +34,16 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Keep avatar synced
-    const interval = setInterval(() => {
+    // Keep avatar synced reactively without continuous CPU polling
+    const handleAvatarUpdate = () => {
       setAvatar(getSelectedAvatar());
-    }, 1000);
-    return () => clearInterval(interval);
+    };
+    window.addEventListener('piru_avatar_changed', handleAvatarUpdate);
+    window.addEventListener('storage', handleAvatarUpdate);
+    return () => {
+      window.removeEventListener('piru_avatar_changed', handleAvatarUpdate);
+      window.removeEventListener('storage', handleAvatarUpdate);
+    };
   }, []);
 
   useEffect(() => {
@@ -53,6 +64,27 @@ function App() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Open item from Mi Lista or Mi Cuenta in its native player
+  const handleOpenItem = (item) => {
+    if (!item) return;
+
+    let targetTab = item.section;
+    if (!targetTab) {
+      const t = (item.type || '').toLowerCase();
+      if (t === 'kdrama' || t === 'dorama') targetTab = 'kdramas';
+      else if (t === 'anime' || t === 'vimeus-anime') targetTab = 'animes';
+      else if (t === 'iptv' || item.url || item.group) targetTab = 'tv-libre';
+      else targetTab = 'peliculas';
+    }
+
+    setActiveTab(targetTab);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('open-piru-item', { detail: { item, tab: targetTab } }));
+    }, 100);
+  };
 
   // Handle Smart TV Remote Control (Back button / ESC key)
   useDpadNavigation({
@@ -100,16 +132,6 @@ function App() {
                 }}
               >
                 Kdramas
-              </button>
-              <button 
-                className={`netflix-nav-link ${activeTab === 'peliculas' ? 'active' : ''}`}
-                onClick={() => {
-                  setActiveTab('peliculas');
-                  window.dispatchEvent(new CustomEvent('open-piru-category', { detail: '🗣️ Películas Latino' }));
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-              >
-                Películas
               </button>
               <button 
                 className={`netflix-nav-link ${activeTab === 'tv-libre' ? 'active' : ''}`}
@@ -202,8 +224,8 @@ function App() {
           {activeTab === 'tv-libre' && <TvLibre />}
           {activeTab === 'kdramas' && <Kdramas />}
           {activeTab === 'animes' && <Animes />}
-          {activeTab === 'mi-lista' && <MiLista />}
-          {activeTab === 'mi-cuenta' && <MiCuenta />}
+          {activeTab === 'mi-lista' && <MiLista onOpenItem={handleOpenItem} />}
+          {activeTab === 'mi-cuenta' && <MiCuenta onOpenItem={handleOpenItem} />}
         </Suspense>
       </main>
 
@@ -216,8 +238,8 @@ function App() {
           }}
           tabIndex={0}
         >
-          <span className="mobile-nav-icon">🎬</span>
-          <span className="mobile-nav-label">Pelis</span>
+          <span className="mobile-nav-icon">🏠</span>
+          <span className="mobile-nav-label">Inicio</span>
         </button>
         <button 
           className={`mobile-nav-item ${activeTab === 'tv-libre' ? 'active' : ''}`}

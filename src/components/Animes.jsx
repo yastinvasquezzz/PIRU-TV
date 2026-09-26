@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import useDpadNavigation from '../hooks/useDpadNavigation';
 import { saveWatchProgress, toggleFavorite, isFavorite, getWatchHistory } from '../utils/storage';
 import { castWithWebVideoCaster } from '../utils/wvcCast';
+import { isLgTv } from '../utils/deviceDetect';
 import vimeusAnimesData from '../data/animes.json';
 
 const TMDB_KEY = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiMGM4MjRjMmFkMzllODUwNmE5ZGUzOGI5ZTA2ZjJmZiIsIm5iZiI6MTc0ODI3MjY1Ni43MDMsInN1YiI6IjY4MzQ4NjEwNjFmMWZlZmI4YmViMzYxZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KUIiE74vCOP05_Y0M5CKyCBtj9m5lN1WzCfZ6bQn6Xs';
@@ -118,7 +119,7 @@ export default function Animes() {
   const heroItem = heroList[heroIndex] || heroList[0];
 
   useEffect(() => {
-    if (heroList.length <= 1) return;
+    if (isLgTv() || heroList.length <= 1) return;
     const timer = setInterval(() => {
       setHeroIndex(prev => (prev + 1) % heroList.length);
     }, 7000);
@@ -289,15 +290,18 @@ export default function Animes() {
   }, [activeCategory, categoryPages, searchTerm, searchResults, animeCache]);
 
   // Handle open anime modal and fetch official TMDB seasons, episodes, cast and trailer
-  const handleOpenAnime = async (anime) => {
+  const handleOpenAnime = async (anime, autoPlay = false) => {
+    const targetSeason = Number(anime.season) || 1;
+    const targetEpisode = Number(anime.episode) || 1;
+
     setSelectedAnime(anime);
-    setIsPlaying(false);
+    setIsPlaying(autoPlay);
     setSelectedServer('unlimplay');
     setModalTab('player');
     setAnimeDetails(null);
     setSeasonEpisodes([]);
-    setSelectedSeasonNumber(1);
-    setSelectedEpisodeNumber(1);
+    setSelectedSeasonNumber(targetSeason);
+    setSelectedEpisodeNumber(targetEpisode);
     setIsLoadingSeasons(true);
 
     saveWatchProgress({
@@ -306,7 +310,9 @@ export default function Animes() {
       poster: anime.poster,
       backdrop: anime.backdrop,
       type: 'anime',
-      section: 'animes'
+      section: 'animes',
+      season: targetSeason,
+      episode: targetEpisode
     }, 'animes');
     setWatchHistory(getWatchHistory('animes'));
 
@@ -325,20 +331,34 @@ export default function Animes() {
             .filter(s => s.season_number > 0)
             .sort((a, b) => a.season_number - b.season_number);
 
-          const initialSeason = validSeasons.length > 0 ? validSeasons[0].season_number : 1;
-          setSelectedSeasonNumber(initialSeason);
-          await fetchSeasonEpisodes(id, initialSeason);
+          const seasonMatch = validSeasons.find(s => s.season_number === targetSeason);
+          const activeSeason = seasonMatch ? seasonMatch.season_number : (validSeasons.length > 0 ? validSeasons[0].season_number : 1);
+          setSelectedSeasonNumber(activeSeason);
+          await fetchSeasonEpisodes(id, activeSeason);
         }
       } else {
-        fetchFallbackEpisodes(1);
+        fetchFallbackEpisodes(targetSeason);
       }
     } catch (e) {
       console.error('Error fetching TMDB details:', e);
-      fetchFallbackEpisodes(1);
+      fetchFallbackEpisodes(targetSeason);
     } finally {
       setIsLoadingSeasons(false);
     }
   };
+
+  // Handle external open event (e.g. from Mi Lista or Mi Cuenta)
+  useEffect(() => {
+    const handleRemoteOpen = (e) => {
+      if (e.detail?.tab === 'animes' && e.detail?.item) {
+        handleOpenAnime(e.detail.item, true);
+      }
+    };
+    window.addEventListener('open-piru-item', handleRemoteOpen);
+    return () => {
+      window.removeEventListener('open-piru-item', handleRemoteOpen);
+    };
+  }, []);
 
   // Fetch episodes for a specific season from TMDb with proper order
   const fetchSeasonEpisodes = async (tmdbId, seasonNum) => {
@@ -522,7 +542,7 @@ export default function Animes() {
       {/* Netflix Subnav & Category Pills */}
       <div className="netflix-subnav-bar">
         {/* Category Tabs Bar */}
-        <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none' }}>
+        <div className="netflix-subnav-categories">
           {ANIME_CATEGORIES.map(cat => (
             <button
               key={cat}
@@ -552,7 +572,7 @@ export default function Animes() {
         </div>
 
         {/* Search Bar */}
-        <div style={{ width: '320px', position: 'relative' }}>
+        <div className="netflix-subnav-search">
           <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }}>🔍</span>
           <input
             ref={searchInputRef}
@@ -706,7 +726,7 @@ export default function Animes() {
                       onClick={() => handleOpenAnime(item)}
                     >
                       <div className="netflix-continue-thumb">
-                        <img src={item.backdrop || item.poster} alt={item.title} />
+                        <img src={item.backdrop || item.poster} alt={item.title} loading="lazy" decoding="async" />
                         <div className="netflix-continue-overlay">
                           <div className="netflix-center-play">
                             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", fontSize: '24px' }}>
@@ -750,7 +770,7 @@ export default function Animes() {
                     >
                       <span className="netflix-top-num">{index + 1}</span>
                       <div className="netflix-top-poster">
-                        <img src={item.poster} alt={item.title} />
+                        <img src={item.poster} alt={item.title} loading="lazy" decoding="async" />
                         <div className="netflix-card-top10-badge">TOP 10</div>
                         <div className="netflix-card-lang-strip">
                           <span className="netflix-pill-lat">LAT</span>
@@ -800,7 +820,7 @@ export default function Animes() {
                       onClick={() => handleOpenAnime(item)}
                     >
                       <div className="netflix-poster-img-wrap">
-                        <img src={item.poster} alt={item.title} loading="lazy" />
+                        <img src={item.poster} alt={item.title} loading="lazy" decoding="async" />
                         <div className="netflix-quality-tag">FULL HD</div>
                         <div className="netflix-card-lang-strip">
                           <span className="netflix-pill-lat">LAT</span>
@@ -860,7 +880,7 @@ export default function Animes() {
                   style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
                 >
                   <div className="netflix-poster-img-wrap" style={{ width: '100%', height: '260px' }}>
-                    <img src={item.poster} alt={item.title} loading="lazy" />
+                    <img src={item.poster} alt={item.title} loading="lazy" decoding="async" />
                     <div className="netflix-quality-tag">{item.quality || 'FULL HD'}</div>
                     <div className="netflix-card-lang-strip">
                       <span className="netflix-pill-lat">LAT</span>

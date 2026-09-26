@@ -16,9 +16,24 @@
     <meta property="og:title" content="PIRU TV - Películas, Series y Canales Gratis en Vivo" />
     <meta property="og:description" content="Disfruta de películas, series, anime y TV en vivo gratis en PIRU TV. Tu centro de streaming premium." />
     
-    <!-- Preconnect to Google Fonts -->
+    <!-- Immediate LG webOS / Smart TV Detection -->
+    <script>
+      (function() {
+        try {
+          var ua = navigator.userAgent || '';
+          if (/web[0o]s|smart[-_]?tv|netcast|lg\s?tv|webappmanager/i.test(ua)) {
+            document.documentElement.classList.add('is-lg-tv');
+          }
+        } catch (e) {}
+      })();
+    </script>
+    
+    <!-- Preconnect to Google Fonts and Image CDN -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://image.tmdb.org" crossorigin />
+    <link rel="dns-prefetch" href="https://image.tmdb.org" />
+    <link rel="dns-prefetch" href="https://api.themoviedb.org" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
   </head>

@@ -24,6 +24,7 @@ export const getSelectedAvatar = () => {
 
 export const setSelectedAvatar = async (avatarId) => {
   localStorage.setItem(AVATAR_KEY, avatarId);
+  window.dispatchEvent(new CustomEvent('piru_avatar_changed', { detail: avatarId }));
   const found = AVATARS.find(a => a.id === avatarId);
   
   // Sync to Supabase user metadata if logged in

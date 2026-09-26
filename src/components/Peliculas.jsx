@@ -3,6 +3,7 @@ import useDpadNavigation from '../hooks/useDpadNavigation';
 import { SkeletonGrid } from './SkeletonLoader';
 import { saveWatchProgress, toggleFavorite, isFavorite, getWatchHistory } from '../utils/storage';
 import { castWithWebVideoCaster } from '../utils/wvcCast';
+import { isLgTv } from '../utils/deviceDetect';
 import catalogData from '../data/catalog.json';
 import dramasData from '../data/dramas.json';
 
@@ -524,9 +525,9 @@ export default function Peliculas() {
     loadDashboard();
   }, []);
 
-  // Auto-rotate Hero Spotlight every 6.5s
+  // Auto-rotate Hero Spotlight every 6.5s (disabled on LG Smart TV to save CPU & GPU memory)
   useEffect(() => {
-    if (heroList.length <= 1) return;
+    if (isLgTv() || heroList.length <= 1) return;
     const timer = setInterval(() => {
       setHeroIndex((prev) => {
         const next = (prev + 1) % heroList.length;
@@ -793,8 +794,8 @@ export default function Peliculas() {
     setServerLangFilter('all');
     setSelectedItem(item);
     setIsPlaying(false);
-    setSelectedSeason(1);
-    setSelectedEpisode(1);
+    setSelectedSeason(item.season || 1);
+    setSelectedEpisode(item.episode || 1);
     setSelectedServer('unlimplay'); // UnLimPlay is 100% active Spanish Latino by default
 
     // If the item doesn't have cast or full details loaded yet, fetch them!
@@ -808,6 +809,20 @@ export default function Peliculas() {
     }
 
   };
+
+  // Handle external open event (e.g. from Mi Lista or Mi Cuenta)
+  useEffect(() => {
+    const handleRemoteOpen = (e) => {
+      if (e.detail?.tab === 'peliculas' && e.detail?.item) {
+        handleOpenItem(e.detail.item);
+        setIsPlaying(true);
+      }
+    };
+    window.addEventListener('open-piru-item', handleRemoteOpen);
+    return () => {
+      window.removeEventListener('open-piru-item', handleRemoteOpen);
+    };
+  }, []);
 
   // Get total episodes in selected season
   const episodesInSelectedSeason = useMemo(() => {
@@ -878,7 +893,7 @@ export default function Peliculas() {
       {/* Netflix Subnav & Category Pills & Search */}
       <div className="netflix-subnav-bar">
         {/* Category Tabs */}
-        <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none' }}>
+        <div className="netflix-subnav-categories">
           {categories.map(cat => (
             <button
               key={cat}
@@ -910,7 +925,7 @@ export default function Peliculas() {
         </div>
 
         {/* Search Bar */}
-        <div style={{ width: '320px', position: 'relative' }}>
+        <div className="netflix-subnav-search">
           <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.6 }}>🔍</span>
           <input
             ref={searchInputRef}
@@ -1069,7 +1084,7 @@ export default function Peliculas() {
                       onClick={() => handleOpenItem(item)}
                     >
                       <div className="netflix-continue-thumb">
-                        <img src={item.backdrop || item.poster} alt={item.title} />
+                        <img src={item.backdrop || item.poster} alt={item.title} loading="lazy" decoding="async" />
                         <div className="netflix-continue-overlay">
                           <div className="netflix-center-play">
                             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1", fontSize: '24px' }}>
@@ -1084,7 +1099,7 @@ export default function Peliculas() {
                       <div className="netflix-continue-info">
                         <span className="netflix-continue-title">{item.title}</span>
                         <span className="netflix-continue-sub">
-                          {item.remaining || (item.type === 'tv' ? `T${selectedSeason}:E${selectedEpisode}` : 'Quedan 35 min')}
+                          {item.remaining || (item.type === 'tv' ? `T${item.season || 1}:E${item.episode || 1}` : 'Continuar viendo')}
                         </span>
                       </div>
                     </div>
@@ -1113,7 +1128,7 @@ export default function Peliculas() {
                     >
                       <span className="netflix-top-num">{index + 1}</span>
                       <div className="netflix-top-poster">
-                        <img src={item.poster} alt={item.title} />
+                        <img src={item.poster} alt={item.title} loading="lazy" decoding="async" />
                         <div className="netflix-card-top10-badge">TOP 10</div>
                         <div className="netflix-card-lang-strip">
                           <span className="netflix-pill-lat">LAT</span>
@@ -1170,7 +1185,7 @@ export default function Peliculas() {
                         onClick={() => handleOpenItem(item)}
                       >
                         <div className="netflix-poster-img-wrap">
-                          <img src={item.poster} alt={item.title} loading="lazy" />
+                          <img src={item.poster} alt={item.title} loading="lazy" decoding="async" />
                           <div className="netflix-quality-tag">4K</div>
                           <div className="netflix-card-lang-strip">
                             <span className="netflix-pill-lat">LAT</span>
@@ -1289,7 +1304,7 @@ export default function Peliculas() {
                   >
                     <div className="card-thumbnail-wrapper" style={{ aspectRatio: '2/3' }}>
                       <div className="card-thumbnail-glow"></div>
-                      <img src={item.poster} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = 'https://via.placeholder.com/160x240?text=?'; }} />
+                      <img src={item.poster} alt={item.title} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = 'https://via.placeholder.com/160x240?text=?'; }} />
                       <button
                         type="button"
                         className="play-hover-btn"
@@ -1381,6 +1396,8 @@ export default function Peliculas() {
                         <img 
                           src={item.poster} 
                           alt={item.title} 
+                          loading="lazy"
+                          decoding="async"
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                           onError={(e) => {
                             e.target.src = 'https://via.placeholder.com/160x240?text=?';
