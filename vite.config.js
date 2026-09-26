@@ -54,20 +54,5 @@ export default defineConfig({
         secure: true,
       }
     }
-  },
-  build: {
-    target: 'es2015',
-    minify: 'esbuild',
-    cssMinify: true,
-    sourcemap: false,
-    chunkSizeWarningLimit: 1200,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'supabase-vendor': ['@supabase/supabase-js']
-        }
-      }
-    }
   }
 })
