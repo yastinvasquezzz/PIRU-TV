@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import useDpadNavigation from '../hooks/useDpadNavigation';
-import { SkeletonGrid } from './SkeletonLoader';
 import { saveWatchProgress, toggleFavorite, isFavorite, getWatchHistory } from '../utils/storage';
 import { castWithWebVideoCaster } from '../utils/wvcCast';
 import { isLgTv } from '../utils/deviceDetect';
 import curatedData from '../data/kdramas_curated.json';
-import { TMDB, IMG, BACK, HDR } from '../utils/tmdb';
+import { TMDB, IMG, BACK, HDR, PLACEHOLDER_POSTER } from '../utils/tmdb';
 
 const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
 const VIMEUS_PARAMS = '&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3';
@@ -35,16 +34,6 @@ const SERVER_NAMES = {
   "1007": "Lulustream",
   "65c6b7f9149d4675d1547a5c": "VidHide",
   "61707703fa461256758155c5": "Mega"
-};
-
-const LANG_NAMES = {
-  "38": "Latino 🗣️",
-  "13109": "Coreano 🇰🇷",
-  "13110": "Japonés 🇯🇵",
-  "13111": "Chino 🇨🇳",
-  "13112": "Japonés/Tailandés 🇯🇵🇹🇭",
-  "13113": "Taiwanés 🇹🇼",
-  "36": "Inglés 🇬🇧"
 };
 
 const getPlayerUrl = (embed) => {
@@ -195,7 +184,6 @@ export default function Kdramas() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
 
   // Watch history (isolated to kdramas)
@@ -244,7 +232,7 @@ export default function Kdramas() {
             type: type === 'movie' ? 'movie' : 'dorama',
             title: x.name || x.title || x.original_name || x.original_title || 'Kdrama',
             original_title: x.original_name || x.original_title,
-            poster: x.poster_path ? `${IMG}${x.poster_path}` : 'https://via.placeholder.com/300x450?text=Kdrama',
+            poster: x.poster_path ? `${IMG}${x.poster_path}` : PLACEHOLDER_POSTER,
             backdrop: x.backdrop_path ? `${BACK}${x.backdrop_path}` : null,
             overview: x.overview || 'Disfruta de este aclamado drama asiático con audio latino y subtítulos.',
             year: (x.first_air_date || x.release_date || '').slice(0, 4) || '2024',
@@ -254,8 +242,9 @@ export default function Kdramas() {
           }));
         };
 
-        const [livePopular, liveRecent, liveRomance, liveAction, liveMovies] = await Promise.all([
+        const [livePopular, liveLatino, liveRecent, liveRomance, liveAction, liveMovies] = await Promise.all([
           fetchSection('/discover/tv?with_original_language=ko&sort_by=popularity.desc&without_genres=10763,10767', 'tv'),
+          fetchSection('/discover/tv?with_original_language=ko&with_genres=18&sort_by=vote_count.desc&vote_count.gte=30', 'tv'),
           fetchSection('/discover/tv?with_original_language=ko&first_air_date.gte=2024-01-01&without_genres=10763,10767&sort_by=popularity.desc', 'tv'),
           fetchSection('/discover/tv?with_original_language=ko&with_genres=18,10749&sort_by=popularity.desc', 'tv'),
           fetchSection('/discover/tv?with_original_language=ko&with_genres=10759,9648&sort_by=popularity.desc', 'tv'),
@@ -269,7 +258,9 @@ export default function Kdramas() {
             livePopular.forEach(it => map.set(it.id, it));
             const fullList = Array.from(map.values());
             setHomePopularKdramas(fullList);
-            setHomeLatinoDoramas(fullList);
+          }
+          if (liveLatino.length > 0) {
+            setHomeLatinoDoramas(liveLatino);
           }
           if (liveRecent.length > 0) setHomeRecentDoramas(liveRecent);
           if (liveRomance.length > 0) setHomeRomanceDoramas(liveRomance);
@@ -339,7 +330,7 @@ export default function Kdramas() {
             type: isMovie ? 'movie' : 'dorama',
             title: x.name || x.title || x.original_name || x.original_title || 'Kdrama',
             original_title: x.original_name || x.original_title,
-            poster: x.poster_path ? `${IMG}${x.poster_path}` : 'https://via.placeholder.com/300x450?text=Kdrama',
+            poster: x.poster_path ? `${IMG}${x.poster_path}` : PLACEHOLDER_POSTER,
             backdrop: x.backdrop_path ? `${BACK}${x.backdrop_path}` : null,
             overview: x.overview || 'Sin descripción disponible.',
             year: (x.first_air_date || x.release_date || '').slice(0, 4) || '—',
@@ -363,11 +354,9 @@ export default function Kdramas() {
   useEffect(() => {
     if (!searchTerm.trim()) {
       setSearchResults([]);
-      setIsSearching(false);
       return;
     }
 
-    setIsSearching(true);
     const timer = setTimeout(async () => {
       try {
         const query = encodeURIComponent(searchTerm.trim());
@@ -398,7 +387,7 @@ export default function Kdramas() {
           tmdbId: x.id,
           type: 'dorama',
           title: x.name || x.original_name,
-          poster: x.poster_path ? `${IMG}${x.poster_path}` : 'https://via.placeholder.com/300x450?text=Kdrama',
+          poster: x.poster_path ? `${IMG}${x.poster_path}` : PLACEHOLDER_POSTER,
           backdrop: x.backdrop_path ? `${BACK}${x.backdrop_path}` : null,
           overview: x.overview || 'Sin descripción disponible.',
           year: (x.first_air_date || '').slice(0, 4) || '—',
@@ -412,7 +401,7 @@ export default function Kdramas() {
           tmdbId: x.id,
           type: 'movie',
           title: x.title || x.original_title,
-          poster: x.poster_path ? `${IMG}${x.poster_path}` : 'https://via.placeholder.com/300x450?text=Película',
+          poster: x.poster_path ? `${IMG}${x.poster_path}` : PLACEHOLDER_POSTER,
           backdrop: x.backdrop_path ? `${BACK}${x.backdrop_path}` : null,
           overview: x.overview || 'Sin descripción disponible.',
           year: (x.release_date || '').slice(0, 4) || '—',
@@ -424,8 +413,6 @@ export default function Kdramas() {
         setSearchResults([...tvItems, ...movieItems]);
       } catch (err) {
         console.error('Search error:', err);
-      } finally {
-        setIsSearching(false);
       }
     }, 350);
 

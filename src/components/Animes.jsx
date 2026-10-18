@@ -4,7 +4,7 @@ import { saveWatchProgress, toggleFavorite, isFavorite, getWatchHistory } from '
 import { castWithWebVideoCaster } from '../utils/wvcCast';
 import { isLgTv } from '../utils/deviceDetect';
 import vimeusAnimesData from '../data/animes.json';
-import { TMDB, HDR } from '../utils/tmdb';
+import { TMDB, HDR, PLACEHOLDER_POSTER } from '../utils/tmdb';
 
 const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
 const VIMEUS_PARAMS = '&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3';
@@ -75,7 +75,6 @@ export default function Animes() {
   const [categoryTotalPages, setCategoryTotalPages] = useState({});
   const [animeCache, setAnimeCache] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [isMuted, setIsMuted] = useState(true);
 
@@ -86,7 +85,6 @@ export default function Animes() {
   const [seasonEpisodes, setSeasonEpisodes] = useState([]);
   const [selectedEpisodeNumber, setSelectedEpisodeNumber] = useState(1);
   const [activeEpisodeData, setActiveEpisodeData] = useState(null);
-  const [isLoadingSeasons, setIsLoadingSeasons] = useState(false);
   const [isLoadingEpisodes, setIsLoadingEpisodes] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedServer, setSelectedServer] = useState('vimeus');
@@ -185,7 +183,7 @@ export default function Animes() {
             id: isMovieCat ? `movie-${x.id}` : `anime-${x.id}`,
             tmdb_id: x.id,
             title: x.title || x.name || 'Anime',
-            poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : (x.backdrop_path ? `https://image.tmdb.org/t/p/w500${x.backdrop_path}` : 'https://via.placeholder.com/300x450?text=Anime'),
+            poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : (x.backdrop_path ? `https://image.tmdb.org/t/p/w500${x.backdrop_path}` : PLACEHOLDER_POSTER),
             backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
             overview: x.overview || 'Sin descripción disponible.',
             rating: x.vote_average ? Math.round(x.vote_average * 10) / 10 : null,
@@ -240,7 +238,7 @@ export default function Animes() {
             id: x.media_type === 'movie' ? `movie-${x.id}` : `anime-${x.id}`,
             tmdb_id: x.id,
             title: x.name || x.title,
-            poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://via.placeholder.com/300x450?text=Anime',
+            poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : PLACEHOLDER_POSTER,
             backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
             overview: x.overview || 'Sin descripción disponible.',
             rating: x.vote_average ? Math.round(x.vote_average * 10) / 10 : null,
@@ -286,6 +284,43 @@ export default function Animes() {
     return vimeusAnimesData.slice(0, 24);
   }, [activeCategory, categoryPages, searchTerm, searchResults, animeCache]);
 
+  const fetchFallbackEpisodes = (seasonNum) => {
+    const fallbackList = Array.from({ length: 12 }, (_, i) => ({
+      id: `fb_${seasonNum}_${i + 1}`,
+      episode_number: i + 1,
+      name: `Episodio ${i + 1}`,
+      overview: `Episodio ${i + 1} de la temporada ${seasonNum}.`,
+      still_path: null
+    }));
+    setSeasonEpisodes(fallbackList);
+    setSelectedEpisodeNumber(1);
+    setActiveEpisodeData(fallbackList[0]);
+  };
+
+  // Fetch episodes for a specific season from TMDb with proper order
+  const fetchSeasonEpisodes = async (tmdbId, seasonNum) => {
+    setIsLoadingEpisodes(true);
+    try {
+      const res = await fetch(`${TMDB}/tv/${tmdbId}/season/${seasonNum}?language=es-ES`, { headers: HDR });
+      if (res.ok) {
+        const data = await res.json();
+        const eps = (data.episodes || []).sort((a, b) => a.episode_number - b.episode_number);
+        setSeasonEpisodes(eps);
+        if (eps.length > 0) {
+          setSelectedEpisodeNumber(eps[0].episode_number || 1);
+          setActiveEpisodeData(eps[0]);
+        }
+      } else {
+        fetchFallbackEpisodes(seasonNum);
+      }
+    } catch (e) {
+      console.error('Error fetching season episodes:', e);
+      fetchFallbackEpisodes(seasonNum);
+    } finally {
+      setIsLoadingEpisodes(false);
+    }
+  };
+
   // Handle open anime modal and fetch official TMDB seasons, episodes, cast and trailer
   const handleOpenAnime = async (anime, autoPlay = false) => {
     const targetSeason = Number(anime.season) || 1;
@@ -299,7 +334,6 @@ export default function Animes() {
     setSeasonEpisodes([]);
     setSelectedSeasonNumber(targetSeason);
     setSelectedEpisodeNumber(targetEpisode);
-    setIsLoadingSeasons(true);
 
     saveWatchProgress({
       id: anime.id || anime.tmdb_id,
@@ -339,8 +373,6 @@ export default function Animes() {
     } catch (e) {
       console.error('Error fetching TMDB details:', e);
       fetchFallbackEpisodes(targetSeason);
-    } finally {
-      setIsLoadingSeasons(false);
     }
   };
 
@@ -356,43 +388,6 @@ export default function Animes() {
       window.removeEventListener('open-piru-item', handleRemoteOpen);
     };
   }, []);
-
-  // Fetch episodes for a specific season from TMDb with proper order
-  const fetchSeasonEpisodes = async (tmdbId, seasonNum) => {
-    setIsLoadingEpisodes(true);
-    try {
-      const res = await fetch(`${TMDB}/tv/${tmdbId}/season/${seasonNum}?language=es-ES`, { headers: HDR });
-      if (res.ok) {
-        const data = await res.json();
-        const eps = (data.episodes || []).sort((a, b) => a.episode_number - b.episode_number);
-        setSeasonEpisodes(eps);
-        if (eps.length > 0) {
-          setSelectedEpisodeNumber(eps[0].episode_number || 1);
-          setActiveEpisodeData(eps[0]);
-        }
-      } else {
-        fetchFallbackEpisodes(seasonNum);
-      }
-    } catch (e) {
-      console.error('Error fetching season episodes:', e);
-      fetchFallbackEpisodes(seasonNum);
-    } finally {
-      setIsLoadingEpisodes(false);
-    }
-  };
-
-  const fetchFallbackEpisodes = (seasonNum) => {
-    const fallbackList = Array.from({ length: 12 }, (_, i) => ({
-      id: `fb_${seasonNum}_${i + 1}`,
-      episode_number: i + 1,
-      name: `Episodio ${i + 1}`,
-      overview: `Episodio ${i + 1} de la temporada ${seasonNum}.`,
-      still_path: null
-    }));
-    setSeasonEpisodes(fallbackList);
-    setSelectedEpisodeNumber(1);
-    setActiveEpisodeData(fallbackList[0]);
-  };
 
   // Switch Season tab
   const handleSelectSeason = (seasonNum) => {
@@ -1338,10 +1333,10 @@ export default function Animes() {
                       <div key={actor.id} style={{ textAlign: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: '10px', padding: '0.75rem', border: '1px solid rgba(255,255,255,0.06)' }}>
                         <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', margin: '0 auto 0.5rem', background: 'rgba(0,0,0,0.3)' }}>
                           <img
-                            src={actor.profile_path ? `https://image.tmdb.org/t/p/w185${actor.profile_path}` : 'https://via.placeholder.com/100x100?text=Actor'}
+                            src={actor.profile_path ? `https://image.tmdb.org/t/p/w185${actor.profile_path}` : PLACEHOLDER_POSTER}
                             alt={actor.name}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/100x100?text=Actor'; }}
+                            onError={(e) => { e.target.onerror = null; e.target.src = PLACEHOLDER_POSTER; }}
                           />
                         </div>
                         <strong style={{ fontSize: '0.82rem', color: '#fff', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import useDpadNavigation from './hooks/useDpadNavigation';
+import ErrorBoundary from './components/ErrorBoundary';
 import { SkeletonGrid } from './components/SkeletonLoader';
 import WelcomeConfirmedModal from './components/WelcomeConfirmedModal';
 import { supabase } from './lib/supabase';
@@ -244,30 +245,32 @@ function App() {
       </header>
 
       <main className={`app-content ${activeTab === 'peliculas' || activeTab === 'kdramas' || activeTab === 'animes' ? 'netflix-full-bleed' : ''}`}>
-        <Suspense fallback={
-          <div style={{ padding: '2rem 1rem' }}>
-            <SkeletonGrid count={12} />
-          </div>
-        }>
-          <div style={{ display: activeTab === 'peliculas' ? 'block' : 'none', width: '100%' }}>
-            {visitedTabs.has('peliculas') && <Peliculas />}
-          </div>
-          <div style={{ display: activeTab === 'tv-libre' ? 'block' : 'none', width: '100%' }}>
-            {visitedTabs.has('tv-libre') && <TvLibre />}
-          </div>
-          <div style={{ display: activeTab === 'kdramas' ? 'block' : 'none', width: '100%' }}>
-            {visitedTabs.has('kdramas') && <Kdramas />}
-          </div>
-          <div style={{ display: activeTab === 'animes' ? 'block' : 'none', width: '100%' }}>
-            {visitedTabs.has('animes') && <Animes />}
-          </div>
-          <div style={{ display: activeTab === 'mi-lista' ? 'block' : 'none', width: '100%' }}>
-            {visitedTabs.has('mi-lista') && <MiLista onOpenItem={handleOpenItem} />}
-          </div>
-          <div style={{ display: activeTab === 'mi-cuenta' ? 'block' : 'none', width: '100%' }}>
-            {visitedTabs.has('mi-cuenta') && <MiCuenta onOpenItem={handleOpenItem} />}
-          </div>
-        </Suspense>
+        <ErrorBoundary onGoHome={() => setActiveTab('peliculas')}>
+          <Suspense fallback={
+            <div style={{ padding: '2rem 1rem' }}>
+              <SkeletonGrid count={12} />
+            </div>
+          }>
+            <div style={{ display: activeTab === 'peliculas' ? 'block' : 'none', width: '100%' }}>
+              {visitedTabs.has('peliculas') && <Peliculas />}
+            </div>
+            <div style={{ display: activeTab === 'tv-libre' ? 'block' : 'none', width: '100%' }}>
+              {visitedTabs.has('tv-libre') && <TvLibre />}
+            </div>
+            <div style={{ display: activeTab === 'kdramas' ? 'block' : 'none', width: '100%' }}>
+              {visitedTabs.has('kdramas') && <Kdramas />}
+            </div>
+            <div style={{ display: activeTab === 'animes' ? 'block' : 'none', width: '100%' }}>
+              {visitedTabs.has('animes') && <Animes />}
+            </div>
+            <div style={{ display: activeTab === 'mi-lista' ? 'block' : 'none', width: '100%' }}>
+              {visitedTabs.has('mi-lista') && <MiLista onOpenItem={handleOpenItem} />}
+            </div>
+            <div style={{ display: activeTab === 'mi-cuenta' ? 'block' : 'none', width: '100%' }}>
+              {visitedTabs.has('mi-cuenta') && <MiCuenta onOpenItem={handleOpenItem} />}
+            </div>
+          </Suspense>
+        </ErrorBoundary>
       </main>
 
       <nav className="mobile-bottom-nav">

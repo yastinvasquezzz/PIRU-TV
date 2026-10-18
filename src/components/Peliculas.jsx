@@ -6,7 +6,21 @@ import { castWithWebVideoCaster } from '../utils/wvcCast';
 import { isLgTv } from '../utils/deviceDetect';
 import catalogData from '../data/catalog.json';
 import dramasData from '../data/dramas.json';
-import { TMDB, IMG, BACK, HDR } from '../utils/tmdb';
+import { TMDB, IMG, BACK, HDR, PLACEHOLDER_POSTER } from '../utils/tmdb';
+
+// Precomputed O(1) Terabox lookup map by media type & ID
+const CATALOG_TERABOX_MAP = new Map();
+try {
+  for (const cat of Object.values(catalogData)) {
+    if (Array.isArray(cat)) {
+      for (const it of cat) {
+        if (it.id && it.terabox) {
+          CATALOG_TERABOX_MAP.set(`${it.type || 'movie'}-${it.id}`, it.terabox);
+        }
+      }
+    }
+  }
+} catch (e) {}
 
 const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
 const VIMEUS_PARAMS = '&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3';
@@ -218,13 +232,13 @@ export default function Peliculas() {
   const [isSearching, setIsSearching] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [watchHistory, setWatchHistory] = useState(() => getWatchHistory('peliculas'));
-  const searchInputRef = React.useRef(null);
+  const searchInputRef = useRef(null);
   
   const [tmdbCache, setTmdbCache] = useState(() => {
     try {
       const saved = sessionStorage.getItem('piru_tmdb_cache');
       return saved ? JSON.parse(saved) : {};
-    } catch (e) {
+    } catch {
       return {};
     }
   });
@@ -232,13 +246,18 @@ export default function Peliculas() {
     try {
       const saved = sessionStorage.getItem('piru_discover_cache');
       return saved ? JSON.parse(saved) : {};
-    } catch (e) {
+    } catch {
       return {};
     }
   });
   const [categoryPages, setCategoryPages] = useState({}); // Current loaded page for each category
-  const [categoryTotalPages, setCategoryTotalPages] = useState({}); // Total pages for each category
   const [selectedItem, setSelectedItem] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [selectedServer, setSelectedServer] = useState('vimeus');
+  const [selectedSeason, setSelectedSeason] = useState(1);
+  const [selectedEpisode, setSelectedEpisode] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [modalTab, setModalTab] = useState('player'); // 'player', 'cast', 'trailer', 'details'
 
   // Combine real user watch history with curated items (filtered strictly to peliculas/series)
   const continueWatchingItems = useMemo(() => {
@@ -322,29 +341,12 @@ export default function Peliculas() {
   const [top5Items, setTop5Items] = useState([]);
   const [homeCategoriesData, setHomeCategoriesData] = useState({});
 
-  // Player state inside modal
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [selectedServer, setSelectedServer] = useState('vimeus');
-  const [selectedSeason, setSelectedSeason] = useState(1);
-  const [selectedEpisode, setSelectedEpisode] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-
   // Doramasflix Latino Movies state
   const [latinoMovies, setLatinoMovies] = useState([]);
   const [latinoMoviePage, setLatinoMoviePage] = useState(1);
   const [latinoMovieTotalPages, setLatinoMovieTotalPages] = useState(1);
   const [latinoMovieLinks, setLatinoMovieLinks] = useState([]);
   const [activeLatinoServer, setActiveLatinoServer] = useState(null);
-
-  // Modal navigation tabs & server language filter
-  const [modalTab, setModalTab] = useState('player'); // 'player', 'cast', 'trailer', 'details'
-  const [serverLangFilter, setServerLangFilter] = useState('all'); // 'all', 'latino', 'multi', 'sub'
-
-  // Filter servers according to selected audio language tab
-  const filteredServers = useMemo(() => {
-    if (serverLangFilter === 'all') return SERVERS;
-    return SERVERS.filter(s => s.langGroup === serverLangFilter);
-  }, [serverLangFilter]);
 
   // Handle Smart TV D-Pad Remote Back button
   useDpadNavigation({
@@ -416,7 +418,7 @@ export default function Peliculas() {
           title: data.title || data.name || '—',
           originalTitle: data.original_title || data.original_name || null,
           tagline: data.tagline || null,
-          poster: data.poster_path ? `${IMG}${data.poster_path}` : 'https://via.placeholder.com/160x240?text=?',
+          poster: data.poster_path ? `${IMG}${data.poster_path}` : PLACEHOLDER_POSTER,
           backdrop: data.backdrop_path ? `${BACK}${data.backdrop_path}` : null,
           overview: data.overview || 'Sin descripción disponible.',
           year: (data.release_date || data.first_air_date || '').slice(0, 4) || '—',
@@ -496,7 +498,7 @@ export default function Peliculas() {
                 id: x.id,
                 type: type,
                 title: x.title || x.name || '—',
-                poster: x.poster_path ? `${IMG}${x.poster_path}` : 'https://via.placeholder.com/160x240?text=?',
+                poster: x.poster_path ? `${IMG}${x.poster_path}` : PLACEHOLDER_POSTER,
                 backdrop: x.backdrop_path ? `${BACK}${x.backdrop_path}` : null,
                 overview: x.overview || 'Sin descripción disponible.',
                 year: (x.release_date || x.first_air_date || '').slice(0, 4) || '—',
@@ -566,7 +568,7 @@ export default function Peliculas() {
             type: 'latino-movie',
             slug: x.slug,
             title: x.name_es || x.name || '—',
-            poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : 'https://via.placeholder.com/160x240?text=?',
+            poster: x.poster_path ? `https://image.tmdb.org/t/p/w500${x.poster_path}` : PLACEHOLDER_POSTER,
             backdrop: x.backdrop_path ? `https://image.tmdb.org/t/p/original${x.backdrop_path}` : null,
             overview: x.overview || 'Sin descripción disponible.',
             year: (x.release_date || '').slice(0, 4) || '—',
@@ -646,7 +648,7 @@ export default function Peliculas() {
               id: x.id,
               type: type,
               title: x.title || x.name || '—',
-              poster: x.poster_path ? `${IMG}${x.poster_path}` : 'https://via.placeholder.com/160x240?text=?',
+              poster: x.poster_path ? `${IMG}${x.poster_path}` : PLACEHOLDER_POSTER,
               overview: x.overview || 'Sin descripción disponible.',
               year: (x.release_date || x.first_air_date || '').slice(0, 4) || '—',
               rating: x.vote_average ? Math.round(x.vote_average * 10) / 10 : null,
@@ -690,19 +692,13 @@ export default function Peliculas() {
               id: x.id,
               type: x.media_type,
               title: x.title || x.name || '—',
-              poster: x.poster_path ? `${IMG}${x.poster_path}` : 'https://via.placeholder.com/160x240?text=?',
+              poster: x.poster_path ? `${IMG}${x.poster_path}` : PLACEHOLDER_POSTER,
               overview: x.overview || 'Sin descripción disponible.',
               year: (x.release_date || x.first_air_date || '').slice(0, 4) || '—',
               rating: x.vote_average ? Math.round(x.vote_average * 10) / 10 : null,
               category: x.media_type === 'tv' ? 'Series' : 'Películas',
-              // Try to find if this item has a Terabox link in our local catalog
-              terabox: (() => {
-                for (const cat of Object.values(catalogData)) {
-                  const match = cat.find(it => it.id === x.id && it.type === x.media_type);
-                  if (match) return match.terabox;
-                }
-                return null;
-              })()
+              // Instant O(1) Terabox link lookup in our local catalog
+              terabox: CATALOG_TERABOX_MAP.get(`${x.media_type}-${x.id}`) || null
             }));
           setSearchResults(results);
         }
@@ -1319,7 +1315,7 @@ export default function Peliculas() {
                   >
                     <div className="card-thumbnail-wrapper" style={{ aspectRatio: '2/3' }}>
                       <div className="card-thumbnail-glow"></div>
-                      <img src={item.poster} alt={item.title} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = 'https://via.placeholder.com/160x240?text=?'; }} />
+                      <img src={item.poster} alt={item.title} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = PLACEHOLDER_POSTER; }} />
                       <button
                         type="button"
                         className="play-hover-btn"
@@ -1415,7 +1411,7 @@ export default function Peliculas() {
                           decoding="async"
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                           onError={(e) => {
-                            e.target.src = 'https://via.placeholder.com/160x240?text=?';
+                            e.target.src = PLACEHOLDER_POSTER;
                           }}
                         />
                         <button

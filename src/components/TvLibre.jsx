@@ -326,6 +326,9 @@ export default function TvLibre() {
 
     const streamUrl = selectedChannel.url;
 
+    let handleNativeLoaded = null;
+    let handleNativeError = null;
+
     if (Hls.isSupported()) {
       const isTV = isLgTv();
       const hls = new Hls({
@@ -374,14 +377,16 @@ export default function TvLibre() {
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       // Native Safari / iOS / Smart TV HLS support
       video.src = streamUrl;
-      video.addEventListener('loadedmetadata', () => {
+      handleNativeLoaded = () => {
         setPlayerLoading(false);
         video.play().catch(e => console.log('Autoplay prevented:', e));
-      });
-      video.addEventListener('error', () => {
+      };
+      handleNativeError = () => {
         setPlayerLoading(false);
         setPlayerError('Error al reproducir el canal nativo. Intenta con otro canal o transmite mediante Web Video Caster.');
-      });
+      };
+      video.addEventListener('loadedmetadata', handleNativeLoaded);
+      video.addEventListener('error', handleNativeError);
     } else {
       setPlayerLoading(false);
       setPlayerError('Tu navegador no soporta reproducción directa de streams HLS (.m3u8).');
@@ -391,6 +396,15 @@ export default function TvLibre() {
       if (hlsRef.current) {
         hlsRef.current.destroy();
         hlsRef.current = null;
+      }
+      if (video) {
+        if (handleNativeLoaded) video.removeEventListener('loadedmetadata', handleNativeLoaded);
+        if (handleNativeError) video.removeEventListener('error', handleNativeError);
+        try {
+          video.pause();
+          video.removeAttribute('src');
+          video.load();
+        } catch (e) {}
       }
     };
   }, [selectedChannel]);

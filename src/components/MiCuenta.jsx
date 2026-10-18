@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { getFavorites, getWatchHistory, toggleFavorite, syncCloudDataWithLocal } from '../utils/storage';
 import { AVATARS, getSelectedAvatar, setSelectedAvatar } from '../utils/avatars';
+import { PLACEHOLDER_POSTER } from '../utils/tmdb';
 
 export default function MiCuenta({ onOpenItem }) {
   const [user, setUser] = useState(null);
@@ -505,7 +506,7 @@ export default function MiCuenta({ onOpenItem }) {
                 >
                   <div className="card-thumbnail-wrapper" style={{ aspectRatio: '16/9' }}>
                     <img
-                      src={item.poster || item.portada || 'https://via.placeholder.com/160x240?text=?'}
+                      src={item.poster || item.portada || PLACEHOLDER_POSTER}
                       alt={item.title || item.titulo}
                       loading="lazy"
                       decoding="async"
@@ -549,7 +550,7 @@ export default function MiCuenta({ onOpenItem }) {
                 >
                   <div className="card-thumbnail-wrapper" style={{ aspectRatio: '2/3' }}>
                     <img
-                      src={item.poster || item.portada || 'https://via.placeholder.com/160x240?text=?'}
+                      src={item.poster || item.portada || PLACEHOLDER_POSTER}
                       alt={item.title || item.titulo}
                       loading="lazy"
                       decoding="async"
