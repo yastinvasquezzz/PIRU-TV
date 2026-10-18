@@ -5,12 +5,7 @@ import { saveWatchProgress, toggleFavorite, isFavorite, getWatchHistory } from '
 import { castWithWebVideoCaster } from '../utils/wvcCast';
 import { isLgTv } from '../utils/deviceDetect';
 import curatedData from '../data/kdramas_curated.json';
-
-const TMDB_KEY = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiMGM4MjRjMmFkMzllODUwNmE5ZGUzOGI5ZTA2ZjJmZiIsIm5iZiI6MTc0ODI3MjY1Ni43MDMsInN1YiI6IjY4MzQ4NjEwNjFmMWZlZmI4YmViMzYxZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KUIiE74vCOP05_Y0M5CKyCBtj9m5lN1WzCfZ6bQn6Xs';
-const TMDB = 'https://api.themoviedb.org/3';
-const IMG = 'https://image.tmdb.org/t/p/w500';
-const BACK = 'https://image.tmdb.org/t/p/original';
-const HDR = { Authorization: `Bearer ${TMDB_KEY}` };
+import { TMDB, IMG, BACK, HDR } from '../utils/tmdb';
 
 const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
 const VIMEUS_PARAMS = '&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3';
@@ -1515,9 +1510,36 @@ export default function Kdramas() {
                       </span>
                     </div>
 
-                    <div className="latino-notice-pill">
-                      <span>🗣️</span>
-                      <span><strong>Servidores Disponibles:</strong> {serversList.length} opciones en línea.</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                      <div className="latino-notice-pill">
+                        <span>🗣️</span>
+                        <span><strong>Servidores Disponibles:</strong> {serversList.length} opciones en línea.</span>
+                      </div>
+                      {serversList.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const idx = serversList.findIndex(s => s.hash === activeServer?.hash);
+                            const next = serversList[(idx + 1) % serversList.length];
+                            handleServerClick(next);
+                          }}
+                          style={{
+                            background: 'rgba(255,255,255,0.08)',
+                            border: '1px solid rgba(255,255,255,0.15)',
+                            color: '#f8fafc',
+                            borderRadius: '20px',
+                            padding: '0.3rem 0.75rem',
+                            fontSize: '0.78rem',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                          title="¿No carga? Probar siguiente servidor"
+                        >
+                          🔄 Siguiente servidor
+                        </button>
+                      )}
                     </div>
                   </div>
 

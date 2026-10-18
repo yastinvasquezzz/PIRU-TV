@@ -4,10 +4,7 @@ import { saveWatchProgress, toggleFavorite, isFavorite, getWatchHistory } from '
 import { castWithWebVideoCaster } from '../utils/wvcCast';
 import { isLgTv } from '../utils/deviceDetect';
 import vimeusAnimesData from '../data/animes.json';
-
-const TMDB_KEY = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiMGM4MjRjMmFkMzllODUwNmE5ZGUzOGI5ZTA2ZjJmZiIsIm5iZiI6MTc0ODI3MjY1Ni43MDMsInN1YiI6IjY4MzQ4NjEwNjFmMWZlZmI4YmViMzYxZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KUIiE74vCOP05_Y0M5CKyCBtj9m5lN1WzCfZ6bQn6Xs';
-const TMDB = 'https://api.themoviedb.org/3';
-const HDR = { Authorization: `Bearer ${TMDB_KEY}` };
+import { TMDB, HDR } from '../utils/tmdb';
 
 const VIMEUS_VIEW_KEY = 'KThsRRoYzOilpZpoAf-eQMKv1cN3ULOBQxPk6QmeL-A';
 const VIMEUS_PARAMS = '&title=PIRU_TV&theme=red&font=v3&overlay=v5&selector=v3&playUI=v3&epanel=v3';
@@ -38,19 +35,19 @@ const CATEGORY_DISCOVER_MAP = {
 
 const ANIME_SERVERS = [
   {
-    id: 'unlimplay',
-    name: 'UnLimPlay',
-    lang: '🇲🇽 LATINO',
-    badge: '⭐ Activo 1080p',
-    desc: 'Audio Latino oficial de alta fidelidad (Directo, Streamwish, Filelions, Voe)',
-    quality: '1080p'
-  },
-  {
     id: 'vimeus',
     name: 'Vimeus',
     lang: '🇲🇽 LATINO',
-    badge: '⚠️ Error 522 Host',
-    desc: 'Audio Latino oficial (Servidor temporalmente fuera de línea por su proveedor)',
+    badge: '⭐ Oficial Latino',
+    desc: 'Audio Latino oficial de alta fidelidad sin anuncios invasivos (Recomendado)',
+    quality: '1080p'
+  },
+  {
+    id: 'unlimplay',
+    name: 'UnLimPlay',
+    lang: '🇲🇽 LATINO',
+    badge: '💎 Multi-Latino',
+    desc: 'Audio Latino oficial con múltiples fuentes (Directo, Streamwish, Filelions, Voe)',
     quality: '1080p'
   },
   {
@@ -92,7 +89,7 @@ export default function Animes() {
   const [isLoadingSeasons, setIsLoadingSeasons] = useState(false);
   const [isLoadingEpisodes, setIsLoadingEpisodes] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [selectedServer, setSelectedServer] = useState('unlimplay');
+  const [selectedServer, setSelectedServer] = useState('vimeus');
   const [modalTab, setModalTab] = useState('player'); // 'player', 'cast', 'trailer', 'details'
 
   // Watch history for continue watching row (specific to animes)
@@ -296,7 +293,7 @@ export default function Animes() {
 
     setSelectedAnime(anime);
     setIsPlaying(autoPlay);
-    setSelectedServer('unlimplay');
+    setSelectedServer('vimeus');
     setModalTab('player');
     setAnimeDetails(null);
     setSeasonEpisodes([]);
@@ -1088,49 +1085,37 @@ export default function Animes() {
                       </span>
                     </div>
 
-                    <div className="latino-notice-pill">
-                      <span>🇲🇽</span>
-                      <span><strong>Audio Latino:</strong> UnLimPlay reproduce con doblaje oficial en Español Latino 1080p. Vimeus temporalmente con caída de servidor (Error 522).</span>
-                    </div>
-                  </div>
-
-                  {selectedServer === 'vimeus' && (
-                    <div style={{
-                      margin: '0.75rem 0',
-                      padding: '0.75rem 1rem',
-                      background: 'rgba(239, 68, 68, 0.15)',
-                      border: '1px solid rgba(239, 68, 68, 0.4)',
-                      borderRadius: '8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: '1rem',
-                      fontSize: '0.85rem'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '1.2rem' }}>⚠️</span>
-                        <span>
-                          <strong>Servidor Vimeus en mantenimiento:</strong> El host de vimeus.com presenta caída de conexión externa (Error 522).
-                        </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                      <div className="latino-notice-pill">
+                        <span>🇲🇽</span>
+                        <span><strong>Audio Latino:</strong> Vimeus y UnLimPlay reproducen con doblaje oficial en Español Latino.</span>
                       </div>
                       <button
                         type="button"
-                        onClick={() => { setSelectedServer('unlimplay'); setIsPlaying(true); }}
-                        style={{
-                          background: '#e50914',
-                          border: 'none',
-                          color: '#fff',
-                          padding: '0.4rem 0.8rem',
-                          borderRadius: '6px',
-                          fontWeight: 'bold',
-                          cursor: 'pointer',
-                          whiteSpace: 'nowrap'
+                        onClick={() => {
+                          const idx = ANIME_SERVERS.findIndex(s => s.id === selectedServer);
+                          const next = ANIME_SERVERS[(idx + 1) % ANIME_SERVERS.length];
+                          setSelectedServer(next.id);
+                          setIsPlaying(true);
                         }}
+                        style={{
+                          background: 'rgba(255,255,255,0.08)',
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          color: '#f8fafc',
+                          borderRadius: '20px',
+                          padding: '0.3rem 0.75rem',
+                          fontSize: '0.78rem',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}
+                        title="¿No carga? Probar siguiente servidor"
                       >
-                        Cambiar a UnLimPlay (1080p Latino)
+                        🔄 Siguiente servidor
                       </button>
                     </div>
-                  )}
+                  </div>
 
                   <div className="server-selector-row">
                     {ANIME_SERVERS.map(srv => (

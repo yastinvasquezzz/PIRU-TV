@@ -15,10 +15,21 @@ const MiCuenta = lazy(() => import('./components/MiCuenta'));
 
 function App() {
   const [activeTab, setActiveTab] = useState('peliculas');
+  const [visitedTabs, setVisitedTabs] = useState(() => new Set(['peliculas']));
   const [isWelcomeOpen, setIsWelcomeOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [avatar, setAvatar] = useState(getSelectedAvatar());
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // Track visited tabs to preserve mounted state and scroll position across switches
+  useEffect(() => {
+    setVisitedTabs(prev => {
+      if (prev.has(activeTab)) return prev;
+      const next = new Set(prev);
+      next.add(activeTab);
+      return next;
+    });
+  }, [activeTab]);
 
   useEffect(() => {
     // On LG Smart TV, keep header solid black and avoid continuous scroll listeners
@@ -89,6 +100,24 @@ function App() {
   // Handle Smart TV Remote Control (Back button / ESC key)
   useDpadNavigation({
     onBack: () => {
+      // 1. If any modal, preview or dialog is open in the DOM, let child handle it or close it
+      const openModal = document.querySelector('.modal-overlay, .player-modal, .netflix-preview-modal, .episodes-overlay, [role="dialog"]');
+      if (openModal) {
+        const closeBtn = openModal.querySelector('.modal-close-btn, .close-btn, button[aria-label="Cerrar"]');
+        if (closeBtn) {
+          closeBtn.click();
+          return;
+        }
+        return;
+      }
+
+      // 2. If a video player or fullscreen container is open, do not switch tabs
+      const activeVideo = document.querySelector('.tvlibre-player-container, .player-wrapper iframe, .player-wrapper video');
+      if (activeVideo) {
+        return;
+      }
+
+      // 3. Navigate back to Home tab if on another section
       if (activeTab !== 'peliculas') {
         setActiveTab('peliculas');
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -220,12 +249,24 @@ function App() {
             <SkeletonGrid count={12} />
           </div>
         }>
-          {activeTab === 'peliculas' && <Peliculas />}
-          {activeTab === 'tv-libre' && <TvLibre />}
-          {activeTab === 'kdramas' && <Kdramas />}
-          {activeTab === 'animes' && <Animes />}
-          {activeTab === 'mi-lista' && <MiLista onOpenItem={handleOpenItem} />}
-          {activeTab === 'mi-cuenta' && <MiCuenta onOpenItem={handleOpenItem} />}
+          <div style={{ display: activeTab === 'peliculas' ? 'block' : 'none', width: '100%' }}>
+            {visitedTabs.has('peliculas') && <Peliculas />}
+          </div>
+          <div style={{ display: activeTab === 'tv-libre' ? 'block' : 'none', width: '100%' }}>
+            {visitedTabs.has('tv-libre') && <TvLibre />}
+          </div>
+          <div style={{ display: activeTab === 'kdramas' ? 'block' : 'none', width: '100%' }}>
+            {visitedTabs.has('kdramas') && <Kdramas />}
+          </div>
+          <div style={{ display: activeTab === 'animes' ? 'block' : 'none', width: '100%' }}>
+            {visitedTabs.has('animes') && <Animes />}
+          </div>
+          <div style={{ display: activeTab === 'mi-lista' ? 'block' : 'none', width: '100%' }}>
+            {visitedTabs.has('mi-lista') && <MiLista onOpenItem={handleOpenItem} />}
+          </div>
+          <div style={{ display: activeTab === 'mi-cuenta' ? 'block' : 'none', width: '100%' }}>
+            {visitedTabs.has('mi-cuenta') && <MiCuenta onOpenItem={handleOpenItem} />}
+          </div>
         </Suspense>
       </main>
 

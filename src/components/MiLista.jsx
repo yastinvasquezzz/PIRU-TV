@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getFavorites, getWatchHistory, toggleFavorite } from '../utils/storage';
+import { PLACEHOLDER_POSTER } from '../utils/tmdb';
 
 export default function MiLista({ onOpenItem }) {
   const [favorites, setFavorites] = useState([]);
@@ -54,7 +55,7 @@ export default function MiLista({ onOpenItem }) {
               >
                 <div className="card-thumbnail-wrapper" style={{ aspectRatio: '2/3' }}>
                   <img
-                    src={item.poster || item.portada || 'https://via.placeholder.com/160x240?text=?'}
+                    src={item.poster || item.portada || PLACEHOLDER_POSTER}
                     alt={item.title || item.titulo}
                     loading="lazy"
                     decoding="async"
@@ -116,7 +117,7 @@ export default function MiLista({ onOpenItem }) {
               >
                 <div className="card-thumbnail-wrapper" style={{ aspectRatio: '16/9' }}>
                   <img
-                    src={item.poster || item.portada || 'https://via.placeholder.com/160x240?text=?'}
+                    src={item.poster || item.portada || PLACEHOLDER_POSTER}
                     alt={item.title || item.titulo}
                     loading="lazy"
                     decoding="async"

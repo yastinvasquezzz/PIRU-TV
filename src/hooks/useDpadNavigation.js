@@ -9,8 +9,9 @@ import { useEffect } from 'react';
  * - PC Keyboard (Escape, Back)
  * - Remote OK / Enter (keyCode 13)
  */
-export const useDpadNavigation = ({ onBack, onEnter } = {}) => {
+export const useDpadNavigation = ({ onBack, onEnter, enabled = true } = {}) => {
   useEffect(() => {
+    if (!enabled) return;
     const handleKeyDown = (e) => {
       const keyCode = e.keyCode || e.which;
       const key = e.key;
@@ -50,7 +51,7 @@ export const useDpadNavigation = ({ onBack, onEnter } = {}) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [onBack, onEnter]);
+  }, [onBack, onEnter, enabled]);
 };
 
 export default useDpadNavigation;

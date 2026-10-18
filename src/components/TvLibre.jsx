@@ -96,9 +96,22 @@ export default function TvLibre() {
     setFavMap(map);
   }, [channels]);
 
-  // Fetch updated live M3U in the background
+  // Fetch updated live M3U in the background (cached in sessionStorage to avoid main-thread freeze)
   useEffect(() => {
     let isCancelled = false;
+
+    // Check if already fetched this session
+    try {
+      const cached = sessionStorage.getItem('piru_cached_m3u_channels');
+      if (cached) {
+        const parsedCached = JSON.parse(cached);
+        if (Array.isArray(parsedCached) && parsedCached.length > 500) {
+          setChannels(parsedCached);
+          return;
+        }
+      }
+    } catch (e) {}
+
     async function fetchLiveM3U() {
       try {
         setIsLoadingLiveM3U(true);
@@ -107,60 +120,67 @@ export default function TvLibre() {
         const text = await res.text();
         if (isCancelled) return;
 
-        const lines = text.split(/\r?\n/);
-        const parsed = [];
-        let current = null;
+        // Non-blocking parse using setTimeout to yield to the browser
+        setTimeout(() => {
+          if (isCancelled) return;
+          const lines = text.split(/\r?\n/);
+          const parsed = [];
+          let current = null;
 
-        for (let i = 0; i < lines.length; i++) {
-          const line = lines[i].trim();
-          if (!line) continue;
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
 
-          if (line.startsWith('#EXTINF:')) {
-            const tvgId = (line.match(/tvg-id="([^"]*)"/i) || [])[1] || '';
-            const tvgName = (line.match(/tvg-name="([^"]*)"/i) || [])[1] || '';
-            const tvgLogo = (line.match(/tvg-logo="([^"]*)"/i) || [])[1] || '';
-            const groupTitle = (line.match(/group-title="([^"]*)"/i) || [])[1] || 'General';
-            const commaIdx = line.lastIndexOf(',');
-            const rawName = commaIdx !== -1 ? line.substring(commaIdx + 1).trim() : (tvgName || 'Canal');
+            if (line.startsWith('#EXTINF:')) {
+              const tvgId = (line.match(/tvg-id="([^"]*)"/i) || [])[1] || '';
+              const tvgName = (line.match(/tvg-name="([^"]*)"/i) || [])[1] || '';
+              const tvgLogo = (line.match(/tvg-logo="([^"]*)"/i) || [])[1] || '';
+              const groupTitle = (line.match(/group-title="([^"]*)"/i) || [])[1] || 'General';
+              const commaIdx = line.lastIndexOf(',');
+              const rawName = commaIdx !== -1 ? line.substring(commaIdx + 1).trim() : (tvgName || 'Canal');
 
-            let country = 'es';
-            if (tvgId) {
-              const m = tvgId.match(/\.([a-z]{2})@/i);
-              if (m) country = m[1].toLowerCase();
-            }
+              let country = 'es';
+              if (tvgId) {
+                const m = tvgId.match(/\.([a-z]{2})@/i);
+                if (m) country = m[1].toLowerCase();
+              }
 
-            let quality = 'HD';
-            if (/\b(1080p|fhd|1080)\b/i.test(rawName)) quality = '1080p';
-            else if (/\b(720p|hd)\b/i.test(rawName)) quality = '720p';
-            else if (/\b(4k|uhd)\b/i.test(rawName)) quality = '4K';
-            else if (/\b(sd|480p|360p)\b/i.test(rawName)) quality = 'SD';
+              let quality = 'HD';
+              if (/\b(1080p|fhd|1080)\b/i.test(rawName)) quality = '1080p';
+              else if (/\b(720p|hd)\b/i.test(rawName)) quality = '720p';
+              else if (/\b(4k|uhd)\b/i.test(rawName)) quality = '4K';
+              else if (/\b(sd|480p|360p)\b/i.test(rawName)) quality = 'SD';
 
-            const cleanName = rawName.replace(/\[.*?\]|\(.*?\)/g, '').trim() || rawName;
+              const cleanName = rawName.replace(/\[.*?\]|\(.*?\)/g, '').trim() || rawName;
 
-            current = {
-              id: tvgId || `chan_${parsed.length}`,
-              name: cleanName,
-              rawName: rawName,
-              logo: tvgLogo,
-              group: groupTitle,
-              country: country,
-              quality: quality
-            };
-          } else if (!line.startsWith('#')) {
-            if (current) {
-              current.url = line;
-              parsed.push(current);
-              current = null;
+              current = {
+                id: tvgId || `chan_${parsed.length}`,
+                name: cleanName,
+                rawName: rawName,
+                logo: tvgLogo,
+                group: groupTitle,
+                country: country,
+                quality: quality
+              };
+            } else if (!line.startsWith('#')) {
+              if (current) {
+                current.url = line;
+                parsed.push(current);
+                current = null;
+              }
             }
           }
-        }
 
-        if (parsed.length > 500 && !isCancelled) {
-          setChannels(parsed);
-        }
+          if (parsed.length > 500 && !isCancelled) {
+            setChannels(parsed);
+            try {
+              sessionStorage.setItem('piru_cached_m3u_channels', JSON.stringify(parsed));
+            } catch (e) {}
+          }
+          setIsLoadingLiveM3U(false);
+        }, 100);
       } catch (err) {
         console.warn('IPTV M3U live fetch error (using local bundle):', err);
-      } finally {
         if (!isCancelled) setIsLoadingLiveM3U(false);
       }
     }
@@ -255,6 +275,10 @@ export default function TvLibre() {
       url: channel.url
     }, 'tv-libre');
     setWatchHistory(getWatchHistory('tv-libre'));
+
+    try {
+      localStorage.setItem('piru_tv_last_channel', JSON.stringify(channel));
+    } catch (e) {}
 
     // Smooth scroll to player on mobile / desktop
     setTimeout(() => {

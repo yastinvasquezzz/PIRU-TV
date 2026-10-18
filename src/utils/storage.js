@@ -83,7 +83,8 @@ export const saveWatchProgress = async (item, explicitSection) => {
     localStorage.setItem(KEYS.WATCH_HISTORY, JSON.stringify(newHistory));
 
     // Async sync to Supabase if logged in
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user;
     if (user) {
       await supabase.from('watch_history').upsert({
         user_id: user.id,
@@ -121,7 +122,8 @@ export const toggleFavorite = async (item) => {
     localStorage.setItem(KEYS.FAVORITES, JSON.stringify(updated));
 
     // Async sync to Supabase if logged in
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user;
     if (user) {
       if (exists) {
         await supabase.from('favorites')
