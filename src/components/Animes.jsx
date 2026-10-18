@@ -89,6 +89,7 @@ export default function Animes() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedServer, setSelectedServer] = useState('vimeus');
   const [modalTab, setModalTab] = useState('player'); // 'player', 'cast', 'trailer', 'details'
+  const [isSearching, setIsSearching] = useState(false);
 
   // Watch history for continue watching row (specific to animes)
   const [watchHistory, setWatchHistory] = useState(() => getWatchHistory('animes'));
@@ -322,7 +323,7 @@ export default function Animes() {
   };
 
   // Handle open anime modal and fetch official TMDB seasons, episodes, cast and trailer
-  const handleOpenAnime = async (anime, autoPlay = false) => {
+  const handleOpenAnime = async (anime, autoPlay = true) => {
     const targetSeason = Number(anime.season) || 1;
     const targetEpisode = Number(anime.episode) || 1;
 

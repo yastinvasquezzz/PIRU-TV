@@ -251,6 +251,7 @@ export default function Peliculas() {
     }
   });
   const [categoryPages, setCategoryPages] = useState({}); // Current loaded page for each category
+  const [categoryTotalPages, setCategoryTotalPages] = useState({}); // Total pages for each category
   const [selectedItem, setSelectedItem] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedServer, setSelectedServer] = useState('vimeus');
@@ -746,7 +747,7 @@ export default function Peliculas() {
   }, [activeCategory, tmdbCache, discoverCache, latinoMovies, categoryPages]);
 
   // Open modal handler
-  const handleOpenItem = async (item) => {
+  const handleOpenItem = async (item, autoPlay = true) => {
     // Record watch progress
     if (item && item.id) {
       saveWatchProgress({
@@ -763,7 +764,7 @@ export default function Peliculas() {
     // Latino movie: load doramasflix links
     if (item.type === 'latino-movie') {
       setSelectedItem(item);
-      setIsPlaying(false);
+      setIsPlaying(autoPlay);
       setLatinoMovieLinks([]);
       setActiveLatinoServer(null);
       setIsLoading(true);
@@ -791,9 +792,8 @@ export default function Peliculas() {
     }
 
     setModalTab('player');
-    setServerLangFilter('all');
     setSelectedItem(item);
-    setIsPlaying(false);
+    setIsPlaying(autoPlay);
     setSelectedSeason(item.season || 1);
     setSelectedEpisode(item.episode || 1);
     setSelectedServer('vimeus'); // Vimeus is Spanish-first by default
@@ -807,7 +807,6 @@ export default function Peliculas() {
       }
       setIsLoading(false);
     }
-
   };
 
   // Handle external open event (e.g. from Mi Lista or Mi Cuenta)
